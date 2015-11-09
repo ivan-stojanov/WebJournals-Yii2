@@ -1,0 +1,17 @@
+/* FRONT-END: Announcements - START */
+.announcement-front-item {
+	color: #466946;
+	font-weight: 600;
+}
+
+.announcement-date-label {
+	padding: 0;
+    margin: 0;
+	font-family: Sofia Pro;
+}
+
+.announcement-front-desc {
+	padding: 10px;
+    margin: 0;
+}
+/* FRONT-END: Announcements - END */

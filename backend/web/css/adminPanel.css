@@ -1,0 +1,120 @@
+.adminContainer {
+	float: left;
+	width: 100%;
+}
+.clear {
+	clear:both;
+}
+
+.myDragClass {
+    /*background: rgba(255, 255, 55, 0.42);*/	
+}
+
+.hidden-div {
+	display: none;
+}
+
+/* Admin: Announcements CRUD - START */
+.announcement-view {
+    padding-bottom: 30px;
+}
+
+.announcement-date-label {
+	padding: 0;
+    margin: 0;
+	font-family: Sofia Pro;
+}
+
+.announcement-date-value {
+    padding: 0;
+    margin: 0;
+    font-weight: 700;
+    font-family: Sofia Pro, sans-serif !important;
+}
+
+.announcement-content-value {
+	padding: 30px 20px 0px 20px;
+    margin: 0;
+}
+/* Admin: Announcements CRUD - END */
+
+
+/* Global CSS for ON OFF checbox - START */
+.switch {
+    cursor: pointer;
+    position: relative;
+}
+
+    .switch input {
+        position: absolute;
+        opacity: 0;
+        filter: alpha(opacity=0);
+    }
+
+        .switch input:checked + span {
+            background-color: #60bb46;
+        }
+
+            .switch input:checked + span:after {
+                left: 31px;
+            }
+
+    .switch span {
+        position: relative;
+        width: 60px;
+        height: 30px;
+        border-radius: 30px;
+        background-color: #fff;
+        border: 1px solid #eee;
+        border-color: rgba(0,0,0,0.1);
+        display: inline-block;
+        -webkit-transition: background-color 0.2s;
+        transition: background-color 0.2s;
+    }
+
+        .switch span:after {
+            content: "";
+            position: absolute;
+            background-color: #fff;
+            width: 26px;
+            top: 1px;
+            bottom: 1px;
+            border-radius: 30px;
+            -webkit-box-shadow: 1px 1px 3px rgba(0,0,0,0.25);
+            box-shadow: 1px 1px 3px rgba(0,0,0,0.25);
+            -webkit-transition: left 0.2s;
+            transition: left 0.2s;
+        }
+
+
+    .switch span {
+        position: relative;
+        width: 50px !important;
+        height: 25px !important;
+        border-radius: 25px !important;
+    }
+
+    .switch input:checked + span:after {
+        left: 25px !important;
+    }
+
+    .switch span:after {
+        width: 22px !important;
+        border-radius: 22px !important;
+    }
+
+    .switch input:checked + span {
+        background-color: #4d90fe !important;
+        background-image: -webkit-linear-gradient(top,#4d90fe,#4787ed) !important;
+        background-image: -moz-linear-gradient(top,#4d90fe,#4787ed) !important;
+        background-image: -ms-linear-gradient(top,#4d90fe,#4787ed) !important;
+        background-image: -o-linear-gradient(top,#4d90fe,#4787ed) !important;
+        background-image: linear-gradient(top,#4d90fe,#4787ed) !important;
+    }
+
+.switch-label label {
+    color: #777;
+    font-weight: 300;
+    margin: 2px 0px 0px 6px;
+}
+/* Global CSS for ON OFF checbox - END */

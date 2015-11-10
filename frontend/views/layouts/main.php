@@ -35,6 +35,10 @@ AppAsset::register($this);
             'class' => 'navbar-inverse navbar-fixed-top',
         ],
     ]);
+    
+    $currentControllerId = $this->context->id;
+    $currentActionId = $this->context->action->id;
+    
     $menuItems = [
         ['label' => 'Home', 'url' => ['/site/index']],
         ['label' => 'About', 'url' => ['/site/about']],
@@ -48,7 +52,10 @@ AppAsset::register($this);
     $menuItems[] = ['label' => 'Search', 'url' => ['/site/search']];
     $menuItems[] = ['label' => 'Current', 'url' => ['/site/current']];
     $menuItems[] = ['label' => 'Archive', 'url' => ['/site/archive']];
-    $menuItems[] = ['label' => 'Blog', 'url' => ['/site/announcement']];
+    $menuItems[] = ['label' => 'Blog', 'url' => ['/site/announcement'], 
+				    'active' => (($currentControllerId == 'site' && $currentActionId == 'announcement') 	||
+					    		 ($currentControllerId == 'site' && $currentActionId == 'announcementdetails')),
+				   ];
     //$menuItems[] = ['label' => 'Contact', 'url' => ['/site/contact']];
     if (!(Yii::$app->user->isGuest)) {
          $menuItems[] = [

@@ -1,7 +1,6 @@
-/* FRONT-END: Announcements - START */
-.announcement-front-item {
-	color: #466946;
-	font-weight: 600;
+/* Admin: Announcements CRUD - START */
+.announcement-view {
+    padding-bottom: 30px;
 }
 
 .announcement-date-label {
@@ -10,8 +9,20 @@
 	font-family: Sofia Pro;
 }
 
-.announcement-front-desc {
-	padding: 10px;
+.announcement-date-value {
+    padding: 0;
+    margin: 0;
+    font-weight: 700;
+    font-family: Sofia Pro, sans-serif !important;
+}
+
+.announcement-content-value {
+	padding: 30px 20px 0px 20px;
     margin: 0;
 }
-/* FRONT-END: Announcements - END */
+
+.announcement-front-item {
+	color: #466946;
+	font-weight: 600;
+}
+/* Admin: Announcements CRUD - END */

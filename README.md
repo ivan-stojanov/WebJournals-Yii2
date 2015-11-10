@@ -1,4 +1,5 @@
-<<<<<<< HEAD
+Web Journal Demo system (in progress)
+
 Yii 2 Advanced Project Template
 ===============================
 
@@ -55,4 +56,3 @@ tests                    contains various tests for the advanced application
 ```
 =======
 # web-journal-demo
->>>>>>> 8b8b53e9dfe811bee0e186f757cc32707732aa74

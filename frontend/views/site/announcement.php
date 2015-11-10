@@ -35,7 +35,7 @@ $this->params['breadcrumbs'][] = $this->title;
        	<div>
        		<p class="announcement-front-desc"><?php echo $description?></p>          	
         </div>        
-        <?php echo Html::a('Read more', ['announcement/'.$id], ['class' => 'btn btn-success']) ?>
+        <?php echo Html::a('Read more', ['site/announcementdetails/'.$id], ['class' => 'btn btn-success']) ?>
 		<hr>
         <?php } ?>
 	</div>

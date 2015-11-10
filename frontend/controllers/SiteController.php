@@ -342,5 +342,25 @@ class SiteController extends Controller
     	return $this->render('announcement', [
     			'model' => $announcements,
     	]);
-    }    
+    }
+    
+    /**
+     * Displays announcement page (blog posts).
+     *
+     * @return mixed
+     */
+    public function actionAnnouncementdetails($id)
+    {
+    	$announcement = Announcement::find()
+				    	->where([
+				    			'announcement_id' => $id,
+				    			'is_deleted' => false,
+				    			'is_visible' => true
+				    	])
+				    	->one();
+    
+    	return $this->render('announcementDetails', [
+    			'model' => $announcement,
+    	]);
+    }
 }

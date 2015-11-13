@@ -9,8 +9,8 @@ use Yii;
 class CommonVariables
 {
     public $gender_values = array(
-    							'male'=>'Male', 
-    							'female'=>'Female',    				
+    							'Male'=>'Male', 
+    							'Female'=>'Female',    				
     						);
     
     public $admin_homepage_sections = array(

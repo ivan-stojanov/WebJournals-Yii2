@@ -4,10 +4,10 @@ namespace backend\controllers;
 
 use Yii;
 use common\models\Announcement;
-use app\models\AnnouncementSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
+use yii\filters\AccessControl;
 
 /**
  * AnnouncementController implements the CRUD actions for Announcement model.
@@ -17,15 +17,48 @@ class AnnouncementController extends Controller
     public function behaviors()
     {
         return [
-            'verbs' => [
-                'class' => VerbFilter::className(),
-                'actions' => [
-                    //'delete' => ['post'],
-                ],
-            ],
+        		'access' => [
+        				'class' => AccessControl::className(),
+        				'rules' => [
+        						//not logged users do not have access to any action
+        						/*[
+        						 'actions' => ['login', 'error'],
+        								'allow' => true,
+        						],*/
+        						//only logged users have access to actions
+        						[
+        								'actions' => [	'index', 'view', 'create', 'update', 'delete',
+        												'asynch-announcement-change-visibility',
+        												'asynch-announcement-change-sorting',
+        											 ],
+        								'allow' => true,
+        								'roles' => ['@'],
+        						],
+        				],
+        		],
+	            'verbs' => [
+	                	'class' => VerbFilter::className(),
+						'actions' => [
+								'asynch-announcement-change-visibility' => ['post'],
+								'asynch-announcement-change-sorting' => ['post'],
+						],
+	            ],
         ];
     }
 
+    /**
+     * @inheritdoc
+     */
+    public function actions()
+    {
+    	$this->layout = 'adminlayout';
+    	return [
+    			'error' => [
+    					'class' => 'yii\web\ErrorAction',
+    			],
+    	];
+    }
+    
     /**
      * Lists all Announcement models.
      * @return mixed
@@ -185,15 +218,5 @@ class AnnouncementController extends Controller
     	}
     	 
     	return "Announcements sorting has been successfully changed.";
-    }
-    
-    /**
-     * set admin layout for menu of the left in admin section pages
-     */
-    public function beforeAction($action){
-    	 
-    	$this->layout = 'adminlayout';
-    	return parent::beforeAction($action);
-    	 
     }
 }

@@ -43,7 +43,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 
  				<?= $form->field($model, 'initials')->label('Initials (e.g. Joan Alice Smith = JAS)') ?>
 				
-				<?= $form->field($model, 'gender')->dropDownList($common_vars->gender_values, ['prompt' => '--- Select ---', 'options' => ['Male' => ['label' => 'Male'], 'Female' => ['label' => 'Female']]]) ?>
+				<?= $form->field($model, 'gender')->dropDownList($common_vars->gender_values, $model->gender_opt) ?>
                 
                 <?= $form->field($model, 'affiliation')->textArea(['rows' => 3])->label('Affiliation (Your institution, e.g. "Simon Fraser University")') ?>    
                 

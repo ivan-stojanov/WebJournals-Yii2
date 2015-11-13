@@ -36,9 +36,8 @@ AppAsset::register($this);
             'class' => 'navbar-inverse navbar-fixed-top',
         ],
     ]);
-    $menuItems = [
-        ['label' => 'Home', 'url' => ['/site/index']],
-    ];
+    $menuItems[] = ['label' => 'Home', 'url' => ['/site/index']];
+    $menuItems[] = ['label' => 'My Profile', 'url' => ['/user/profile']];
     if (Yii::$app->user->isGuest) {
         $menuItems[] = ['label' => 'Login', 'url' => ['/site/login']];
     } else {
@@ -71,6 +70,16 @@ AppAsset::register($this);
     									 ($currentControllerId == 'announcement' && $currentActionId == 'update')),
 				    		'label' => 'Announcements',
 				    		'icon' => 'book',
+    ];    
+    $adminMenuItems[] = [
+    		'url' => Url::to(['/user/index']),
+    		'active' => (($currentControllerId == 'user' && $currentActionId == 'index') 	||
+    				($currentControllerId == 'user' && $currentActionId == 'create') 	||
+    				($currentControllerId == 'user' && $currentActionId == 'view') 	||
+    				($currentControllerId == 'user' && $currentActionId == 'update') 	||
+    				($currentControllerId == 'user' && $currentActionId == 'profile')),
+    		'label' => 'Profile',
+    		'icon' => 'user',
     ];
     /*$adminMenuItems[] = [
 				            'label' => 'Help',
@@ -86,17 +95,19 @@ AppAsset::register($this);
             'links' => isset($this->params['breadcrumbs']) ? $this->params['breadcrumbs'] : [],
         ]) ?>
         <?= Alert::widget() ?>
-        <div class='col-lg-2 col-md-2' >
-            <!-- here your left admin menu -->            
-			<?php
-				echo SideNav::widget([
-				    'type' => SideNav::TYPE_DEFAULT,
-					'encodeLabels' => false,
-				    'heading' => 'Options',
-				    'items' => $adminMenuItems,
-				]);
-			?>
-        </div>
+        <?php if(!Yii::$app->user->getIsGuest()){?>
+	        <div class='col-lg-2 col-md-2' >
+	            <!-- here your left admin menu -->            
+				<?php
+					echo SideNav::widget([
+					    'type' => SideNav::TYPE_DEFAULT,
+						'encodeLabels' => false,
+					    'heading' => 'Options',
+					    'items' => $adminMenuItems,
+					]);
+				?>
+	        </div>
+        <?php } ?>
         <div class='col-lg-10 col-md-10' >
             <!-- here your content page-->
             <?= $content ?>

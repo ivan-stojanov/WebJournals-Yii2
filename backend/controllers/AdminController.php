@@ -4,6 +4,7 @@ namespace backend\controllers;
 
 use Yii;
 use yii\filters\VerbFilter;
+use yii\filters\AccessControl;
 use common\models\HomepageSection;
 use common\models\CommonVariables;
 
@@ -12,6 +13,25 @@ class AdminController extends \yii\web\Controller
 	public function behaviors()
 	{
 		return [
+				'access' => [
+						'class' => AccessControl::className(),
+						'rules' => [
+								//not logged users do not have access to any action
+								/*[
+										'actions' => ['login', 'error'],
+										'allow' => true,
+								],*/
+								//only logged users have access to actions
+								[
+										'actions' => [	'index', 'home', 'homecontent', 'home', 
+														'asynch-home-section-change-visibility',
+														'asynch-home-section-change-sorting',												
+													 ],
+										'allow' => true,
+										'roles' => ['@'],
+								],
+						],
+				],
 				'verbs' => [
 						'class' => VerbFilter::className(),
 						'actions' => [
@@ -22,6 +42,18 @@ class AdminController extends \yii\web\Controller
 		];
 	}
 	
+	/**
+	 * @inheritdoc
+	 */
+	public function actions()
+	{
+		$this->layout = 'adminlayout';
+		return [
+				'error' => [
+						'class' => 'yii\web\ErrorAction',
+				],
+		];
+	}
 	
     public function actionIndex()
     {
@@ -113,15 +145,5 @@ class AdminController extends \yii\web\Controller
     	}
     	
     	return "Section sorting has been successfully changed.";
-    }
-
-    /**
-     * set admin layout for menu of the left in admin section pages
-     */
-    public function beforeAction($action){
-    	
-    	$this->layout = 'adminlayout';    	 
-    	return parent::beforeAction($action);
-    	
     }
 }

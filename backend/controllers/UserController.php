@@ -10,6 +10,7 @@ use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 use yii\filters\AccessControl;
+use backend\models\UserProfileForm;
 
 /**
  * UserController implements the CRUD actions for User model.
@@ -29,7 +30,7 @@ class UserController extends Controller
         			],*/
         			//only logged users have access to actions
         			[
-        				'actions' => [	'index', 'view', 'create', 'update', 'delete', 'profile',
+        				'actions' => [	'index', 'view', 'create', 'update', 'delete', 'profile', 'captcha',
         				],
         				'allow' => true,
         				'roles' => ['@'],
@@ -54,6 +55,10 @@ class UserController extends Controller
     	return [
     			'error' => [
     					'class' => 'yii\web\ErrorAction',
+    			],
+    			'captcha' => [
+    					'class' => 'yii\captcha\CaptchaAction',
+    					'fixedVerifyCode' => YII_ENV_TEST ? 'testme2' : null,
     			],
     	];
     }
@@ -142,39 +147,109 @@ class UserController extends Controller
     		return $this->redirect(['error']);
     	}
     	 
-    	$id = Yii::$app->user->identity->attributes["id"];
-    	$model = $this->findModel($id);
-    	var_dump($model->middle_name);
-    	if ($model->load(Yii::$app->request->post())) {
-    		//var_dump($this->middle_name);
+    	$currentId = Yii::$app->user->identity->attributes["id"];
+    	
+        $model = new UserProfileForm();
+        
+        
+        if ($model->load(Yii::$app->request->post())) {
+            if ($user = $model->updateUserProfile($currentId)) {
+            //    if (Yii::$app->getUser()->login($user)) {
+            //        return $this->goHome();
+            //    }      
+            	//return Yii::$app->getResponse()->redirect(Yii::$app->getHomeUrl());
+            	        $searchModel = new UserSearch();
+				        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+				
+				        return $this->render('index', [
+				            'searchModel' => $searchModel,
+				            'dataProvider' => $dataProvider,
+				        ]);
+            }
+            /*
+            //var_dump($this->middle_name);
     		var_dump($model->middle_name);
     		var_dump(Yii::$app->request->post());
     		return;
     		return $this->redirect(['view', 'id' => $model->id]);
-    	} else {    	
-	    	$common_vars = new CommonVariables();
-	    	
-	    	if(isset($model->gender)){
-	    		$additional_params["gender_opt"] = ['prompt' => '--- Select ---', 'options' => [$model->gender => ['Selected' => 'selected']]];
-	    	} else {
-	    		$additional_params["gender_opt"] = ['prompt' => '--- Select ---'];
-	    	}
-	    	
-	    	if(isset($model->country)){
-	    		$additional_params["country_opt"] = ['prompt' => '--- Select ---', 'options' => [$model->country => ['Selected' => 'selected']]];
-	    	} else {
-	    		$additional_params["country_opt"] = ['prompt' => '--- Select ---'];
-	    	}
-	    	
-	    	$additional_vars = (object)$additional_params;
-	    	 
-	    	return $this->render('profile', [
-	    			'model' => $model,
-	    			'common_vars' => $common_vars,
-	    			'additional_vars' => $additional_vars
-	    	]);
+            var_dump($model->middle_name);
+            */      	
+        } 
+        //var_dump("empty");
+        $currentUserModel = $this->findModel($currentId);
+        //var_dump($currentUser);
+        $currentUser = [$model->formName() => $currentUserModel->attributes];
+        //var_dump($currentUser);
+        $model->load($currentUser);        
+       	
+        if(isset($_POST["password"])){
+        	$model->password = $_POST["password"];
+        } else if(isset($currentUserModel->password_hash)){
+        	$model->password = $currentUserModel->password_hash;
+        }
+        
+        if(isset($_POST["repeat_password"])){
+        	$model->repeat_password = $_POST["repeat_password"];
+        } else if(isset($currentUserModel->password_hash)){
+        	$model->repeat_password = $currentUserModel->password_hash;
+        }
+        
+        if(isset($_POST["repeat_email"])){
+        	$model->repeat_email = $_POST["repeat_email"];
+        } else if(isset($currentUserModel->email)){
+        	$model->repeat_email = $currentUserModel->email;
+        }
+
+        $common_vars = new CommonVariables();
+    	
+    	if(isset($currentUserModel->gender)){
+    		$additional_params["gender_opt"] = ['prompt' => '--- Select ---', 'options' => [$currentUserModel->gender => ['Selected' => 'selected']]];
+    	} else {
+    		$additional_params["gender_opt"] = ['prompt' => '--- Select ---'];
     	}
-    }
+    	
+    	if(isset($currentUserModel->country)){
+    		$additional_params["country_opt"] = ['prompt' => '--- Select ---', 'options' => [$currentUserModel->country => ['Selected' => 'selected']]];
+    	} else {
+    		$additional_params["country_opt"] = ['prompt' => '--- Select ---'];
+    	}
+    	
+    	if(isset($_POST[$model->formName()]['send_confirmation'])){
+    		$model->send_confirmation = $_POST[$model->formName()]['send_confirmation'];
+    	} else if (isset($currentUserModel->send_confirmation)) {	
+    		$model->send_confirmation = $currentUserModel->send_confirmation;
+    	} else {
+    		$model->send_confirmation = true;
+    	}
+    	
+    	if(isset($_POST[$model->formName()]['is_reader'])){
+    		$model->is_reader = $_POST[$model->formName()]['is_reader'];
+    	} else if (isset($currentUserModel->is_reader)) {	
+    		$model->is_reader = $currentUserModel->is_reader;
+    	} else {
+    		$model->is_reader = true;
+    	}
+    	
+    	if(isset($_POST[$model->formName()]['is_author'])){
+    		$model->is_author = $_POST[$model->formName()]['is_author'];
+    	} else if (isset($currentUserModel->is_author)) {	
+    		$model->is_author = $currentUserModel->is_author;
+    	}
+    	
+    	if(isset($_POST[$model->formName()]['is_reviewer'])){
+    		$model->is_reviewer = $_POST[$model->formName()]['is_reviewer'];
+    	} else if (isset($currentUserModel->is_reviewer)) {	
+    		$model->is_reviewer = $currentUserModel->is_reviewer;
+    	}
+    	
+    	$additional_vars = (object)$additional_params;
+    	 
+	   	return $this->render('profile', [
+	   			'model' => $model,
+	   			'common_vars' => $common_vars,
+    			'additional_vars' => $additional_vars	   			
+	   	]);
+   	} 
 
     /**
      * Finds the User model based on its primary key value.

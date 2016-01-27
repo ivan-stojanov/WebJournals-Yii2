@@ -2,6 +2,8 @@
 
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
+use yii\grid\GridView;
+use yii\grid\DataColumn;
 
 /* @var $this yii\web\View */
 /* @var $model app\models\UserSearch */
@@ -10,82 +12,71 @@ use yii\widgets\ActiveForm;
 
 <div class="user-search">
 
-    <?php $form = ActiveForm::begin([
-        'action' => ['index'],
-        'method' => 'get',
+	<?php if(isset($post_msg)){ ?>
+	    <div class="alert alert-dismissable <?php echo "alert-".$post_msg["type"];?>" id="homepage-section-alert"> <?php /*alert-danger alert-success alert-warning */ ?>
+		    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+		    <strong><span id="homepage-section-alert-msg"></span><?php echo $post_msg["text"]; ?></strong>
+		</div>
+	<?php } ?>
+
+    <p>
+        <?= Html::a('Create User', ['create'], ['class' => 'btn btn-success']) ?>
+    </p>
+
+    <?= GridView::widget([
+        'dataProvider' => $dataProvider,
+        'filterModel' => $searchModel,
+        'columns' => [
+            ['class' => 'yii\grid\SerialColumn'],            
+            'username',
+            'email:email',
+        	 array(
+        			'class' => DataColumn::className(), // this line is optional
+       				'label' => 'Full Name',
+       				'attribute' => 'first_name',
+       				'value' => function($model) { return $model->first_name  . " " .$model->middle_name  . " " . $model->last_name ;},
+        	 ),
+        	 //here add icons with roles
+        	 array(
+        	 		'class' => DataColumn::className(), // this line is optional
+        	 		'label' => '<a>Roles</a>',        	 		
+        	 		'value' => function($model) { return $model->first_name  . " " .$model->middle_name  . " " . $model->last_name ;},
+        	 		'format'=> 'email',
+        	 ),
+        	// 'id',
+        	// 'auth_key',
+        	// 'password_hash',
+        	// 'password_reset_token',
+            // 'status',
+            // 'created_at',
+            // 'updated_at',
+            // 'first_name',
+        	// 'middle_name',
+            // 'last_name',
+            // 'gender',
+            // 'salutation',            
+            // 'initials',
+            // 'affiliation:ntext',
+            // 'signature:ntext',
+            // 'orcid_id',
+            // 'url:url',
+            // 'phone',
+            // 'fax',
+            // 'mailing_address:ntext',
+            // 'bio_statement:ntext',
+            // 'send_confirmation',
+            // 'is_admin',
+            // 'is_editor',
+            // 'is_reader',
+            // 'is_author',
+            // 'is_reviewer',
+            // 'reviewer_interests:ntext',
+            // 'user_image',
+            // 'last_login',
+            // 'country',
+
+            ['class' => 'yii\grid\ActionColumn'],
+        ],
     ]); ?>
-
-    <?= $form->field($model, 'id') ?>
-
-    <?= $form->field($model, 'username') ?>
-
-    <?= $form->field($model, 'auth_key') ?>
-
-    <?= $form->field($model, 'password_hash') ?>
-
-    <?= $form->field($model, 'password_reset_token') ?>
-
-    <?php // echo $form->field($model, 'email') ?>
-
-    <?php // echo $form->field($model, 'status') ?>
-
-    <?php // echo $form->field($model, 'created_at') ?>
-
-    <?php // echo $form->field($model, 'updated_at') ?>
-
-    <?php // echo $form->field($model, 'first_name') ?>
-
-    <?php // echo $form->field($model, 'last_name') ?>
-
-    <?php // echo $form->field($model, 'gender') ?>
-
-    <?php // echo $form->field($model, 'salutation') ?>
-
-    <?php // echo $form->field($model, 'middle_name') ?>
-
-    <?php // echo $form->field($model, 'initials') ?>
-
-    <?php // echo $form->field($model, 'affiliation') ?>
-
-    <?php // echo $form->field($model, 'signature') ?>
-
-    <?php // echo $form->field($model, 'orcid_id') ?>
-
-    <?php // echo $form->field($model, 'url') ?>
-
-    <?php // echo $form->field($model, 'phone') ?>
-
-    <?php // echo $form->field($model, 'fax') ?>
-
-    <?php // echo $form->field($model, 'mailing_address') ?>
-
-    <?php // echo $form->field($model, 'bio_statement') ?>
-
-    <?php // echo $form->field($model, 'send_confirmation') ?>
-
-    <?php // echo $form->field($model, 'is_admin') ?>
-
-    <?php // echo $form->field($model, 'is_editor') ?>
-
-    <?php // echo $form->field($model, 'is_reader') ?>
-
-    <?php // echo $form->field($model, 'is_author') ?>
-
-    <?php // echo $form->field($model, 'is_reviewer') ?>
-
-    <?php // echo $form->field($model, 'reviewer_interests') ?>
-
-    <?php // echo $form->field($model, 'user_image') ?>
-
-    <?php // echo $form->field($model, 'last_login') ?>
-
-    <?php // echo $form->field($model, 'country') ?>
-
-    <div class="form-group">
-        <?= Html::submitButton('Search', ['class' => 'btn btn-primary']) ?>
-        <?= Html::resetButton('Reset', ['class' => 'btn btn-default']) ?>
-    </div>
-
-    <?php ActiveForm::end(); ?>
 
 </div>

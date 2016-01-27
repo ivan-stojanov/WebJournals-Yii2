@@ -121,7 +121,8 @@ class UserProfileForm extends Model
     	//}    	
     	if ($this->validate()) {
     		
-    		if($user->email != $this->email || $user->username != $this->username){   			
+    		if($user->email != $this->email || $user->username != $this->username){
+    			
     			$tmpUserEmail = User::findOne([
     					'email' => $this->email
     			]);
@@ -130,11 +131,12 @@ class UserProfileForm extends Model
     					'username' => $this->username
     			]);    			
     			
-    			if(isset($tmpUserEmail) && count($tmpUserEmail) > 0 && isset($tmpUserUsername) && count($tmpUserUsername) > 0){
+    			if(isset($tmpUserEmail) && count($tmpUserEmail) > 0 && isset($tmpUserUsername) && count($tmpUserUsername) > 0
+    					&& ($user->email != $this->email) && ($user->username != $this->username)){
     				return "existing email and username error";
-    			} else if(isset($tmpUserEmail) && count($tmpUserEmail) > 0){
+    			} else if(isset($tmpUserEmail) && count($tmpUserEmail) > 0 && ($user->email != $this->email)){
     				return "existing email error";
-    			} else if(isset($tmpUserUsername) && count($tmpUserUsername) > 0){
+    			} else if(isset($tmpUserUsername) && count($tmpUserUsername) > 0 && ($user->username != $this->username)){
     				return "existing username error";
     			}
     		}

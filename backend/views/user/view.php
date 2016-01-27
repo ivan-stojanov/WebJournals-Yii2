@@ -2,15 +2,14 @@
 
 use yii\helpers\Html;
 use yii\widgets\DetailView;
+use yii\grid\DataColumn;
 
 /* @var $this yii\web\View */
 /* @var $model common\models\User */
 
-$this->title = $model->id;
+$this->title = 'User Details';
 ?>
 <div class="user-view">
-
-    <h1><?= Html::encode($this->title) ?></h1>
 
     <p>
         <?= Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
@@ -26,39 +25,69 @@ $this->title = $model->id;
     <?= DetailView::widget([
         'model' => $model,
         'attributes' => [
-            'id',
+            // 'id',
             'username',
-            'auth_key',
-            'password_hash',
-            'password_reset_token',
+            // 'auth_key',
+            // 'password_hash',
+            // 'password_reset_token',
             'email:email',
-            'status',
-            'created_at',
-            'updated_at',
+            // 'status',            
             'first_name',
+        	'middle_name',
             'last_name',
             'gender',
-            'salutation',
-            'middle_name',
-            'initials',
-            'affiliation:ntext',
-            'signature:ntext',
-            'orcid_id',
-            'url:url',
+        	'initials',            
             'phone',
             'fax',
             'mailing_address:ntext',
+        	'country',
             'bio_statement:ntext',
-            'send_confirmation',
-            'is_admin',
-            'is_editor',
-            'is_reader',
-            'is_author',
-            'is_reviewer',
+        	'url:url',
+        	'salutation',
+        	'affiliation:ntext',
+        	'signature:ntext',
+        	'orcid_id',            
+        	 array(
+        			'class' => DataColumn::className(), // this line is optional
+        			'attribute' => 'send_confirmation',
+        			'value' => ($model->send_confirmation == 0) ? "<div class='glyphicon glyphicon-remove'></div>" : "<div class='glyphicon glyphicon-ok'></div>",
+        			'format' => 'HTML'
+        	 ),        		
+        	 array(
+        			'class' => DataColumn::className(), // this line is optional
+        			'attribute' => 'is_admin',
+        			'value' => ($model->is_admin == 0) ? "<div class='glyphicon glyphicon-remove'></div>" : "<div class='glyphicon glyphicon-ok'></div>",
+        	 		'format' => 'HTML'
+        	 ),
+        	 array(
+        			'class' => DataColumn::className(), // this line is optional
+        			'attribute' => 'is_editor',
+        			'value' => ($model->is_editor == 0) ? "<div class='glyphicon glyphicon-remove'></div>" : "<div class='glyphicon glyphicon-ok'></div>",
+        			'format' => 'HTML'
+        	 ),
+        	 array(
+        			'class' => DataColumn::className(), // this line is optional
+        			'attribute' => 'is_reader',
+        			'value' => ($model->is_reader == 0) ? "<div class='glyphicon glyphicon-remove'></div>" : "<div class='glyphicon glyphicon-ok'></div>",
+        			'format' => 'HTML'
+        	 ),
+        	 array(
+        			'class' => DataColumn::className(), // this line is optional
+        			'attribute' => 'is_author',
+        			'value' => ($model->is_author == 0) ? "<div class='glyphicon glyphicon-remove'></div>" : "<div class='glyphicon glyphicon-ok'></div>",
+        			'format' => 'HTML'
+         	 ),
+        	 array(
+        			'class' => DataColumn::className(), // this line is optional
+        			'attribute' => 'is_reviewer',
+        			'value' => ($model->is_reviewer == 0) ? "<div class='glyphicon glyphicon-remove'></div>" : "<div class='glyphicon glyphicon-ok'></div>",
+        			'format' => 'HTML'
+        	 ),
             'reviewer_interests:ntext',
             'user_image',
-            'last_login',
-            'country',
+        	'created_at:datetime',
+        	'updated_at:datetime',
+        	'last_login',            
         ],
     ]) ?>
 

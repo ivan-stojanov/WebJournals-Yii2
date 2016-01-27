@@ -78,7 +78,7 @@ AppAsset::register($this);
     				($currentControllerId == 'user' && $currentActionId == 'view') 	||
     				($currentControllerId == 'user' && $currentActionId == 'update') 	||
     				($currentControllerId == 'user' && $currentActionId == 'profile')),
-    		'label' => 'Profile',
+    		'label' => 'Users',
     		'icon' => 'user',
     ];
     /*$adminMenuItems[] = [

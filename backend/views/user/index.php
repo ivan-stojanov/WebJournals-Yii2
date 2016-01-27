@@ -2,6 +2,7 @@
 
 use yii\helpers\Html;
 use yii\grid\GridView;
+use yii\grid\DataColumn;
 
 /* @var $this yii\web\View */
 /* @var $searchModel app\models\UserSearch */
@@ -22,22 +23,34 @@ $this->title = 'Users';
         'dataProvider' => $dataProvider,
         'filterModel' => $searchModel,
         'columns' => [
-            ['class' => 'yii\grid\SerialColumn'],
-
-            'id',
+            ['class' => 'yii\grid\SerialColumn'],            
             'username',
-            'auth_key',
-            'password_hash',
-            'password_reset_token',
-            // 'email:email',
+            'email:email',
+        	 array(
+        			'class' => DataColumn::className(), // this line is optional
+       				'label' => 'Full Name',
+       				'attribute' => 'first_name',
+       				'value' => function($model) { return $model->first_name  . " " .$model->middle_name  . " " . $model->last_name ;},
+        	 ),
+        	 //here add icons with roles
+        	 array(
+        	 		'class' => DataColumn::className(), // this line is optional
+        	 		'label' => '<a>Roles</a>',        	 		
+        	 		'value' => function($model) { return $model->first_name  . " " .$model->middle_name  . " " . $model->last_name ;},
+        	 		'format'=> 'email',
+        	 ),
+        	// 'id',
+        	// 'auth_key',
+        	// 'password_hash',
+        	// 'password_reset_token',
             // 'status',
             // 'created_at',
             // 'updated_at',
             // 'first_name',
+        	// 'middle_name',
             // 'last_name',
             // 'gender',
-            // 'salutation',
-            // 'middle_name',
+            // 'salutation',            
             // 'initials',
             // 'affiliation:ntext',
             // 'signature:ntext',

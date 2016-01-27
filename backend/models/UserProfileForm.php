@@ -47,8 +47,8 @@ class UserProfileForm extends Model
         return [
             ['username', 'filter', 'filter' => 'trim'],
             ['username', 'required'],
-            ['username', 'unique', 'targetClass' => '\common\models\User', 'message' => 'This username has already been taken.'],
-            ['username', 'match', 'pattern' => '/^[a-z0-9_\-]{6,20}$/', 'message' => 'The username must contain only lowercase letters, numbers and hyphens/underscores, between 6 and 20 characters.'],
+            //['username', 'unique', 'targetClass' => '\common\models\User', 'message' => 'This username has already been taken.'],
+            ['username', 'match', 'pattern' => '/^[a-z0-9_\-\.]{6,20}$/', 'message' => 'The username must contain only lowercase letters, numbers and hyphens/underscores, between 6 and 20 characters.'],
 
             ['password', 'required'],
             ['password', 'string', 'min' => 6],        	
@@ -79,7 +79,7 @@ class UserProfileForm extends Model
         	['email', 'required'],
         	['email', 'email'],
         	['email', 'string', 'max' => 255],
-        	['email', 'unique', 'targetClass' => '\common\models\User', 'message' => 'This email address has already been taken.'],
+        	//['email', 'unique', 'targetClass' => '\common\models\User', 'message' => 'This email address has already been taken.'],
         		
        		['repeat_email', 'filter', 'filter' => 'trim'],
        		['repeat_email', 'required'],
@@ -113,19 +113,37 @@ class UserProfileForm extends Model
     {
     	$user = new User();
     	$user = $user->findIdentity($userId);
+
     	$tmpEmail = $this->email;
-    	if($this->email == $user->email && $this->email == $this->repeat_email){
-    		$this->email = "test12@google.com";
-    		$this->repeat_email = $this->email;
-    	}    	
-    	if ($this->validate()) {    	
-    		$this->email = $tmpEmail;
-    		$this->repeat_email = $this->email;    		
+    	//if($this->email == $user->email && $this->email == $this->repeat_email){
+    	//	$this->email = "test12@google.com";
+    	//	$this->repeat_email = $this->email;
+    	//}    	
+    	if ($this->validate()) {
+    		
+    		if($user->email != $this->email || $user->username != $this->username){   			
+    			$tmpUserEmail = User::findOne([
+    					'email' => $this->email
+    			]);
+    			
+    			$tmpUserUsername = User::findOne([
+    					'username' => $this->username
+    			]);    			
+    			
+    			if(isset($tmpUserEmail) && count($tmpUserEmail) > 0 && isset($tmpUserUsername) && count($tmpUserUsername) > 0){
+    				return "existing email and username error";
+    			} else if(isset($tmpUserEmail) && count($tmpUserEmail) > 0){
+    				return "existing email error";
+    			} else if(isset($tmpUserUsername) && count($tmpUserUsername) > 0){
+    				return "existing username error";
+    			}
+    		}
+    		
+    		//$this->email = $tmpEmail;
+    		//$this->repeat_email = $this->email;    		
     		$user->username = $this->username;
-    		$user->email = $this->email;		
-    		if($this->password != $user->password){
-    			$user->setPassword($this->password);
-    		}    		
+    		$user->email = $this->email;	
+   			$user->setPassword($this->password);  		
     		$user->salutation = $this->salutation;
     		$user->first_name = $this->first_name;
     		$user->middle_name = $this->middle_name;
@@ -139,15 +157,7 @@ class UserProfileForm extends Model
     		$user->fax = $this->fax;
     		$user->mailing_address = $this->mailing_address;
     		$user->bio_statement = $this->bio_statement;
-    		$user->reviewer_interests = $this->reviewer_interests;
-    
-    		/* $user->gender = $this->gender;
-    		 $user->country = $this->country;
-    		 $user->send_confirmation = $this->send_confirmation;
-    		 $user->is_reader = $this->is_reader;
-    		 $user->is_author = $this->is_author;
-    		 $user->is_reviewer = $this->is_reviewer;
-    		 */
+    		$user->reviewer_interests = $this->reviewer_interests; 		 
     
     		if(isset($_POST['UserProfileForm']['gender'])){
     			$user->gender = $_POST['UserProfileForm']['gender'];
@@ -186,7 +196,7 @@ class UserProfileForm extends Model
     			return $user;
     		}
     	}
-    
+    	
     	return null;
     }    
 

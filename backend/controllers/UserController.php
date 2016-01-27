@@ -149,66 +149,155 @@ class UserController extends Controller
     	 
     	$currentId = Yii::$app->user->identity->attributes["id"];
     	
-        $model = new UserProfileForm();
-        
+        $model = new UserProfileForm();        
+        $postErrorMessage = null;
         
         if ($model->load(Yii::$app->request->post())) {
             if ($user = $model->updateUserProfile($currentId)) {
-            //    if (Yii::$app->getUser()->login($user)) {
-            //        return $this->goHome();
-            //    }      
-            	//return Yii::$app->getResponse()->redirect(Yii::$app->getHomeUrl());
-            	        $searchModel = new UserSearch();
-				        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
-				
-				        return $this->render('index', [
-				            'searchModel' => $searchModel,
-				            'dataProvider' => $dataProvider,
-				        ]);
-            }
-            /*
-            //var_dump($this->middle_name);
-    		var_dump($model->middle_name);
-    		var_dump(Yii::$app->request->post());
-    		return;
-    		return $this->redirect(['view', 'id' => $model->id]);
-            var_dump($model->middle_name);
-            */      	
+            	
+           		if($user === "existing email and username error"){
+           			$postErrorMessage = "The username and the email address have already been taken. Try with anothers.";
+           		} else if($user === "existing email error"){
+           			$postErrorMessage = "This email address has already been taken. Try with another one.";
+           		} else if($user === "existing username error"){
+            		$postErrorMessage = "This username has already been taken. Try with another one.";            		
+            	} else {            	
+	            	$searchModel = new UserSearch();
+					$dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+					
+					return $this->render('index', [
+						'searchModel' => $searchModel,
+					    'dataProvider' => $dataProvider,
+					]);
+            	}
+            }     	
         } 
-        //var_dump("empty");
+
         $currentUserModel = $this->findModel($currentId);
-        //var_dump($currentUser);
         $currentUser = [$model->formName() => $currentUserModel->attributes];
-        //var_dump($currentUser);
-        $model->load($currentUser);        
-       	
-        if(isset($_POST["password"])){
-        	$model->password = $_POST["password"];
+        $model->load($currentUser);
+        
+        if(isset($_POST[$model->formName()]["password"])){
+        	$model->password = $_POST[$model->formName()]["password"];
         } else if(isset($currentUserModel->password_hash)){
         	$model->password = $currentUserModel->password_hash;
         }
         
-        if(isset($_POST["repeat_password"])){
-        	$model->repeat_password = $_POST["repeat_password"];
+        if(isset($_POST[$model->formName()]["repeat_password"])){
+        	$model->repeat_password = $_POST[$model->formName()]["repeat_password"];
         } else if(isset($currentUserModel->password_hash)){
         	$model->repeat_password = $currentUserModel->password_hash;
         }
         
-        if(isset($_POST["repeat_email"])){
-        	$model->repeat_email = $_POST["repeat_email"];
+        if(isset($_POST[$model->formName()]["email"])){
+        	$model->email = $_POST[$model->formName()]["email"];
+        } else if(isset($currentUserModel->email)){
+        	$model->email = $currentUserModel->email;
+        }
+        
+        if(isset($_POST[$model->formName()]["repeat_email"])){
+        	$model->repeat_email = $_POST[$model->formName()]["repeat_email"];
         } else if(isset($currentUserModel->email)){
         	$model->repeat_email = $currentUserModel->email;
+        }        
+        
+        if(isset($_POST[$model->formName()]["salutation"])){
+        	$model->salutation = $_POST[$model->formName()]["salutation"];
+        } else if(isset($currentUserModel->salutation)){
+        	$model->salutation = $currentUserModel->salutation;
+        }        
+
+        if(isset($_POST[$model->formName()]["first_name"])){
+        	$model->first_name = $_POST[$model->formName()]["first_name"];
+        } else if(isset($currentUserModel->first_name)){
+        	$model->first_name = $currentUserModel->first_name;
+        } 
+        
+        if(isset($_POST[$model->formName()]["middle_name"])){
+        	$model->middle_name = $_POST[$model->formName()]["middle_name"];
+        } else if(isset($currentUserModel->middle_name)){
+        	$model->middle_name = $currentUserModel->middle_name;
+        }
+        
+        if(isset($_POST[$model->formName()]["last_name"])){
+        	$model->last_name = $_POST[$model->formName()]["last_name"];
+        } else if(isset($currentUserModel->last_name)){
+        	$model->last_name = $currentUserModel->last_name;
+        }
+        
+        if(isset($_POST[$model->formName()]["initials"])){
+        	$model->initials = $_POST[$model->formName()]["initials"];
+        } else if(isset($currentUserModel->initials)){
+        	$model->initials = $currentUserModel->initials;
+        }
+        
+        if(isset($_POST[$model->formName()]["affiliation"])){
+        	$model->affiliation = $_POST[$model->formName()]["affiliation"];
+        } else if(isset($currentUserModel->affiliation)){
+        	$model->affiliation = $currentUserModel->affiliation;
+        }
+        
+        if(isset($_POST[$model->formName()]["signature"])){
+        	$model->signature = $_POST[$model->formName()]["signature"];
+        } else if(isset($currentUserModel->signature)){
+        	$model->signature = $currentUserModel->signature;
+        }
+        
+        if(isset($_POST[$model->formName()]["bio_statement"])){
+        	$model->bio_statement = $_POST[$model->formName()]["bio_statement"];
+        } else if(isset($currentUserModel->bio_statement)){
+        	$model->bio_statement = $currentUserModel->bio_statement;
+        }
+  
+        if(isset($_POST[$model->formName()]["orcid_id"])){
+        	$model->orcid_id = $_POST[$model->formName()]["orcid_id"];
+        } else if(isset($currentUserModel->orcid_id)){
+        	$model->orcid_id = $currentUserModel->orcid_id;
+        }
+        
+        if(isset($_POST[$model->formName()]["url"])){
+        	$model->url = $_POST[$model->formName()]["url"];
+        } else if(isset($currentUserModel->url)){
+        	$model->url = $currentUserModel->url;
+        }
+        
+        if(isset($_POST[$model->formName()]["phone"])){
+        	$model->phone = $_POST[$model->formName()]["phone"];
+        } else if(isset($currentUserModel->phone)){
+        	$model->phone = $currentUserModel->phone;
+        }
+        
+        if(isset($_POST[$model->formName()]["fax"])){
+        	$model->fax = $_POST[$model->formName()]["fax"];
+        } else if(isset($currentUserModel->fax)){
+        	$model->fax = $currentUserModel->fax;
+        }
+        
+        if(isset($_POST[$model->formName()]["mailing_address"])){
+        	$model->mailing_address = $_POST[$model->formName()]["mailing_address"];
+        } else if(isset($currentUserModel->mailing_address)){
+        	$model->mailing_address = $currentUserModel->mailing_address;
+        }
+        
+        if(isset($_POST[$model->formName()]["reviewer_interests"])){
+        	$model->reviewer_interests = $_POST[$model->formName()]["reviewer_interests"];
+        } else if(isset($currentUserModel->reviewer_interests)){
+        	$model->reviewer_interests = $currentUserModel->reviewer_interests;
         }
 
         $common_vars = new CommonVariables();
     	
-    	if(isset($currentUserModel->gender)){
+        if(isset($_POST[$model->formName()]["gender"])){
+        	$additional_params["gender_opt"] = ['prompt' => '--- Select ---', 'options' => [$_POST[$model->formName()]["gender"] => ['Selected' => 'selected']]];
+        } else if(isset($currentUserModel->gender)){
     		$additional_params["gender_opt"] = ['prompt' => '--- Select ---', 'options' => [$currentUserModel->gender => ['Selected' => 'selected']]];
     	} else {
     		$additional_params["gender_opt"] = ['prompt' => '--- Select ---'];
     	}
     	
-    	if(isset($currentUserModel->country)){
+    	if(isset($_POST[$model->formName()]["country"])){
+        	$additional_params["country_opt"] = ['prompt' => '--- Select ---', 'options' => [$_POST[$model->formName()]["country"] => ['Selected' => 'selected']]];
+        } else if(isset($currentUserModel->country)){
     		$additional_params["country_opt"] = ['prompt' => '--- Select ---', 'options' => [$currentUserModel->country => ['Selected' => 'selected']]];
     	} else {
     		$additional_params["country_opt"] = ['prompt' => '--- Select ---'];
@@ -247,7 +336,8 @@ class UserController extends Controller
 	   	return $this->render('profile', [
 	   			'model' => $model,
 	   			'common_vars' => $common_vars,
-    			'additional_vars' => $additional_vars	   			
+    			'additional_vars' => $additional_vars,
+	   			'post_error_msg' => $postErrorMessage
 	   	]);
    	} 
 

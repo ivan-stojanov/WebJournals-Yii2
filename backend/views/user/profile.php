@@ -12,6 +12,13 @@ $this->title = 'My Profile ';
 <div class="user-update">
 
     <!-- <h1><?php /*echo Html::encode($this->title)*/ ?></h1> -->
+    
+    <?php if(isset($post_error_msg)){ ?>
+        <div class="alert alert-dismissable alert-warning" id="homepage-section-alert"> <?php /*alert-danger alert-success alert-warning */ ?>
+		    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+		    <strong><span id="homepage-section-alert-msg"></span><?php echo $post_error_msg; ?></strong>
+		</div>
+	<?php } ?>
 
     <?= $this->render('_form', [
         'model' => $model,

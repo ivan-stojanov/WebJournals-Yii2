@@ -3,7 +3,6 @@
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 use yii\captcha\Captcha;
-
 /* @var $this yii\web\View */
 /* @var $model common\models\User */
 /* @var $form yii\widgets\ActiveForm */
@@ -12,6 +11,7 @@ use yii\captcha\Captcha;
 <div class="row">
 
     <?php $form = ActiveForm::begin(['id' => 'UserProfileForm']); ?>
+    
        	<div class="col-md-6">
         	
 			<?= $form->field($model, 'username') ?>

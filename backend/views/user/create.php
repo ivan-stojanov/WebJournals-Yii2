@@ -14,6 +14,9 @@ $this->title = 'Create User';
 
     <?= $this->render('_form', [
         'model' => $model,
+    	'common_vars' => $common_vars,
+    	'additional_vars' => $additional_vars,
+    	'post_msg' => $post_msg
     ]) ?>
 
 </div>

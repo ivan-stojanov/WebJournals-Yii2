@@ -14,8 +14,10 @@ $this->title = 'Announcements';
 
 <h1>Announcement List</h1>
 <hr>
-<?php echo Html::a('Create', ['announcement/create'], ['class' => 'btn btn-success']) ?>
-<hr>
+	<?php /* 
+	    <?php echo Html::a('Create', ['announcement/create'], ['class' => 'btn btn-success']) ?>
+		<hr>
+	 */ ?>
 <?php if(isset($model) && count($model)>0) {?>
 <div class="table-responsive">
 	<table class="table table-hover table-striped" id="sortTable">

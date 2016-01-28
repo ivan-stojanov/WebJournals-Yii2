@@ -111,14 +111,12 @@ class UserProfileForm extends Model
      */
     public function updateUserProfile($userId)
     {
-    	$user = new User();
+    	$user = new User();    	
+    	
     	$user = $user->findIdentity($userId);
 
     	$tmpEmail = $this->email;
-    	//if($this->email == $user->email && $this->email == $this->repeat_email){
-    	//	$this->email = "test12@google.com";
-    	//	$this->repeat_email = $this->email;
-    	//}    	
+	
     	if ($this->validate()) {
     		
     		if($user->email != $this->email || $user->username != $this->username){
@@ -140,9 +138,7 @@ class UserProfileForm extends Model
     				return "existing username error";
     			}
     		}
-    		
-    		//$this->email = $tmpEmail;
-    		//$this->repeat_email = $this->email;    		
+		
     		$user->username = $this->username;
     		$user->email = $this->email;	
    			$user->setPassword($this->password);  		
@@ -161,33 +157,33 @@ class UserProfileForm extends Model
     		$user->bio_statement = $this->bio_statement;
     		$user->reviewer_interests = $this->reviewer_interests; 		 
     
-    		if(isset($_POST['UserProfileForm']['gender'])){
+    		if(isset($_POST[$this->formName()]['gender'])){
     			$user->gender = $_POST['UserProfileForm']['gender'];
     		}
     
-    		if(isset($_POST['UserProfileForm']['country'])){
+    		if(isset($_POST[$this->formName()]['country'])){
     			$user->country = $_POST['UserProfileForm']['country'];
     		}
     
-    		if(isset($_POST['UserProfileForm']['send_confirmation'])){
+    		if(isset($_POST[$this->formName()]['send_confirmation'])){
     			$user->send_confirmation = $_POST['UserProfileForm']['send_confirmation'];
     		} else {
     			$user->send_confirmation = true;
     		}
     
-    		if(isset($_POST['UserProfileForm']['is_reader'])){
+    		if(isset($_POST[$this->formName()]['is_reader'])){
     			$user->is_reader = $_POST['UserProfileForm']['is_reader'];
     		} else{
     			$user->is_reader = true;
     		}
     
-    		if(isset($_POST['UserProfileForm']['is_author'])){
+    		if(isset($_POST[$this->formName()]['is_author'])){
     			$user->is_author = $_POST['UserProfileForm']['is_author'];
     		} else{
     			$user->is_author = false;
     		}
     
-    		if(isset($_POST['UserProfileForm']['is_reviewer'])){
+    		if(isset($_POST[$this->formName()]['is_reviewer'])){
     			$user->is_reviewer = $_POST['UserProfileForm']['is_reviewer'];
     		} else{
     			$user->is_reviewer = false;
@@ -200,7 +196,93 @@ class UserProfileForm extends Model
     	}
     	
     	return null;
-    }    
+    }
+    
+    //create user profile
+    public function createUserProfile()
+    {
+    	$user = new User(); 
+    
+    	if ($this->validate()) {
+    
+    		if(isset($this->email) || isset($this->username)){
+    			 
+    			$tmpUserEmail = User::findOne([
+    					'email' => $this->email
+    			]);
+    			 
+    			$tmpUserUsername = User::findOne([
+    					'username' => $this->username
+    			]);
+    			 
+    			if(isset($tmpUserEmail) && count($tmpUserEmail) > 0 && isset($tmpUserUsername) && count($tmpUserUsername) > 0
+    					&& (isset($this->email)) && (isset($this->username))){
+    				return "existing email and username error";
+    			} else if(isset($tmpUserEmail) && count($tmpUserEmail) > 0 && (isset($this->email))){
+    				return "existing email error";
+    			} else if(isset($tmpUserUsername) && count($tmpUserUsername) > 0 && (isset($this->username))){
+    				return "existing username error";
+    			}
+    		}
+    
+    		$user->username = $this->username;
+    		$user->email = $this->email;
+    		$user->setPassword($this->password);
+    		$user->salutation = $this->salutation;
+    		$user->first_name = $this->first_name;
+    		$user->middle_name = $this->middle_name;
+    		$user->last_name = $this->last_name;
+    		$user->initials = $this->initials;
+    		$user->affiliation = $this->affiliation;
+    		$user->signature = $this->signature;
+    		$user->orcid_id = $this->orcid_id;
+    		$user->url = $this->url;
+    		$user->phone = $this->phone;
+    		$user->fax = $this->fax;
+    		$user->mailing_address = $this->mailing_address;
+    		$user->bio_statement = $this->bio_statement;
+    		$user->reviewer_interests = $this->reviewer_interests;
+    
+    		if(isset($_POST[$this->formName()]['gender'])){
+    			$user->gender = $_POST['UserProfileForm']['gender'];
+    		}
+    
+    		if(isset($_POST[$this->formName()]['country'])){
+    			$user->country = $_POST['UserProfileForm']['country'];
+    		}
+    
+    		if(isset($_POST[$this->formName()]['send_confirmation'])){
+    			$user->send_confirmation = $_POST['UserProfileForm']['send_confirmation'];
+    		} else {
+    			$user->send_confirmation = true;
+    		}
+    
+    		if(isset($_POST[$this->formName()]['is_reader'])){
+    			$user->is_reader = $_POST['UserProfileForm']['is_reader'];
+    		} else{
+    			$user->is_reader = true;
+    		}
+    
+    		if(isset($_POST[$this->formName()]['is_author'])){
+    			$user->is_author = $_POST['UserProfileForm']['is_author'];
+    		} else{
+    			$user->is_author = false;
+    		}
+    
+    		if(isset($_POST[$this->formName()]['is_reviewer'])){
+    			$user->is_reviewer = $_POST['UserProfileForm']['is_reviewer'];
+    		} else{
+    			$user->is_reviewer = false;
+    		}
+    
+    		$user->generateAuthKey();
+    		if ($user->save()) {
+    			return $user;
+    		}
+    	}
+    	 
+    	return null;
+    }
 
     /**
      * Signs user up from Admin panel.

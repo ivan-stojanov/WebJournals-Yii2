@@ -20,9 +20,21 @@ class AppAsset extends AssetBundle
     public $css = [
         'css/site.css',
     	'css/adminPanel.css',
+    		
+    	'thirdParty/bootstrap/dist/css/bootstrap.min.css',
+    	'thirdParty/metisMenu/dist/metisMenu.min.css',	
+   		'thirdParty/timeline.css',
+   		'thirdParty/sb-admin-2.css',
+    	'thirdParty/morrisjs/morris.css',
+    	'thirdParty/font-awesome/css/font-awesome.min.css',
     ];
     public $js = [
     	'js/jquery.tablednd.0.7.min.js',
+    		
+    	'thirdParty/metisMenu/dist/metisMenu.min.js',
+    	'thirdParty/raphael/raphael-min.js',
+    	'thirdParty/morrisjs/morris.min.js',
+    	'thirdParty/sb-admin-2.js',
     ];
     public $depends = [
         'yii\web\YiiAsset',

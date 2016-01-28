@@ -18,10 +18,15 @@ use yii\grid\DataColumn;
 		    <strong><span id="homepage-section-alert-msg"></span><?php echo $post_msg["text"]; ?></strong>
 		</div>
 	<?php } ?>
+	
+<h1>User List</h1>
+<hr>
 
-    <p>
-        <?= Html::a('Create User', ['create'], ['class' => 'btn btn-success']) ?>
-    </p>
+	<?php /* ?>
+	    <p>
+	        <?= Html::a('Create User', ['create'], ['class' => 'btn btn-success']) ?>
+	    </p>
+	<?php */ ?>    
 
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
@@ -39,10 +44,11 @@ use yii\grid\DataColumn;
         	 //here add icons with roles
         	 array(
         	 		'class' => DataColumn::className(), // this line is optional
-        	 		'label' => '<a>Roles</a>',        	 		
-        	 		'value' => function($model) { return $model->first_name  . " " .$model->middle_name  . " " . $model->last_name ;},
-        	 		'format'=> 'email',
-        	 ),
+        	 		'label' => 'Roles',        	 		
+        	 		'value' => function($model) { return "admin/editor/reader/author/reviewer" ;},
+        	 		'format'=> 'text',
+        	 ),        	 
+        	 
         	// 'id',
         	// 'auth_key',
         	// 'password_hash',

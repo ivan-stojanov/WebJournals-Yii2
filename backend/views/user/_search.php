@@ -26,9 +26,10 @@ use yii\grid\DataColumn;
 	    <p>
 	        <?= Html::a('Create User', ['create'], ['class' => 'btn btn-success']) ?>
 	    </p>
-	<?php */ ?>    
+	<?php */    
+	?>
 
-    <?= GridView::widget([
+	 <?= GridView::widget([
         'dataProvider' => $dataProvider,
         'filterModel' => $searchModel,
         'columns' => [
@@ -45,7 +46,7 @@ use yii\grid\DataColumn;
         	 array(
         	 		'class' => DataColumn::className(), // this line is optional
         	 		'label' => 'Roles',        	 		
-        	 		'value' => function($model) { return "admin/editor/reader/author/reviewer" ;},
+        	 		'value' => function($model) { return "reader/editor/reviewer/author/admin" ;},
         	 		'format'=> 'text',
         	 ),        	 
         	 
@@ -83,6 +84,15 @@ use yii\grid\DataColumn;
 
             ['class' => 'yii\grid\ActionColumn'],
         ],
-    ]); ?>
-
+    ]); 
+	 ?>
 </div>
+
+<?php 
+$dir_icons = Yii::getAlias('@common')."\\images\icons\\";
+var_dump($dir_icons);
+$script = <<< JS
+	$('.grid-view:nth-of-type(1) table:nth-of-type(1) tr:nth-of-type(2) td:nth-of-type(5)').text(".$dir_icons.");
+JS;
+$this->registerJs($script, \yii\web\View::POS_END);
+?>

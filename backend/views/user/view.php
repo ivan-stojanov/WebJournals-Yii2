@@ -84,10 +84,15 @@ $this->title = 'User Details';
         			'format' => 'HTML'
         	 ),
             'reviewer_interests:ntext',
-            'user_image',
+        	 array(
+        			'class' => DataColumn::className(), // this line is optional
+        			'attribute' => 'user_image',
+        			'value' => Yii::getAlias('@common')."\\images\users\\".$model->user_image,
+        	 		'format' => 'image'
+        	 ),        	
         	'created_at:datetime',
         	'updated_at:datetime',
-        	'last_login',            
+        	'last_login:datetime',            
         ],
     ]) ?>
 

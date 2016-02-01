@@ -203,6 +203,8 @@ class SiteController extends Controller
         
         if(isset($_POST['SignupForm']['is_author'])){
         	$model->is_author = $_POST['SignupForm']['is_author'];
+        } else{
+        	$model->is_author = true;
         }
         
         if(isset($_POST['SignupForm']['is_reviewer'])){

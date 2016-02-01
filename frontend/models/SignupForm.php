@@ -128,43 +128,35 @@ class SignupForm extends Model
             $user->fax = $this->fax;
             $user->mailing_address = $this->mailing_address;
             $user->bio_statement = $this->bio_statement;
-            $user->reviewer_interests = $this->reviewer_interests;
-            
-           /* $user->gender = $this->gender;
-            $user->country = $this->country;
-            $user->send_confirmation = $this->send_confirmation;
-            $user->is_reader = $this->is_reader;
-            $user->is_author = $this->is_author;
-           	$user->is_reviewer = $this->is_reviewer;          	
-           	*/
-           	
-           	if(isset($_POST['SignupForm']['gender'])){
+            $user->reviewer_interests = $this->reviewer_interests;            
+        	
+           	if(isset($_POST[$this->formName()]['gender'])){
            		$user->gender = $_POST['SignupForm']['gender'];
            	}
            	
-           	if(isset($_POST['SignupForm']['country'])){
+           	if(isset($_POST[$this->formName()]['country'])){
            		$user->country = $_POST['SignupForm']['country'];
            	}
            	
-           	if(isset($_POST['SignupForm']['send_confirmation'])){
+           	if(isset($_POST[$this->formName()]['send_confirmation'])){
            		$user->send_confirmation = $_POST['SignupForm']['send_confirmation'];
            	} else {
            		$user->send_confirmation = true;
            	}
            	
-           	if(isset($_POST['SignupForm']['is_reader'])){
+           	if(isset($_POST[$this->formName()]['is_reader'])){
            		$user->is_reader = $_POST['SignupForm']['is_reader'];
            	} else{
            		$user->is_reader = true;
            	}
            	
-           	if(isset($_POST['SignupForm']['is_author'])){
+           	if(isset($_POST[$this->formName()]['is_author'])){
            		$user->is_author = $_POST['SignupForm']['is_author'];
            	} else{
-           		$user->is_author = false;
+           		$user->is_author = true;
            	}
            	
-           	if(isset($_POST['SignupForm']['is_reviewer'])){
+           	if(isset($_POST[$this->formName()]['is_reviewer'])){
            		$user->is_reviewer = $_POST['SignupForm']['is_reviewer'];
            	} else{
            		$user->is_reviewer = false;
@@ -191,6 +183,7 @@ class SignupForm extends Model
     		'is_reader' => 'Reader: Notified by email on publication of an issue of the journal',
     		'is_author' => 'Author: Able to submit items to the journal',
     		'is_reviewer' => 'Reviewer: Willing to conduct peer review of submissions to the site. Identify reviewing interests (substantive areas and research methods):',  
+    		'reviewer_interests' => 'Reviewer Interests',    			
     	);
     }
 }

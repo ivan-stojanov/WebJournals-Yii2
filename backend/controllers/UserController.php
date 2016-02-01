@@ -339,12 +339,26 @@ class UserController extends Controller
     		$model->is_author = $_POST[$model->formName()]['is_author'];
     	} else if (isset($currentUserModel) && isset($currentUserModel->is_author)) {
     		$model->is_author = $currentUserModel->is_author;
+    	} else {
+    		$model->is_author = true;
     	}
     	 
     	if(isset($_POST[$model->formName()]['is_reviewer'])){
     		$model->is_reviewer = $_POST[$model->formName()]['is_reviewer'];
     	} else if (isset($currentUserModel) && isset($currentUserModel->is_reviewer)) {
     		$model->is_reviewer = $currentUserModel->is_reviewer;
+    	}
+    	
+    	if(isset($_POST[$model->formName()]['is_editor'])){
+    		$model->is_editor = $_POST[$model->formName()]['is_editor'];
+    	} else if (isset($currentUserModel) && isset($currentUserModel->is_editor)) {
+    		$model->is_editor = $currentUserModel->is_editor;
+    	}
+    	
+    	if(isset($_POST[$model->formName()]['is_admin'])){
+    		$model->is_admin = $_POST[$model->formName()]['is_admin'];
+    	} else if (isset($currentUserModel) && isset($currentUserModel->is_admin)) {
+    		$model->is_admin = $currentUserModel->is_admin;
     	}
     	
     	return $this->render('update', [
@@ -496,10 +510,24 @@ class UserController extends Controller
     
     	if(isset($_POST[$model->formName()]['is_author'])){
     		$model->is_author = $_POST[$model->formName()]['is_author'];
+    	} else {
+    		$model->is_author = true;
     	}
     
     	if(isset($_POST[$model->formName()]['is_reviewer'])){
     		$model->is_reviewer = $_POST[$model->formName()]['is_reviewer'];
+    	}
+    	
+    	if(isset($_POST[$model->formName()]['is_editor'])){
+    		$model->is_editor = $_POST[$model->formName()]['is_editor'];
+    	} else if (isset($currentUserModel) && isset($currentUserModel->is_editor)) {
+    		$model->is_editor = $currentUserModel->is_editor;
+    	}
+    	 
+    	if(isset($_POST[$model->formName()]['is_admin'])){
+    		$model->is_admin = $_POST[$model->formName()]['is_admin'];
+    	} else if (isset($currentUserModel) && isset($currentUserModel->is_admin)) {
+    		$model->is_admin = $currentUserModel->is_admin;
     	}
     	 
     	return $this->render('create', [

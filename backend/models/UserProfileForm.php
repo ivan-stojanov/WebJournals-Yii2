@@ -36,6 +36,8 @@ class UserProfileForm extends Model
     public $is_reader;
     public $is_author;
     public $is_reviewer;
+    public $is_editor;
+    public $is_admin;
     public $verifyCode;
     public $reviewer_interests;
 
@@ -158,35 +160,47 @@ class UserProfileForm extends Model
     		$user->reviewer_interests = $this->reviewer_interests; 		 
     
     		if(isset($_POST[$this->formName()]['gender'])){
-    			$user->gender = $_POST['UserProfileForm']['gender'];
+    			$user->gender = $_POST[$this->formName()]['gender'];
     		}
     
     		if(isset($_POST[$this->formName()]['country'])){
-    			$user->country = $_POST['UserProfileForm']['country'];
+    			$user->country = $_POST[$this->formName()]['country'];
     		}
     
     		if(isset($_POST[$this->formName()]['send_confirmation'])){
-    			$user->send_confirmation = $_POST['UserProfileForm']['send_confirmation'];
+    			$user->send_confirmation = $_POST[$this->formName()]['send_confirmation'];
     		} else {
     			$user->send_confirmation = true;
     		}
     
     		if(isset($_POST[$this->formName()]['is_reader'])){
-    			$user->is_reader = $_POST['UserProfileForm']['is_reader'];
+    			$user->is_reader = $_POST[$this->formName()]['is_reader'];
     		} else{
     			$user->is_reader = true;
     		}
     
     		if(isset($_POST[$this->formName()]['is_author'])){
-    			$user->is_author = $_POST['UserProfileForm']['is_author'];
+    			$user->is_author = $_POST[$this->formName()]['is_author'];
     		} else{
-    			$user->is_author = false;
+    			$user->is_author = true;
     		}
     
     		if(isset($_POST[$this->formName()]['is_reviewer'])){
-    			$user->is_reviewer = $_POST['UserProfileForm']['is_reviewer'];
+    			$user->is_reviewer = $_POST[$this->formName()]['is_reviewer'];
     		} else{
     			$user->is_reviewer = false;
+    		}
+    		
+    		if(isset($_POST[$this->formName()]['is_editor'])){
+    			$user->is_editor = $_POST[$this->formName()]['is_editor'];
+    		} else{
+    			$user->is_editor = false;
+    		}
+    		 
+    		if(isset($_POST[$this->formName()]['is_admin'])){
+    			$user->is_admin = $_POST[$this->formName()]['is_admin'];
+    		} else{
+    			$user->is_admin = false;
     		}
     
     		$user->generateAuthKey();
@@ -244,35 +258,47 @@ class UserProfileForm extends Model
     		$user->reviewer_interests = $this->reviewer_interests;
     
     		if(isset($_POST[$this->formName()]['gender'])){
-    			$user->gender = $_POST['UserProfileForm']['gender'];
+    			$user->gender = $_POST[$this->formName()]['gender'];
     		}
     
     		if(isset($_POST[$this->formName()]['country'])){
-    			$user->country = $_POST['UserProfileForm']['country'];
+    			$user->country = $_POST[$this->formName()]['country'];
     		}
     
     		if(isset($_POST[$this->formName()]['send_confirmation'])){
-    			$user->send_confirmation = $_POST['UserProfileForm']['send_confirmation'];
+    			$user->send_confirmation = $_POST[$this->formName()]['send_confirmation'];
     		} else {
     			$user->send_confirmation = true;
     		}
     
     		if(isset($_POST[$this->formName()]['is_reader'])){
-    			$user->is_reader = $_POST['UserProfileForm']['is_reader'];
+    			$user->is_reader = $_POST[$this->formName()]['is_reader'];
     		} else{
     			$user->is_reader = true;
     		}
     
     		if(isset($_POST[$this->formName()]['is_author'])){
-    			$user->is_author = $_POST['UserProfileForm']['is_author'];
+    			$user->is_author = $_POST[$this->formName()]['is_author'];
     		} else{
-    			$user->is_author = false;
+    			$user->is_author = true;
     		}
     
     		if(isset($_POST[$this->formName()]['is_reviewer'])){
-    			$user->is_reviewer = $_POST['UserProfileForm']['is_reviewer'];
+    			$user->is_reviewer = $_POST[$this->formName()]['is_reviewer'];
     		} else{
     			$user->is_reviewer = false;
+    		}
+    		
+    		if(isset($_POST[$this->formName()]['is_editor'])){
+    			$user->is_editor = $_POST[$this->formName()]['is_editor'];
+    		} else{
+    			$user->is_editor = false;
+    		}
+    		 
+    		if(isset($_POST[$this->formName()]['is_admin'])){
+    			$user->is_admin = $_POST[$this->formName()]['is_admin'];
+    		} else{
+    			$user->is_admin = false;
     		}
     
     		$user->generateAuthKey();
@@ -319,36 +345,48 @@ class UserProfileForm extends Model
            	$user->is_reviewer = $this->is_reviewer;          	
            	*/
            	
-           	if(isset($_POST['UserProfileForm']['gender'])){
-           		$user->gender = $_POST['UserProfileForm']['gender'];
+           	if(isset($_POST[$this->formName()]['gender'])){
+           		$user->gender = $_POST[$this->formName()]['gender'];
            	}
            	
-           	if(isset($_POST['UserProfileForm']['country'])){
-           		$user->country = $_POST['UserProfileForm']['country'];
+           	if(isset($_POST[$this->formName()]['country'])){
+           		$user->country = $_POST[$this->formName()]['country'];
            	}
            	
-           	if(isset($_POST['UserProfileForm']['send_confirmation'])){
-           		$user->send_confirmation = $_POST['UserProfileForm']['send_confirmation'];
+           	if(isset($_POST[$this->formName()]['send_confirmation'])){
+           		$user->send_confirmation = $_POST[$this->formName()]['send_confirmation'];
            	} else {
            		$user->send_confirmation = true;
            	}
            	
-           	if(isset($_POST['UserProfileForm']['is_reader'])){
-           		$user->is_reader = $_POST['UserProfileForm']['is_reader'];
+           	if(isset($_POST[$this->formName()]['is_reader'])){
+           		$user->is_reader = $_POST[$this->formName()]['is_reader'];
            	} else{
            		$user->is_reader = true;
            	}
            	
-           	if(isset($_POST['UserProfileForm']['is_author'])){
-           		$user->is_author = $_POST['UserProfileForm']['is_author'];
+           	if(isset($_POST[$this->formName()]['is_author'])){
+           		$user->is_author = $_POST[$this->formName()]['is_author'];
            	} else{
-           		$user->is_author = false;
+           		$user->is_author = true;
            	}
            	
-           	if(isset($_POST['UserProfileForm']['is_reviewer'])){
-           		$user->is_reviewer = $_POST['UserProfileForm']['is_reviewer'];
+           	if(isset($_POST[$this->formName()]['is_reviewer'])){
+           		$user->is_reviewer = $_POST[$this->formName()]['is_reviewer'];
            	} else{
            		$user->is_reviewer = false;
+           	}
+           	
+           	if(isset($_POST[$this->formName()]['is_editor'])){
+           		$user->is_editor = $_POST[$this->formName()]['is_editor'];
+           	} else{
+           		$user->is_editor = false;
+           	}
+           	 
+           	if(isset($_POST[$this->formName()]['is_admin'])){
+           		$user->is_admin = $_POST[$this->formName()]['is_admin'];
+           	} else{
+           		$user->is_admin = false;
            	}
            	
             $user->generateAuthKey();
@@ -372,6 +410,9 @@ class UserProfileForm extends Model
     		'is_reader' => 'Reader: Notified by email on publication of an issue of the journal',
     		'is_author' => 'Author: Able to submit items to the journal',
     		'is_reviewer' => 'Reviewer: Willing to conduct peer review of submissions to the site. Identify reviewing interests (substantive areas and research methods):',  
+    		'is_editor' => 'Editor: Able to edit items to the journal',
+    		'is_admin' => 'Admin: Able to manage the system',
+    		'reviewer_interests' => 'Reviewer Interests',
     	);
     }
 }

@@ -78,8 +78,12 @@ use yii\captcha\Captcha;
 			<?= $form->field($model, 'is_author')->checkbox() ?>
 				
 			<?= $form->field($model, 'is_reviewer')->checkbox() ?>
+			
+			<?= $form->field($model, 'is_editor')->checkbox() ?>
+			
+			<?= $form->field($model, 'is_admin')->checkbox() ?>
 				
-			<?= $form->field($model, 'reviewer_interests')->label(false) ?>
+			<?= $form->field($model, 'reviewer_interests')->label() ?>
     	
 	       	<div class="form-group">
 	           	<?= Html::submitButton('Save', ['class' => 'btn btn-primary', 'name' => 'signup-button']) ?>

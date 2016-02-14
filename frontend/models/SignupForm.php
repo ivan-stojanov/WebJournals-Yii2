@@ -164,6 +164,13 @@ class SignupForm extends Model
            	
             $user->generateAuthKey();
             if ($user->save()) {
+            	
+            	Yii::$app->session->set('user.is_admin', false /*$user->is_admin*/);
+            	Yii::$app->session->set('user.is_editor', false /*$user->is_editor*/);
+            	Yii::$app->session->set('user.is_reader', $user->is_reader);
+            	Yii::$app->session->set('user.is_author', $user->is_author);
+            	Yii::$app->session->set('user.is_reviewer', $user->is_reviewer);
+            	
                 return $user;
             }    		
         }

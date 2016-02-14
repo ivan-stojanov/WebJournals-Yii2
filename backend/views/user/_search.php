@@ -18,8 +18,26 @@ use yii\grid\DataColumn;
 		    <strong><span id="homepage-section-alert-msg"></span><?php echo $post_msg["text"]; ?></strong>
 		</div>
 	<?php } ?>
-	
-<h1>User List</h1>
+<h1>	
+	<?php 	
+		$params = Yii::$app->request->queryParams;
+		if(isset($params) && isset($params['type'])){
+        	if($params['type'] == 'admin'){
+        		echo "Admin List";
+        	} else if($params['type'] == 'author'){
+        		echo "Author List";
+        	} else if($params['type'] == 'editor'){
+        		echo "Editor List";
+        	} else if($params['type'] == 'reviewer'){
+        		echo "Reviewer List";
+        	} else {
+        		echo "User List";
+        	}
+        } else {
+        	echo "User List";
+        }
+	?>	
+</h1>
 <hr>
 
 	<?php /* ?>
@@ -43,13 +61,12 @@ use yii\grid\DataColumn;
        				'value' => function($model) { return $model->first_name  . " " .$model->middle_name  . " " . $model->last_name ;},
         	 ),
         	 //here add icons with roles
-        	 array(
+        	 /*array(
         	 		'class' => DataColumn::className(), // this line is optional
         	 		'label' => 'Roles',        	 		
         	 		'value' => function($model) { return "reader/editor/reviewer/author/admin" ;},
         	 		'format'=> 'text',
-        	 ),        	 
-        	 
+        	 ),*/         	 
         	// 'id',
         	// 'auth_key',
         	// 'password_hash',
@@ -89,10 +106,10 @@ use yii\grid\DataColumn;
 </div>
 
 <?php 
-$dir_icons = Yii::getAlias('@common')."\\images\icons\\";
+/*$dir_icons = Yii::getAlias('@common')."\\images\icons\\";
 var_dump($dir_icons);
 $script = <<< JS
 	$('.grid-view:nth-of-type(1) table:nth-of-type(1) tr:nth-of-type(2) td:nth-of-type(5)').text(".$dir_icons.");
 JS;
-$this->registerJs($script, \yii\web\View::POS_END);
+$this->registerJs($script, \yii\web\View::POS_END);*/
 ?>

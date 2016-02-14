@@ -47,7 +47,7 @@ AppAsset::register($this);
     	$menuItems[] = ['label' => 'Login', 'url' => ['/site/login']];
         $menuItems[] = ['label' => 'Register', 'url' => ['/site/signup']];        
     } else {
-    	$menuItems[] = ['label' => 'User Home', 'url' => ['/site/userpanel']];
+    	$menuItems[] = ['label' => 'User Panel', 'url' => Yii::$app->urlManagerBackEnd->createUrl('site/index'),];
     }
     $menuItems[] = ['label' => 'Search', 'url' => ['/site/search']];
     $menuItems[] = ['label' => 'Current', 'url' => ['/site/current']];

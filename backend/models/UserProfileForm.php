@@ -191,20 +191,39 @@ class UserProfileForm extends Model
     			$user->is_reviewer = false;
     		}
     		
-    		if(isset($_POST[$this->formName()]['is_editor'])){
-    			$user->is_editor = $_POST[$this->formName()]['is_editor'];
-    		} else{
+    		if (Yii::$app->session->get('user.is_editor') == true || Yii::$app->session->get('user.is_admin') == true){
+	    		if(isset($_POST[$this->formName()]['is_editor'])){
+	    			$user->is_editor = $_POST[$this->formName()]['is_editor'];
+	    		} else{
+	    			$user->is_editor = false;
+	    		}   
+    		} else {
     			$user->is_editor = false;
     		}
-    		 
-    		if(isset($_POST[$this->formName()]['is_admin'])){
-    			$user->is_admin = $_POST[$this->formName()]['is_admin'];
-    		} else{
+    		
+    		if (Yii::$app->session->get('user.is_admin') == true){
+	    		if(isset($_POST[$this->formName()]['is_admin'])){
+	    			$user->is_admin = $_POST[$this->formName()]['is_admin'];
+	    		} else{
+	    			$user->is_admin = false;
+	    		}
+    		} else {
     			$user->is_admin = false;
     		}
     
     		$user->generateAuthKey();
     		if ($user->save()) {
+    			
+    			if((isset(Yii::$app->user->identity) && isset(Yii::$app->user->identity->attributes["id"]) &&
+    					isset($user) && isset($user->id) && (Yii::$app->user->identity->attributes["id"] == $user->id)))
+    			{
+	    			Yii::$app->session->set('user.is_admin', $user->is_admin);
+	    			Yii::$app->session->set('user.is_editor', $user->is_editor);
+	    			Yii::$app->session->set('user.is_reader', $user->is_reader);
+	    			Yii::$app->session->set('user.is_author', $user->is_author);
+	    			Yii::$app->session->set('user.is_reviewer', $user->is_reviewer);
+    			}
+    			
     			return $user;
     		}
     	}
@@ -289,114 +308,36 @@ class UserProfileForm extends Model
     			$user->is_reviewer = false;
     		}
     		
-    		if(isset($_POST[$this->formName()]['is_editor'])){
-    			$user->is_editor = $_POST[$this->formName()]['is_editor'];
-    		} else{
+    		if (Yii::$app->session->get('user.is_editor') == true || Yii::$app->session->get('user.is_admin') == true){
+	    		if(isset($_POST[$this->formName()]['is_editor'])){
+	    			$user->is_editor = $_POST[$this->formName()]['is_editor'];
+	    		} else{
+	    			$user->is_editor = false;
+	    		}   
+    		} else {
     			$user->is_editor = false;
     		}
-    		 
-    		if(isset($_POST[$this->formName()]['is_admin'])){
-    			$user->is_admin = $_POST[$this->formName()]['is_admin'];
-    		} else{
+    		
+    		if (Yii::$app->session->get('user.is_admin') == true){
+	    		if(isset($_POST[$this->formName()]['is_admin'])){
+	    			$user->is_admin = $_POST[$this->formName()]['is_admin'];
+	    		} else{
+	    			$user->is_admin = false;
+	    		}
+    		} else {
     			$user->is_admin = false;
     		}
     
     		$user->generateAuthKey();
     		if ($user->save()) {
+    			
     			return $user;
     		}
     	}
     	 
     	return null;
     }
-
-    /**
-     * Signs user up from Admin panel.
-     *
-     * @return User|null the saved model or null if saving fails
-     */
-    public function createNewUserFromAdmin()
-    {
-        if ($this->validate()) {
-            $user = new User();
-            $user->username = $this->username;
-            $user->email = $this->email;
-            $user->setPassword($this->password);            
-            $user->salutation = $this->salutation;
-            $user->first_name = $this->first_name;
-            $user->middle_name = $this->middle_name;
-            $user->last_name = $this->last_name;
-            $user->initials = $this->initials;            
-            $user->affiliation = $this->affiliation;
-            $user->signature = $this->signature;
-            $user->orcid_id = $this->orcid_id;
-            $user->url = $this->url;
-            $user->phone = $this->phone;
-            $user->fax = $this->fax;
-            $user->mailing_address = $this->mailing_address;
-            $user->bio_statement = $this->bio_statement;
-            $user->reviewer_interests = $this->reviewer_interests;
-            
-           /* $user->gender = $this->gender;
-            $user->country = $this->country;
-            $user->send_confirmation = $this->send_confirmation;
-            $user->is_reader = $this->is_reader;
-            $user->is_author = $this->is_author;
-           	$user->is_reviewer = $this->is_reviewer;          	
-           	*/
-           	
-           	if(isset($_POST[$this->formName()]['gender'])){
-           		$user->gender = $_POST[$this->formName()]['gender'];
-           	}
-           	
-           	if(isset($_POST[$this->formName()]['country'])){
-           		$user->country = $_POST[$this->formName()]['country'];
-           	}
-           	
-           	if(isset($_POST[$this->formName()]['send_confirmation'])){
-           		$user->send_confirmation = $_POST[$this->formName()]['send_confirmation'];
-           	} else {
-           		$user->send_confirmation = true;
-           	}
-           	
-           	if(isset($_POST[$this->formName()]['is_reader'])){
-           		$user->is_reader = $_POST[$this->formName()]['is_reader'];
-           	} else{
-           		$user->is_reader = true;
-           	}
-           	
-           	if(isset($_POST[$this->formName()]['is_author'])){
-           		$user->is_author = $_POST[$this->formName()]['is_author'];
-           	} else{
-           		$user->is_author = true;
-           	}
-           	
-           	if(isset($_POST[$this->formName()]['is_reviewer'])){
-           		$user->is_reviewer = $_POST[$this->formName()]['is_reviewer'];
-           	} else{
-           		$user->is_reviewer = false;
-           	}
-           	
-           	if(isset($_POST[$this->formName()]['is_editor'])){
-           		$user->is_editor = $_POST[$this->formName()]['is_editor'];
-           	} else{
-           		$user->is_editor = false;
-           	}
-           	 
-           	if(isset($_POST[$this->formName()]['is_admin'])){
-           		$user->is_admin = $_POST[$this->formName()]['is_admin'];
-           	} else{
-           		$user->is_admin = false;
-           	}
-           	
-            $user->generateAuthKey();
-            if ($user->save()) {
-                return $user;
-            }    		
-        }
-        
-        return null;
-    }
+    
     
     /**
      * @return array customized attribute labels (name=>label)

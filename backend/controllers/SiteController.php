@@ -56,15 +56,13 @@ class SiteController extends Controller
     }
 
     public function actionIndex()
-    {		
-    	//var_dump(Yii::$app->user->getAdminRole());
-    	//Yii::app()->user
+    {	    	
         return $this->render('index');
     }
 
     public function actionLogin()
     {
-        if (!\Yii::$app->user->isGuest) {
+        if (!Yii::$app->user->isGuest) {
             return $this->goHome();
         }
 
@@ -81,7 +79,7 @@ class SiteController extends Controller
     public function actionLogout()
     {
         Yii::$app->user->logout();
-
-        return $this->goHome();
+        
+    	return $this->redirect(Yii::$app->urlManagerFrontEnd->createUrl('site/index'));
     }
 }

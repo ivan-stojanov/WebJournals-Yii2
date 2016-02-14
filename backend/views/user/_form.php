@@ -77,13 +77,19 @@ use yii\captcha\Captcha;
 				
 			<?= $form->field($model, 'is_author')->checkbox() ?>
 				
-			<?= $form->field($model, 'is_reviewer')->checkbox() ?>
+			<?= $form->field($model, 'is_reviewer')->checkbox() ?>			
 			
-			<?= $form->field($model, 'is_editor')->checkbox() ?>
+			<?php if (Yii::$app->session->get('user.is_editor') == true || Yii::$app->session->get('user.is_admin') == true){ ?>
+				<?= $form->field($model, 'is_editor')->checkbox() ?>
+			<?php } ?>
 			
-			<?= $form->field($model, 'is_admin')->checkbox() ?>
+			<?php if (Yii::$app->session->get('user.is_admin') == true){ ?>
+				<?= $form->field($model, 'is_admin')->checkbox() ?>
+			<?php } ?>
 				
 			<?= $form->field($model, 'reviewer_interests')->label() ?>
+			
+			<input type="hidden" name="type" value="type"/>
     	
 	       	<div class="form-group">
 	           	<?= Html::submitButton('Save', ['class' => 'btn btn-primary', 'name' => 'signup-button']) ?>

@@ -43,7 +43,7 @@ AppAsset::register($this);
             
             <ul class="nav navbar-top-links navbar-right">
             	<li>
-               		<a href='<?php echo Url::to(['/site/index']); ?>'>
+               		<a href='<?php echo Yii::$app->urlManagerFrontEnd->createUrl('site/index'); ?>'>
                     	<div>
                         	<strong>Home</strong>
                         </div>
@@ -94,9 +94,12 @@ AppAsset::register($this);
                         <li>
                             <a href='<?php echo Url::to(['/site/index']); ?>'><i class="fa fa-dashboard fa-fw"></i> Dashboard</a>
                         </li>
+                        <?php if (Yii::$app->session->get('user.is_admin') == true){ ?>
                         <li>
                             <a href='<?php echo Url::to(['/admin/home']); ?>'><i class="fa fa-home fa-fw"></i> Manage Home Page</a>
                         </li>
+                        <?php } ?>
+                        <?php if (Yii::$app->session->get('user.is_admin') == true){ ?>
                         <li>
 							<a href='#'><i class="fa fa-book fa-fw"></i> Announcements<span class="fa arrow"></span></a>
                             <ul class="nav nav-second-level">
@@ -109,6 +112,8 @@ AppAsset::register($this);
                             </ul>
                             <!-- /.nav-second-level -->                            
                         </li>
+                        <?php } ?>
+                        <?php if (Yii::$app->session->get('user.is_admin') == true){ ?>
                         <li>
                             <a href='#'><i class="fa fa-users fa-fw"></i> Users<span class="fa arrow"></span></a>
                             <ul class="nav nav-second-level">
@@ -116,11 +121,24 @@ AppAsset::register($this);
                                     <a href='<?php echo Url::to(['/user/index']); ?>'><i class="fa fa-list fa-fw"></i> List All</a>
                                 </li>
                                 <li>
-                                    <a href='<?php echo Url::to(['/user/create']); ?>'><i class="fa fa-plus fa-fw"></i> Create New</a>
+                                    <a href='<?php echo Url::to(['/user/index?type=admin']); ?>'><i class="fa fa-user fa-fw"></i> Admins</a>
+                                </li>
+                                <li>
+                                    <a href='<?php echo Url::to(['/user/index?type=author']); ?>'><i class="fa fa-user fa-fw"></i> Authors</a>
+                                </li>
+                                <li>
+                                    <a href='<?php echo Url::to(['/user/index?type=editor']); ?>'><i class="fa fa-user fa-fw"></i> Editors</a>
+                                </li>
+                                <li>
+                                    <a href='<?php echo Url::to(['/user/index?type=reviewer']); ?>'><i class="fa fa-user fa-fw"></i> Reviewers</a>
+                                </li>
+                                <li>
+                                    <a href='<?php echo Url::to(['/user/create']); ?>'><i class="fa fa-plus fa-fw"></i> Create New User</a>
                                 </li>
                             </ul>
                             <!-- /.nav-second-level -->
                         </li>
+                        <?php } ?>
 						<!-- 
                         <li>
                             <a href="forms.html"><i class="fa fa-edit fa-fw"></i> Forms</a>

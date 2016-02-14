@@ -55,6 +55,18 @@ class UserSearch extends User
             // uncomment the following line if you do not want to return any records when validation fails
             // $query->where('0=1');
             return $dataProvider;
+        }        
+       
+        if(isset($params) && isset($params['type'])){
+        	if($params['type'] == 'admin'){
+        		$this->is_admin = true;
+        	} else if($params['type'] == 'author'){
+        		$this->is_author = true;
+        	} else if($params['type'] == 'editor'){
+        		$this->is_editor = true;
+        	} else if($params['type'] == 'reviewer'){
+        		$this->is_reviewer = true;
+        	}
         }
 
         // grid filtering conditions

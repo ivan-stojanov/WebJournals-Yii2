@@ -8,6 +8,7 @@ use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 use yii\filters\AccessControl;
+use yii\web\Response;
 
 /**
  * AnnouncementController implements the CRUD actions for Announcement model.
@@ -65,6 +66,10 @@ class AnnouncementController extends Controller
      */
     public function actionIndex()
     {
+    	if (Yii::$app->user->isGuest || Yii::$app->session->get('user.is_admin') != true){
+    		return $this->redirect(['error']);
+    	}
+    	
         $announcements = Announcement::find()        
 				        ->where(['is_deleted' => false])
 				        ->orderBy([
@@ -85,6 +90,10 @@ class AnnouncementController extends Controller
      */
     public function actionView($id)
     {
+    	if (Yii::$app->user->isGuest || Yii::$app->session->get('user.is_admin') != true){
+    		return $this->redirect(['error']);
+    	}
+    	
         return $this->render('view', [
             'model' => $this->findModel($id),
         ]);
@@ -97,6 +106,10 @@ class AnnouncementController extends Controller
      */
     public function actionCreate()
     {
+    	if (Yii::$app->user->isGuest || Yii::$app->session->get('user.is_admin') != true){
+    		return $this->redirect(['error']);
+    	}
+    	
         $model = new Announcement();
         
         $model->created_on = date("Y-m-d H:i:s");
@@ -119,6 +132,10 @@ class AnnouncementController extends Controller
      */
     public function actionUpdate($id)
     {
+    	if (Yii::$app->user->isGuest || Yii::$app->session->get('user.is_admin') != true){
+    		return $this->redirect(['error']);
+    	}
+    	
         $model = $this->findModel($id);
         $model->updated_on = date("Y-m-d H:i:s");
 
@@ -139,6 +156,10 @@ class AnnouncementController extends Controller
      */
     public function actionDelete($id)
     {
+    	if (Yii::$app->user->isGuest || Yii::$app->session->get('user.is_admin') != true){
+    		return $this->redirect(['error']);
+    	}
+    	
         $model = $this->findModel($id);
         $model->is_deleted = true;
         $model->save();
@@ -216,7 +237,18 @@ class AnnouncementController extends Controller
     			throw new \Exception('Data not saved: '.print_r($announcementItem->errors, true), 500);
     		}
     	}
-    	 
+    	
+    	/*header('HTTP/1.1 404');
+    	header('Content-type: application/json');
+    	$response = new Response();
+    	$response->format = Response::FORMAT_JSON;
+    	//$response->statusText = "Announcements sorting has been successfully changed.";
+    	$response->statusCode = 200;    	
+    	$response->data = [
+    			'message' => "Announcements sorting has been successfully changed.",
+    	];    	
+    	Yii::$app->end();*/
+    	
     	return "Announcements sorting has been successfully changed.";
     }
 }

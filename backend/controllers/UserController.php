@@ -69,6 +69,10 @@ class UserController extends Controller
      */
     public function actionIndex()
     {
+    	if (Yii::$app->user->isGuest || Yii::$app->session->get('user.is_admin') != true){
+    		return $this->redirect(['error']);
+    	}
+    	
         $searchModel = new UserSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
         $post_msg = null;
@@ -87,6 +91,10 @@ class UserController extends Controller
      */
     public function actionView($id)
     {
+    	if (Yii::$app->user->isGuest || Yii::$app->session->get('user.is_admin') != true){
+    		return $this->redirect(['error']);
+    	}
+    	
         return $this->render('view', [
             'model' => $this->findModel($id),
         ]);
@@ -99,6 +107,10 @@ class UserController extends Controller
      */
     public function actionCreate()
     {
+    	if (Yii::$app->user->isGuest || Yii::$app->session->get('user.is_admin') != true){
+    		return $this->redirect(['error']);
+    	}
+    	
         $model = new User();
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
@@ -116,6 +128,10 @@ class UserController extends Controller
      */
     public function actionUpdate($id)
     {
+    	if (Yii::$app->user->isGuest || Yii::$app->session->get('user.is_admin') != true){
+    		return $this->redirect(['error']);
+    	}
+    	
     	if (Yii::$app->user->isGuest) {
     		return $this->redirect(['error']);
     	}
@@ -130,7 +146,11 @@ class UserController extends Controller
      * @return mixed
      */
     public function actionDelete($id)
-    {    	
+    {
+    	if (Yii::$app->user->isGuest || Yii::$app->session->get('user.is_admin') != true){
+    		return $this->redirect(['error']);
+    	}
+    	
         $this->findModel($id)->delete();
 
         return $this->redirect(['index']);
@@ -138,13 +158,21 @@ class UserController extends Controller
     
 
     public function actionProfile()
-    {
+    {   	
     	if (Yii::$app->user->isGuest) {
     		return $this->redirect(['error']);
     	}
     
-    	$currentId = Yii::$app->user->identity->attributes["id"];    	 
-    	return $this->_editUserForm($currentId);
+    	$currentId = Yii::$app->user->identity->attributes["id"];
+    	
+    	//make sure that is current user
+    	if((isset(Yii::$app->user->identity) && isset(Yii::$app->user->identity->attributes["id"]) &&
+    			isset($currentId) && (Yii::$app->user->identity->attributes["id"] == $currentId)))
+    	{
+    		return $this->_editUserForm($currentId);
+    	}
+
+    	return $this->redirect(['error']);
     }
     
     //called on actionProfile & actionEdit
@@ -171,7 +199,7 @@ class UserController extends Controller
     				
     				$post_msg["type"] = "success";
     				$post_msg["text"] = "The user data have been successfully updated.";
-    					
+
     				return $this->render('index', [
     						'searchModel' => $searchModel,
     						'dataProvider' => $dataProvider,

@@ -27,6 +27,8 @@ function announcementScript_changeAnnouncementVisibility(htmlElementId, rowId){
             		$("#announcement-alert").addClass("alert-danger");
             		$("#announcement-alert-msg").text("Some error occured. Refresh the page and try again.");
             	}
+            	//$("#announcement-alert").removeClass("alert-success");
+        		//$("#announcement-alert").addClass("alert-danger");
             }
         });
     } else {
@@ -54,6 +56,8 @@ function announcementScript_changeAnnouncementVisibility(htmlElementId, rowId){
             		$("#announcement-alert").addClass("alert-danger");
             		$("#announcement-alert-msg").text("Some error occured. Refresh the page and try again.");
             	}
+            	//$("#announcement-alert").removeClass("alert-success");
+        		//$("#announcement-alert").addClass("alert-danger");
             }
         });
     }    
@@ -83,6 +87,9 @@ $("#sortTable").tableDnD({
             	$("#announcement-alert").removeClass("alert-danger");
             	$("#announcement-alert").addClass("alert-success");
             	$("#announcement-alert-msg").text(successData);
+            	
+            	console.log("success");
+            	console.log(successData);
             },
             error: function (xhr, error) {
             	$("#announcement-alert").removeClass("hidden-div");
@@ -95,6 +102,8 @@ $("#sortTable").tableDnD({
             		$("#announcement-alert").addClass("alert-danger");
             		$("#announcement-alert-msg").text("Some error occured. Refresh the page and try again.");
             	}
+            	//$("#announcement-alert").removeClass("alert-success");
+        		//$("#announcement-alert").addClass("alert-danger");
             }
         });
     },

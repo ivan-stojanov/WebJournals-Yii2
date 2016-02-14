@@ -62,7 +62,13 @@ class LoginForm extends Model
         	$loginUser->last_login = time();
         	$loginUser->save();
         	
-            return Yii::$app->user->login($loginUser, $this->rememberMe ? 3600 * 24 * 30 : 0);
+        	Yii::$app->session->set('user.is_admin', $loginUser->is_admin);
+        	Yii::$app->session->set('user.is_editor', $loginUser->is_editor);
+        	Yii::$app->session->set('user.is_reader', $loginUser->is_reader);
+        	Yii::$app->session->set('user.is_author', $loginUser->is_author);
+        	Yii::$app->session->set('user.is_reviewer', $loginUser->is_reviewer);
+        	
+            return Yii::$app->user->login($loginUser, $this->rememberMe ? 3600 * 24 * 30 : 0);            
         } else {
             return false;
         }

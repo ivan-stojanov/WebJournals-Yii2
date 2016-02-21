@@ -11,6 +11,9 @@ $this->title = 'User Details';
 ?>
 <div class="user-view">
 
+	<h1><?php echo Html::encode($model->first_name." ".$model->last_name);?></h1>
+    <hr>
+
     <p>
         <?= Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
         <?= Html::a('Delete', ['delete', 'id' => $model->id], [

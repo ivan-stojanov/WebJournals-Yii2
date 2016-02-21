@@ -2,6 +2,7 @@
 
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
+use yii\grid\GridView;
 
 /* @var $this yii\web\View */
 /* @var $model backend\models\VolumeSearch */
@@ -10,28 +11,30 @@ use yii\widgets\ActiveForm;
 
 <div class="volume-search">
 
-    <?php $form = ActiveForm::begin([
-        'action' => ['index'],
-        'method' => 'get',
+	<?php if(isset($post_msg)){ ?>
+	    <div class="alert alert-dismissable <?php echo "alert-".$post_msg["type"];?>" id="homepage-section-alert"> <?php /*alert-danger alert-success alert-warning */ ?>
+		    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+		    <strong><span id="homepage-section-alert-msg"></span><?php echo $post_msg["text"]; ?></strong>
+		</div>
+	<?php } ?>
+	<h1><?php echo "Volume List" ?></h1>
+	<hr>
+
+    <?= GridView::widget([
+        'dataProvider' => $dataProvider,
+        'filterModel' => $searchModel,
+        'columns' => [
+            ['class' => 'yii\grid\SerialColumn'],
+
+            'volume_id',
+            'title:ntext',
+            'year',
+            // 'created_on',
+            // 'updated_on',
+            // 'is_deleted',
+
+            ['class' => 'yii\grid\ActionColumn'],
+        ],
     ]); ?>
-
-    <?= $form->field($model, 'volume_id') ?>
-
-    <?= $form->field($model, 'title') ?>
-
-    <?= $form->field($model, 'year') ?>
-
-    <?= $form->field($model, 'created_on') ?>
-
-    <?= $form->field($model, 'updated_on') ?>
-
-    <?php // echo $form->field($model, 'is_deleted') ?>
-
-    <div class="form-group">
-        <?= Html::submitButton('Search', ['class' => 'btn btn-primary']) ?>
-        <?= Html::resetButton('Reset', ['class' => 'btn btn-default']) ?>
-    </div>
-
-    <?php ActiveForm::end(); ?>
 
 </div>

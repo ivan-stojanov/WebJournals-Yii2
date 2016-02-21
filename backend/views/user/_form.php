@@ -15,6 +15,9 @@ use yii\captcha\Captcha;
 	</div>
 <?php } ?>
 
+<h1><?= Html::encode($this->title) ?></h1>
+<hr>
+
 <div class="row">
 
     <?php $form = ActiveForm::begin(['id' => 'UserProfileForm']); ?>

@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "a9ebe7d5df7c16c3dcdb268e9e0b600f",
-    "content-hash": "c23488213079860705add1f51da26f4f",
+    "hash": "6af728b9b170e2dc9e5644a9ef1d9210",
+    "content-hash": "cc92b4a6ec8b5f62a9c393997ee7bbc5",
     "packages": [
         {
             "name": "2amigos/yii2-tinymce-widget",
@@ -283,7 +283,7 @@
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/cebe/markdown/zipball/e14d3da8f84eefa3792fd22b5b5ecba9c98d2e18",
+                "url": "https://api.github.com/repos/cebe/markdown/zipball/e4499350d8a94c4c693a7e784295eff7a717ae67",
                 "reference": "e14d3da8f84eefa3792fd22b5b5ecba9c98d2e18",
                 "shasum": ""
             },
@@ -378,6 +378,59 @@
             "time": "2013-11-30 08:25:19"
         },
         {
+            "name": "kartik-v/bootstrap-fileinput",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/kartik-v/bootstrap-fileinput.git",
+                "reference": "52f30624c7615eda63b97cedf0e3a104e7920aab"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/kartik-v/bootstrap-fileinput/zipball/52f30624c7615eda63b97cedf0e3a104e7920aab",
+                "reference": "52f30624c7615eda63b97cedf0e3a104e7920aab",
+                "shasum": ""
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "4.3.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "kartik\\plugins\\fileinput\\": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD-3-Clause"
+            ],
+            "authors": [
+                {
+                    "name": "Kartik Visweswaran",
+                    "email": "kartikv2@gmail.com",
+                    "homepage": "http://www.krajee.com/"
+                }
+            ],
+            "description": "An enhanced HTML 5 file input for Bootstrap 3.x with features for file preview for many file types, multiple selection, ajax uploads, and more.",
+            "homepage": "https://github.com/kartik-v/bootstrap-fileinput",
+            "keywords": [
+                "ajax",
+                "bootstrap",
+                "delete",
+                "file",
+                "image",
+                "input",
+                "jquery",
+                "multiple",
+                "preview",
+                "progress",
+                "upload"
+            ],
+            "time": "2016-02-12 08:14:03"
+        },
+        {
             "name": "kartik-v/yii2-krajee-base",
             "version": "dev-master",
             "source": {
@@ -387,7 +440,7 @@
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/kartik-v/yii2-krajee-base/zipball/2eed12db28138c50439a1429894f4df762b89ac4",
+                "url": "https://api.github.com/repos/kartik-v/yii2-krajee-base/zipball/8983a0e6f67b7ba3a4def53d5d730444756e1f6d",
                 "reference": "2eed12db28138c50439a1429894f4df762b89ac4",
                 "shasum": ""
             },
@@ -422,6 +475,56 @@
                 "yii2"
             ],
             "time": "2015-10-22 18:45:09"
+        },
+        {
+            "name": "kartik-v/yii2-widget-fileinput",
+            "version": "v1.0.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/kartik-v/yii2-widget-fileinput.git",
+                "reference": "c78637387dd5306002ae5613d9f9cab8a5df975d"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/kartik-v/yii2-widget-fileinput/zipball/c78637387dd5306002ae5613d9f9cab8a5df975d",
+                "reference": "c78637387dd5306002ae5613d9f9cab8a5df975d",
+                "shasum": ""
+            },
+            "require": {
+                "kartik-v/bootstrap-fileinput": "*",
+                "kartik-v/yii2-krajee-base": "*"
+            },
+            "type": "yii2-extension",
+            "autoload": {
+                "psr-4": {
+                    "kartik\\file\\": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD 3-Clause"
+            ],
+            "authors": [
+                {
+                    "name": "Kartik Visweswaran",
+                    "email": "kartikv2@gmail.com",
+                    "homepage": "http://www.krajee.com/"
+                }
+            ],
+            "description": "An enhanced FileInput widget for Bootstrap 3.x with file preview, multiple selection, and more features (sub repo split from yii2-widgets)",
+            "homepage": "https://github.com/kartik-v/yii2-widget-fileinput",
+            "keywords": [
+                "extension",
+                "file",
+                "form",
+                "input",
+                "jquery",
+                "plugin",
+                "upload",
+                "widget",
+                "yii2"
+            ],
+            "time": "2015-05-03 14:11:04"
         },
         {
             "name": "kartik-v/yii2-widget-sidenav",
@@ -482,7 +585,7 @@
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/swiftmailer/swiftmailer/zipball/6522539daf0a7bdada1cc2dccb7ec37dc0712136",
+                "url": "https://api.github.com/repos/swiftmailer/swiftmailer/zipball/fffbc0e2a7e376dbb0a4b5f2ff6847330f20ccf9",
                 "reference": "6522539daf0a7bdada1cc2dccb7ec37dc0712136",
                 "shasum": ""
             },
@@ -526,6 +629,114 @@
             "time": "2015-09-04 05:47:20"
         },
         {
+            "name": "symfony/css-selector",
+            "version": "2.6.x-dev",
+            "target-dir": "Symfony/Component/CssSelector",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/symfony/css-selector.git",
+                "reference": "560e446b93883050a5874908652e8e912e8cbe44"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/symfony/css-selector/zipball/560e446b93883050a5874908652e8e912e8cbe44",
+                "reference": "560e446b93883050a5874908652e8e912e8cbe44",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.3"
+            },
+            "require-dev": {
+                "symfony/phpunit-bridge": "~2.7"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "2.6-dev"
+                }
+            },
+            "autoload": {
+                "psr-0": {
+                    "Symfony\\Component\\CssSelector\\": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Jean-François Simon",
+                    "email": "jeanfrancois.simon@sensiolabs.com"
+                },
+                {
+                    "name": "Fabien Potencier",
+                    "email": "fabien@symfony.com"
+                },
+                {
+                    "name": "Symfony Community",
+                    "homepage": "https://symfony.com/contributors"
+                }
+            ],
+            "description": "Symfony CssSelector Component",
+            "homepage": "https://symfony.com",
+            "time": "2015-05-15 13:32:45"
+        },
+        {
+            "name": "symfony/dom-crawler",
+            "version": "2.6.x-dev",
+            "target-dir": "Symfony/Component/DomCrawler",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/symfony/dom-crawler.git",
+                "reference": "301fca88f26fb57f5ea4020d3abf78d046e5c0ee"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/symfony/dom-crawler/zipball/301fca88f26fb57f5ea4020d3abf78d046e5c0ee",
+                "reference": "301fca88f26fb57f5ea4020d3abf78d046e5c0ee",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.3"
+            },
+            "require-dev": {
+                "symfony/css-selector": "~2.3",
+                "symfony/phpunit-bridge": "~2.7"
+            },
+            "suggest": {
+                "symfony/css-selector": ""
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "2.6-dev"
+                }
+            },
+            "autoload": {
+                "psr-0": {
+                    "Symfony\\Component\\DomCrawler\\": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Fabien Potencier",
+                    "email": "fabien@symfony.com"
+                },
+                {
+                    "name": "Symfony Community",
+                    "homepage": "https://symfony.com/contributors"
+                }
+            ],
+            "description": "Symfony DomCrawler Component",
+            "homepage": "https://symfony.com",
+            "time": "2015-07-09 16:02:48"
+        },
+        {
             "name": "tinymce/tinymce",
             "version": "dev-master",
             "source": {
@@ -535,7 +746,7 @@
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/tinymce/tinymce-dist/zipball/ba7dd60f92f050dbc408f037de7a5a659875358b",
+                "url": "https://api.github.com/repos/tinymce/tinymce-dist/zipball/4db115aff381c7e881193eede8cb8d8172d01963",
                 "reference": "ba7dd60f92f050dbc408f037de7a5a659875358b",
                 "shasum": ""
             },
@@ -570,6 +781,57 @@
                 "wysiwyg"
             ],
             "time": "2015-10-27 07:11:29"
+        },
+        {
+            "name": "wbraganca/yii2-dynamicform",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/wbraganca/yii2-dynamicform.git",
+                "reference": "049770e48bff426fb7aeb0e86690ee689c514c70"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/wbraganca/yii2-dynamicform/zipball/049770e48bff426fb7aeb0e86690ee689c514c70",
+                "reference": "049770e48bff426fb7aeb0e86690ee689c514c70",
+                "shasum": ""
+            },
+            "require": {
+                "symfony/css-selector": "~2.6.6",
+                "symfony/dom-crawler": "~2.6.6",
+                "yiisoft/yii2": "~2.0.0"
+            },
+            "require-dev": {
+                "yiisoft/yii2-codeception": "*"
+            },
+            "type": "yii2-extension",
+            "autoload": {
+                "psr-4": {
+                    "wbraganca\\dynamicform\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD-3-Clause"
+            ],
+            "authors": [
+                {
+                    "name": "Wanderson Bragança",
+                    "email": "wanderson.wbc@gmail.com",
+                    "homepage": "http://wbraganca.com"
+                }
+            ],
+            "description": "It is widget to yii2 framework to clone form elements in a nested manner, maintaining accessibility.",
+            "keywords": [
+                "copy DOM element",
+                "extension",
+                "wbraganca",
+                "widget",
+                "yii2",
+                "yii2 dynamic form",
+                "yii2-dynamicform"
+            ],
+            "time": "2015-05-26 12:06:27"
         },
         {
             "name": "yiisoft/yii2",
@@ -669,7 +931,7 @@
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/yiisoft/yii2-bootstrap/zipball/09a5bfe72c0141ad26281848f1ae9c3f42541f20",
+                "url": "https://api.github.com/repos/yiisoft/yii2-bootstrap/zipball/ef941bc83ea63326e44769b922476dc1035ea551",
                 "reference": "09a5bfe72c0141ad26281848f1ae9c3f42541f20",
                 "shasum": ""
             },
@@ -719,7 +981,7 @@
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/yiisoft/yii2-composer/zipball/87cd1f2e0dd454a837607de612b1057840effe8b",
+                "url": "https://api.github.com/repos/yiisoft/yii2-composer/zipball/d33d1046a5951f2f7823fe343f28ddc58b3421a4",
                 "reference": "87cd1f2e0dd454a837607de612b1057840effe8b",
                 "shasum": ""
             },
@@ -809,7 +1071,7 @@
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/yiisoft/yii2-swiftmailer/zipball/745a045c905cc595ca5698f5cd78fd7a8944c706",
+                "url": "https://api.github.com/repos/yiisoft/yii2-swiftmailer/zipball/2cca1bb86444a6438b0720f8c60120a400982366",
                 "reference": "745a045c905cc595ca5698f5cd78fd7a8944c706",
                 "shasum": ""
             },
@@ -888,7 +1150,7 @@
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/fzaninotto/Faker/zipball/cd5fb1c262e1734366e77688b011a0f0422ce06d",
+                "url": "https://api.github.com/repos/fzaninotto/Faker/zipball/d8c0bebc230284edc91b5e7091013e7a0c55bf34",
                 "reference": "cd5fb1c262e1734366e77688b011a0f0422ce06d",
                 "shasum": ""
             },
@@ -972,7 +1234,7 @@
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/yiisoft/yii2-codeception/zipball/22e981b8c93d9882ccd333ba001767a6b99aa9a1",
+                "url": "https://api.github.com/repos/yiisoft/yii2-codeception/zipball/ee239c244fd011f11c8827f97ebe7600d03f1841",
                 "reference": "22e981b8c93d9882ccd333ba001767a6b99aa9a1",
                 "shasum": ""
             },
@@ -1017,7 +1279,7 @@
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/yiisoft/yii2-debug/zipball/7ba01f0049f691bd76259e10bdede0709323ffc2",
+                "url": "https://api.github.com/repos/yiisoft/yii2-debug/zipball/e30ded9067f595b5e6d3536ec1365353b826b300",
                 "reference": "7ba01f0049f691bd76259e10bdede0709323ffc2",
                 "shasum": ""
             },
@@ -1064,7 +1326,7 @@
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/yiisoft/yii2-faker/zipball/6968c97fd2e951e8260d1ccc6f5e2109407290eb",
+                "url": "https://api.github.com/repos/yiisoft/yii2-faker/zipball/186c77214e0a4b75f10380b4e6e5f82788922cb7",
                 "reference": "6968c97fd2e951e8260d1ccc6f5e2109407290eb",
                 "shasum": ""
             },
@@ -1111,7 +1373,7 @@
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/yiisoft/yii2-gii/zipball/741ef183702cb8ba8f7d790040ff2c38124cc8c2",
+                "url": "https://api.github.com/repos/yiisoft/yii2-gii/zipball/ce42838abcbef076ebaf46147671d518ae69d028",
                 "reference": "741ef183702cb8ba8f7d790040ff2c38124cc8c2",
                 "shasum": ""
             },
@@ -1157,7 +1419,10 @@
     ],
     "aliases": [],
     "minimum-stability": "dev",
-    "stability-flags": [],
+    "stability-flags": {
+        "wbraganca/yii2-dynamicform": 20,
+        "kartik-v/yii2-widget-fileinput": 20
+    },
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {

@@ -1,30 +1,50 @@
 <?php
 
 use yii\helpers\Html;
-use yii\widgets\ActiveForm;
+use yii\bootstrap\ActiveForm;
+use wbraganca\dynamicform\DynamicFormWidget;
 
 /* @var $this yii\web\View */
 /* @var $model common\models\Volume */
 /* @var $form yii\widgets\ActiveForm */
 ?>
 
+<?php if(isset($post_msg)){ ?>
+    <div class="alert alert-dismissable <?php echo "alert-".$post_msg["type"];?>" id="homepage-section-alert"> <?php /*alert-danger alert-success alert-warning */ ?>
+	    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+	    <strong><span id="homepage-section-alert-msg"></span><?php echo $post_msg["text"]; ?></strong>
+	</div>
+<?php } ?>
+
+<h1><?= Html::encode($this->title) ?></h1>
+<hr>
+
 <div class="volume-form">
 
-    <?php $form = ActiveForm::begin(); ?>
+    <?php $form = ActiveForm::begin([
+        'enableClientValidation' => false,
+        'enableAjaxValidation' => true,
+        'validateOnChange' => true,
+        'validateOnBlur' => false,
+        'options' => [
+            'enctype' => 'multipart/form-data',
+            'id' => 'dynamic-form'
+        ]
+    ]); ?>
 
-    <?= $form->field($model, 'title')->textarea(['rows' => 6]) ?>
+    <?= $form->field($modelVolume, 'title')->textInput(['maxlength' => true]) ?>
 
-    <?= $form->field($model, 'year')->textInput(['maxlength' => true]) ?>
-
-    <?= $form->field($model, 'created_on')->textInput() ?>
-
-    <?= $form->field($model, 'updated_on')->textInput() ?>
-
-    <?= $form->field($model, 'is_deleted')->textInput() ?>
+    <?= $form->field($modelVolume, 'year')->textInput(['maxlength' => true]) ?>
+    
+    <?= $this->render('_form_issues', [
+        'form' => $form,
+        'modelVolume' => $modelVolume,
+    	'modelsIssue' => $modelsIssue
+    ]) ?>
 
     <div class="form-group">
-        <?= Html::submitButton($model->isNewRecord ? 'Create' : 'Update', ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary']) ?>
-    </div>
+		<?= Html::submitButton('Save', ['class' => 'btn btn-primary', 'name' => 'signup-button']) ?>
+	</div>
 
     <?php ActiveForm::end(); ?>
 

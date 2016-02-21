@@ -2,17 +2,17 @@
 
 use yii\helpers\Html;
 use yii\widgets\DetailView;
+use yii\grid\DataColumn;
 
 /* @var $this yii\web\View */
 /* @var $model common\models\Volume */
 
 $this->title = $model->title;
-$this->params['breadcrumbs'][] = ['label' => 'Volumes', 'url' => ['index']];
-$this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="volume-view">
 
-    <h1><?= Html::encode($this->title) ?></h1>
+    <h1><?php echo Html::encode($this->title) ?></h1>
+    <hr>
 
     <p>
         <?= Html::a('Update', ['update', 'id' => $model->volume_id], ['class' => 'btn btn-primary']) ?>
@@ -28,12 +28,17 @@ $this->params['breadcrumbs'][] = $this->title;
     <?= DetailView::widget([
         'model' => $model,
         'attributes' => [
-            'volume_id',
+            // 'volume_id',
             'title:ntext',
             'year',
-            'created_on',
-            'updated_on',
-            'is_deleted',
+            'created_on:datetime',
+            'updated_on:datetime',
+        	array(
+        			'class' => DataColumn::className(), // this line is optional
+        			'attribute' => 'is_deleted',
+        			'value' => ($model->is_deleted == 0) ? "<div class='glyphicon glyphicon-remove'></div>" : "<div class='glyphicon glyphicon-ok'></div>",
+        			'format' => 'HTML'
+        	),
         ],
     ]) ?>
 

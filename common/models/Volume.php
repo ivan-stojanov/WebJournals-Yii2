@@ -30,12 +30,19 @@ class Volume extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['title'], 'required'],
+            [['title', 'year'], 'required'],
             [['title'], 'string'],
             [['created_on', 'updated_on'], 'safe'],
             [['is_deleted'], 'integer'],
-            [['year'], 'string', 'max' => 10],
+            [['year'], 'validateYear'],
         ];
+    }
+    
+    public function validateYear($attribute, $params)
+    {
+    	if (!preg_match('/^[0-9]{4}$/i', $this->$attribute)) {
+    		$this->addError($attribute, 'Please enter a valid year');
+    	}
     }
 
     /**

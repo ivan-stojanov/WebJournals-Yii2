@@ -73,8 +73,10 @@ class UserController extends Controller
     		return $this->redirect(['error']);
     	}
     	
+    	$queryParams = Yii::$app->request->queryParams; 	
         $searchModel = new UserSearch();
-        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+        $dataProvider = $searchModel->search($queryParams);
+        
         $post_msg = null;
         
         return $this->render('index', [
@@ -195,7 +197,8 @@ class UserController extends Controller
     				$post_msg["text"] = "This username has already been taken. Try with another one.";
     			} else {
     				$searchModel = new UserSearch();
-    				$dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+    				$queryParams = Yii::$app->request->queryParams;
+    				$dataProvider = $searchModel->search($queryParams);
     				
     				$post_msg["type"] = "success";
     				$post_msg["text"] = "The user data have been successfully updated.";
@@ -418,7 +421,8 @@ class UserController extends Controller
     				$post_msg["text"] = "This username has already been taken. Try with another one.";
     			} else {
     				$searchModel = new UserSearch();
-    				$dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+    				$queryParams = Yii::$app->request->queryParams;
+    				$dataProvider = $searchModel->search($queryParams);
     
     				$post_msg["type"] = "success";
     				$post_msg["text"] = "The user data have been successfully created.";

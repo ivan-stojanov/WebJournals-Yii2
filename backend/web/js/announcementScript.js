@@ -1,66 +1,34 @@
 $('[data-toggle="tooltip"]').tooltip();
 
 function announcementScript_changeAnnouncementVisibility(htmlElementId, rowId){	
+	var isChecked = 0;
     if ($("#" + htmlElementId).is(':checked')) {
         $("#" + htmlElementId).attr('checked', 'checked');
-        $.ajax({
-            type: 'POST',
-            //contentType: 'application/json; charset=utf-8',
-            async: true,
-            url: 'asynch-announcement-change-visibility',
-            data: { rowId: rowId, isChecked: 1 },
-            dataType: 'json',
-            success: function (successData) {
-            	$("#announcement-alert").removeClass("hidden-div");
-            	$("#announcement-alert").removeClass("alert-danger");
-            	$("#announcement-alert").addClass("alert-success");
-            	$("#announcement-alert-msg").text(successData);
-            },
-            error: function (xhr, error) {
-            	$("#announcement-alert").removeClass("hidden-div");
-            	if(xhr != null && xhr.status != null && xhr.status == 200 && xhr.responseText != null){
-                	$("#announcement-alert").removeClass("alert-danger");
-                	$("#announcement-alert").addClass("alert-success");
-                	$("#announcement-alert-msg").text(xhr.responseText);
-            	} else {
-            		$("#announcement-alert").removeClass("alert-success");
-            		$("#announcement-alert").addClass("alert-danger");
-            		$("#announcement-alert-msg").text("Some error occured. Refresh the page and try again.");
-            	}
-            	//$("#announcement-alert").removeClass("alert-success");
-        		//$("#announcement-alert").addClass("alert-danger");
-            }
-        });
-    } else {
-    	$.ajax({
-            type: 'POST',
-            //contentType: 'application/json; charset=utf-8',
-            async: true,
-            url: 'asynch-announcement-change-visibility',
-            data: { rowId: rowId, isChecked: 0 },
-            dataType: 'json',
-            success: function (successData) {
-            	$("#announcement-alert").removeClass("hidden-div");
-            	$("#announcement-alert").removeClass("alert-danger");
-            	$("#announcement-alert").addClass("alert-success");
-            	$("#announcement-alert-msg").text(successData);
-            },
-            error: function (xhr, error) {
-            	$("#announcement-alert").removeClass("hidden-div");
-            	if(xhr != null && xhr.status != null && xhr.status == 200 && xhr.responseText != null){
-                	$("#announcement-alert").removeClass("alert-danger");
-                	$("#announcement-alert").addClass("alert-success");
-                	$("#announcement-alert-msg").text(xhr.responseText);
-            	} else {
-            		$("#announcement-alert").removeClass("alert-success");
-            		$("#announcement-alert").addClass("alert-danger");
-            		$("#announcement-alert-msg").text("Some error occured. Refresh the page and try again.");
-            	}
-            	//$("#announcement-alert").removeClass("alert-success");
-        		//$("#announcement-alert").addClass("alert-danger");
-            }
-        });
-    }    
+        isChecked = 1;
+    }
+    $.ajax({
+        type: 'POST',
+        //contentType: 'application/json; charset=utf-8',
+        async: true,
+        url: 'asynch-announcement-change-visibility',
+        data: { rowId: rowId, isChecked: isChecked },
+        dataType: 'text',
+        success: function (successData) {
+        	$("#announcement-alert").removeClass("hidden-div");
+        	$("#announcement-alert").removeClass("alert-danger");
+        	$("#announcement-alert").addClass("alert-success");
+        	$("#announcement-alert-msg").text(successData);
+        },
+        error: function (xhr, error) {
+        	$("#announcement-alert").removeClass("hidden-div");            	
+        	$("#announcement-alert").removeClass("alert-success");
+    		$("#announcement-alert").addClass("alert-danger");
+    		$("#announcement-alert-msg").text("Some error occured. Refresh the page and try again.");
+    		/*console.log("error");
+        	console.log(xhr);
+        	console.log(error);*/
+        }
+    }); 
 }
 
 $("#sortTable").tableDnD({
@@ -81,29 +49,21 @@ $("#sortTable").tableDnD({
             data: {
             	sortedEntityIds: JSON.stringify(sortedEntityIds),                
             },
-            dataType: 'json',
+            dataType: 'text',
             success: function (successData) {
             	$("#announcement-alert").removeClass("hidden-div");
             	$("#announcement-alert").removeClass("alert-danger");
             	$("#announcement-alert").addClass("alert-success");
             	$("#announcement-alert-msg").text(successData);
-            	
-            	console.log("success");
-            	console.log(successData);
             },
             error: function (xhr, error) {
             	$("#announcement-alert").removeClass("hidden-div");
-            	if(xhr != null && xhr.status != null && xhr.status == 200 && xhr.responseText != null){
-                	$("#announcement-alert").removeClass("alert-danger");
-                	$("#announcement-alert").addClass("alert-success");
-                	$("#announcement-alert-msg").text(xhr.responseText);
-            	} else {
-            		$("#announcement-alert").removeClass("alert-success");
-            		$("#announcement-alert").addClass("alert-danger");
-            		$("#announcement-alert-msg").text("Some error occured. Refresh the page and try again.");
-            	}
-            	//$("#announcement-alert").removeClass("alert-success");
-        		//$("#announcement-alert").addClass("alert-danger");
+            	$("#announcement-alert").removeClass("alert-success");
+        		$("#announcement-alert").addClass("alert-danger");
+        		$("#announcement-alert-msg").text("Some error occured. Refresh the page and try again.");        		
+        		/*console.log("error");
+            	console.log(xhr);
+            	console.log(error);*/
             }
         });
     },

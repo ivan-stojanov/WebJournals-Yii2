@@ -11,6 +11,8 @@ $this->title = $modelVolume->title;
 
     <?= $this->render('_form', [
         'modelVolume' => $modelVolume,
-    ]) ?>
+    	'modelsIssue' => $modelsIssue,    		
+    	'post_msg' => $post_msg
+    ]) ?>  
 
 </div>

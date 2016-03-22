@@ -5,11 +5,15 @@ namespace backend\controllers;
 use Yii;
 use common\models\Volume;
 use common\models\Issue;
+use common\models\Image;
+use common\models\DynamicForms;
 use backend\models\VolumeSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
+use yii\web\UploadedFile;
 use yii\filters\VerbFilter;
 use yii\base\Object;
+use yii\helpers\ArrayHelper;
 
 /**
  * VolumeController implements the CRUD actions for Volume model.
@@ -98,17 +102,18 @@ class VolumeController extends Controller
         
         $modelVolume->created_on = date("Y-m-d H:i:s");
 
-        if ($modelVolume->load(Yii::$app->request->post())) {
-        	
-        	$modelsIssue = Model::createMultiple(Issue::classname());
-        	Model::loadMultiple($modelsIssue, Yii::$app->request->post());
+        if ($modelVolume->load(Yii::$app->request->post())) {        	
+
+        	// get Issue data from POST
+        	$modelsIssue = DynamicForms::createMultiple(Issue::classname(), 'issue_id');
+        	DynamicForms::loadMultiple($modelsIssue, Yii::$app->request->post());        	
+
         	foreach ($modelsIssue as $index => $modelIssue) {
-        		//$modelIssue->sort_order = $index;
-        		$modelIssue->cover_image = \yii\web\UploadedFile::getInstance($modelIssue, "[{$index}]cover_image");
+        		$modelIssue->sort_in_volume = $index;
         	}
         	
         	// ajax validation
-        	if (Yii::$app->request->isAjax) {
+	       	if (Yii::$app->request->isAjax) {
         		Yii::$app->response->format = Response::FORMAT_JSON;
         		return ArrayHelper::merge(
         				ActiveForm::validateMultiple($modelsIssue),
@@ -118,14 +123,28 @@ class VolumeController extends Controller
         	
         	// validate all models
         	$valid = $modelVolume->validate();
-        	$valid = Model::validateMultiple($modelsIssue) && $valid;
+        	$valid = DynamicForms::validateMultiple($modelsIssue) && $valid;
         	
         	if ($valid) {
         		$transaction = \Yii::$app->db->beginTransaction();
         		try {
         			if ($flag = $modelVolume->save(false)) {
         				foreach ($modelsIssue as $modelIssue) {
-        					$modelIssue->volume_id = $modelVolume->volume_id;
+        					$modelIssue->volume_id = $modelVolume->volume_id;        					
+        					$modelIssue->cover_image = \yii\web\UploadedFile::getInstance($modelIssue, "[{$index}]cover_image");
+         					 
+        					if ($modelIssue->uploadIssueImage($modelVolume->volume_id)) {
+        						// file is uploaded successfully   
+        						
+        						$newImage = new Image();
+        						$newImage->path = $modelIssue->cover_image->baseName . '.' . $modelIssue->cover_image->extension;
+        						$newImage->type = 'file';
+        						$newImage->name = $modelIssue->cover_image->baseName;
+        						$newImage->size = 100;
+        						if($newImage->save()){
+        							$modelIssue->cover_image = $newImage->image_id;
+        						}
+        					}        					
         	
         					if (($flag = $modelIssue->save(false)) === false) {
         						$transaction->rollBack();
@@ -140,15 +159,14 @@ class VolumeController extends Controller
         		} catch (Exception $e) {
         			$transaction->rollBack();
         		}
-        	}       	
+        	}      	
 
-        } else {
-            return $this->render('create', [
-                'modelVolume' => $modelVolume,
-            	'modelsIssue' => (empty($modelsIssue)) ? [new Issue()] : $modelsIssue,
-            	'post_msg' => $post_msg,
-            ]);
-        }
+        } 
+        return $this->render('create', [
+        		'modelVolume' => $modelVolume,
+        		'modelsIssue' => (empty($modelsIssue)) ? [new Issue()] : $modelsIssue,
+        		'post_msg' => $post_msg,
+        ]);
     }
 
     /**
@@ -165,14 +183,72 @@ class VolumeController extends Controller
     	
         $modelVolume = $this->findModel($id);
         $modelVolume->updated_on = date("Y-m-d H:i:s");
+        
+        $modelsIssue = $modelVolume->issues;
+        $post_msg = null;
 
-        if ($modelVolume->load(Yii::$app->request->post()) && $modelVolume->save()) {
-            return $this->redirect(['view', 'id' => $modelVolume->volume_id]);
-        } else {
-            return $this->render('update', [
-                'modelVolume' => $modelVolume,
-            ]);
+        if ($modelVolume->load(Yii::$app->request->post())) {
+     	
+        	$oldIDs = ArrayHelper::map($modelsIssue, 'issue_id', 'issue_id');
+        	$modelsIssue = DynamicForms::createMultiple(Issue::classname(), 'issue_id', $modelsIssue);
+        	DynamicForms::loadMultiple($modelsIssue, Yii::$app->request->post());
+        	$deletedIDs = array_diff($oldIDs, array_filter(ArrayHelper::map($modelsIssue, 'issue_id', 'issue_id')));
+        	
+        	foreach ($modelsIssue as $index => $modelIssue) {
+        		$modelIssue->sort_in_volume = $index;
+        		//$modelIssue->sort_order = $index;
+        		//$modelIssue->img = \yii\web\UploadedFile::getInstance($modelOptionValue, "[{$index}]img");
+        	}
+        	
+        	// ajax validation
+        	if (Yii::$app->request->isAjax) {
+        		Yii::$app->response->format = Response::FORMAT_JSON;
+        		return ArrayHelper::merge(
+        				ActiveForm::validateMultiple($modelsIssue),
+        				ActiveForm::validate($modelVolume)
+        		);
+        	}
+        	
+        	// validate all models
+        	$valid = $modelVolume->validate();
+        	$valid = DynamicForms::validateMultiple($modelsIssue) && $valid;
+        	
+        	if ($valid) {
+        		$transaction = \Yii::$app->db->beginTransaction();
+        		try {
+        			if ($flag = $modelVolume->save(false)) {
+        	
+        				if (!empty($deletedIDs)) {
+        					$flag = Issue::deleteByIDs($deletedIDs);
+        				}
+        	
+        				if ($flag) {
+        					foreach ($modelsIssue as $modelIssue) {
+        						$modelIssue->volume_id = $modelVolume->volume_id;
+        						if (($flag = $modelIssue->save(false)) === false) {
+        							$transaction->rollBack();
+        							break;
+        						}
+        					}
+        				}
+        			}
+        	
+        			if ($flag) {
+        				$transaction->commit();
+        				return $this->redirect(['view', 'id' => $modelVolume->volume_id]);
+        			}
+        	
+        		} catch (Exception $e) {
+        			$transaction->rollBack();
+        		}
+        	}
         }
+        
+        return $this->render('update', [
+        		'modelVolume' => $modelVolume,
+        		'modelsIssue' => (empty($modelsIssue)) ? [new Issue()] : $modelsIssue,
+        		'post_msg' => $post_msg,
+        ]);
     }
 
     /**

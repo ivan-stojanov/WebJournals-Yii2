@@ -22,10 +22,10 @@ use wbraganca\dynamicform\DynamicFormWidget;
 <div class="volume-form">
 
     <?php $form = ActiveForm::begin([
-        'enableClientValidation' => false,
+     /*   'enableClientValidation' => false,
         'enableAjaxValidation' => true,
         'validateOnChange' => true,
-        'validateOnBlur' => false,
+        'validateOnBlur' => false,*/
         'options' => [
             'enctype' => 'multipart/form-data',
             'id' => 'dynamic-form'
@@ -35,7 +35,7 @@ use wbraganca\dynamicform\DynamicFormWidget;
     <?= $form->field($modelVolume, 'title')->textInput(['maxlength' => true]) ?>
 
     <?= $form->field($modelVolume, 'year')->textInput(['maxlength' => true]) ?>
-    
+ 
     <?= $this->render('_form_issues', [
         'form' => $form,
         'modelVolume' => $modelVolume,

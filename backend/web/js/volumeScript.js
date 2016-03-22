@@ -8,7 +8,7 @@ $(".optionvalue-img").on("filecleared", function(event) {
     }
 });
 
-/*
+
  var fixHelperSortable = function(e, ui) {
     ui.children().each(function() {
         $(this).width($(this).width());
@@ -27,8 +27,8 @@ $(".form-options-body").sortable({
         $(".dynamicform_wrapper").yiiDynamicForm("updateContainer");
     }
 }).disableSelection();
-*/
 
+/*
 $(".form-options-body").tableDnD({
     onDragClass: "myDragClass",
     onDrop: function (table, row) {
@@ -42,4 +42,4 @@ $(".form-options-body").tableDnD({
     onDragStart: function (table, row) {
 
     }
-});
+});*/

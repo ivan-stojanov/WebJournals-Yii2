@@ -2,21 +2,37 @@
 
 use yii\helpers\Html;
 use yii\helpers\Url;
-use yii\jui\JuiAsset;
 use yii\web\JsExpression;
 use kartik\file\FileInput;
 use wbraganca\dynamicform\DynamicFormWidget;
 use common\models\Image;
+use yii\jui\Sortable;
 
 /* @var $this yii\web\View */
 /* @var $model common\models\Volume */
 /* @var $form yii\widgets\ActiveForm */
 
 \backend\assets\AppAsset::register($this);
-$this->registerJsFile("@web/js/volumeScript.js", [ 'depends' => ['\yii\web\JqueryAsset'], 'position' => \yii\web\View::POS_END]);
+$this->registerJsFile("@web/js/volumeScript.js", [ 'depends' => ['backend\assets\CustomJuiAsset'], 'position' => \yii\web\View::POS_END]);
 ?>
 
 <hr>
+<?php /*
+echo Sortable::widget([
+    'items' => [
+        'Item 1',
+        ['content' => 'Item2'],
+        [
+            'content' => 'Item3',
+            'options' => ['tag' => 'li'],
+        ],
+    ],
+    'options' => ['tag' => 'ul'],
+    'itemOptions' => ['tag' => 'li'],
+    'clientOptions' => ['cursor' => 'move'],
+]); */
+?>
+
 
 <div class="issues-form">
 	<div id="panel-option-values" class="panel panel-default">
@@ -59,23 +75,28 @@ $this->registerJsFile("@web/js/volumeScript.js", [ 'depends' => ['\yii\web\Jquer
 	                    </td>
 	                    <td>
 	                        <?php if (!$modelIssue->isNewRecord): ?>
-	                            <?= Html::activeHiddenInput($modelIssue, "[{$index}]id"); ?>
-	                            <?= Html::activeHiddenInput($modelIssue, "[{$index}]image_id"); ?>
-	                            <?= Html::activeHiddenInput($modelIssue, "[{$index}]deleteImg"); ?>
+	                            <?= Html::activeHiddenInput($modelIssue, "[{$index}]issue_id"); ?>
+	                            <?= Html::activeHiddenInput($modelIssue, "[{$index}]coverimage"); ?>
+	                            <?= Html::activeHiddenInput($modelIssue, "[{$index}]is_deleted"); ?>
 	                        <?php endif; ?>
 	                         <?php
-	                            $modelImage = Image::findOne(['image_id' => $modelIssue->cover_image]);
-	                            $initialPreview = [];
-	                            if ($modelImage) {
-	                                $pathImg = Yii::$app->fileStorage->baseUrl . '/' . $modelImage->path;
-	                                $initialPreview[] = Html::img($pathImg, ['class' => 'file-preview-image']);
-	                            }
+	                         	$issueImagesPath = Yii::getAlias('@common') . '\images\issues\cover.jpg';
+	                         	$initialPreview = [];
+	                         	if(isset($modelIssue->cover_image) && ($modelIssue->cover_image > 0) && isset($modelIssue->coverimage)){
+		                            $modelImage = $modelIssue->coverimage;
+		                            
+		                            if ($modelImage) {	                        		
+		                        		$issueImagesPath = Yii::getAlias('@common') . DIRECTORY_SEPARATOR . 'images' . DIRECTORY_SEPARATOR . 'issues' . DIRECTORY_SEPARATOR . $modelVolume->volume_id . DIRECTORY_SEPARATOR;
+		                        		$issueImagesPath .= $issueImagesPath . $modelImage->path;
+		                            }
+	                         	}
+	                         	$initialPreview[] = Html::img($issueImagesPath, ['class' => 'file-preview-image', 'type' => 'file']);
 	                        ?>
 	                        <?= $form->field($modelIssue, "[{$index}]cover_image")->label(false)->widget(FileInput::classname(), [
 	                            'options' => [
 	                                'multiple' => false,
 	                                'accept' => 'image/*',
-	                                'class' => 'optionvalue-img'
+	                                'class' => 'optionvalue-img'	                            	
 	                            ],
 	                            'pluginOptions' => [
 	                                'previewFileType' => 'image',

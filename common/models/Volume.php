@@ -29,12 +29,12 @@ class Volume extends \yii\db\ActiveRecord
      */
     public function rules()
     {
-        return [
-            [['title', 'year'], 'required'],
+		return [
+            [['title'], 'required'],
             [['title'], 'string'],
             [['created_on', 'updated_on'], 'safe'],
             [['is_deleted'], 'integer'],
-            [['year'], 'validateYear'],
+            [['year'], 'string', 'max' => 10],
         ];
     }
     
@@ -43,6 +43,12 @@ class Volume extends \yii\db\ActiveRecord
     	if (!preg_match('/^[0-9]{4}$/i', $this->$attribute)) {
     		$this->addError($attribute, 'Please enter a valid year');
     	}
+    }
+    
+    public function getIssues()
+    {
+    	return $this->hasMany(\common\models\Issue::className(),  ['volume_id' => 'volume_id'])
+    				->orderBy(['sort_in_volume' => SORT_ASC]);
     }
 
     /**

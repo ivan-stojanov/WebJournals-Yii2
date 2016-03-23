@@ -48,12 +48,18 @@ class Issue extends \yii\db\ActiveRecord
     
     public function uploadIssueImage($volume_id)
     {
-    	$issueImagesPath = Yii::getAlias('@common') . DIRECTORY_SEPARATOR . 'images' . DIRECTORY_SEPARATOR . 'issues' . DIRECTORY_SEPARATOR . $volume_id . DIRECTORY_SEPARATOR;
-    	if (!file_exists($issueImagesPath)) {
-    		mkdir($issueImagesPath, 0777, true);
-    	}
+    	$issueImagesPathDIR = Yii::getAlias('@common') . DIRECTORY_SEPARATOR . 'images' . DIRECTORY_SEPARATOR . 'issues' . DIRECTORY_SEPARATOR . $volume_id . DIRECTORY_SEPARATOR;
+    	if (!file_exists($issueImagesPathDIR)) {
+    		mkdir($issueImagesPathDIR, 0777, true);
+    	}    	
     	
-    	$this->cover_image->saveAs($issueImagesPath . $this->cover_image->baseName . '.' . $this->cover_image->extension);
+    	if(isset($this->cover_image) && isset($this->cover_image->baseName) && isset($this->cover_image->extension)){
+    		$issueImagesPathFILE = $issueImagesPathDIR . $this->cover_image->baseName . '.' . $this->cover_image->extension;
+    		if (!file_exists($issueImagesPathFILE)) {
+    			$this->cover_image->saveAs($issueImagesPathFILE);
+    		}
+    	}
+    		
    		return true;
     }   
     
@@ -101,4 +107,5 @@ class Issue extends \yii\db\ActiveRecord
             'is_deleted' => 'Is Deleted',
         ];
     }
+    
 }

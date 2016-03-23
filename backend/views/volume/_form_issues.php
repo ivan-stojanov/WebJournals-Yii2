@@ -79,15 +79,15 @@ echo Sortable::widget([
 	                            <?= Html::activeHiddenInput($modelIssue, "[{$index}]coverimage"); ?>
 	                            <?= Html::activeHiddenInput($modelIssue, "[{$index}]is_deleted"); ?>
 	                        <?php endif; ?>
-	                         <?php
-	                         	$issueImagesPath = Yii::getAlias('@common') . '\images\issues\cover.jpg';
+	                         <?php	                            
+	                         	$issueImagesPath = Yii::$app->urlManagerCommon->createUrl('images/issues/cover.jpg');
 	                         	$initialPreview = [];
 	                         	if(isset($modelIssue->cover_image) && ($modelIssue->cover_image > 0) && isset($modelIssue->coverimage)){
 		                            $modelImage = $modelIssue->coverimage;
 		                            
 		                            if ($modelImage) {	                        		
-		                        		$issueImagesPath = Yii::getAlias('@common') . DIRECTORY_SEPARATOR . 'images' . DIRECTORY_SEPARATOR . 'issues' . DIRECTORY_SEPARATOR . $modelVolume->volume_id . DIRECTORY_SEPARATOR;
-		                        		$issueImagesPath .= $issueImagesPath . $modelImage->path;
+		                        		$issueImagesPath = Yii::$app->urlManagerCommon->createUrl('images/issues') . DIRECTORY_SEPARATOR . $modelVolume->volume_id . DIRECTORY_SEPARATOR;
+		                        		$issueImagesPath = $issueImagesPath . $modelImage->path;
 		                            }
 	                         	}
 	                         	$initialPreview[] = Html::img($issueImagesPath, ['class' => 'file-preview-image', 'type' => 'file']);
@@ -102,10 +102,10 @@ echo Sortable::widget([
 	                                'previewFileType' => 'image',
 	                                'showCaption' => false,
 	                                'showUpload' => false,
-	                                'browseClass' => 'btn btn-default btn-sm',
-	                                'browseLabel' => ' Pick image',
+	                                'browseClass' => 'btn btn-default btn-sm btn-brw-custom',
+	                                'browseLabel' => ' Pick img',
 	                                'browseIcon' => '<i class="glyphicon glyphicon-picture"></i>',
-	                                'removeClass' => 'btn btn-danger btn-sm',
+	                                'removeClass' => 'btn btn-danger btn-sm btn-rmv-custom',
 	                                'removeLabel' => ' Delete',
 	                                'removeIcon' => '<i class="fa fa-trash"></i>',
 	                                'previewSettings' => [

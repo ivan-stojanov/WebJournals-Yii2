@@ -39,6 +39,18 @@ return [
     					'<controller:\w+>/<action:\w+>'=>'<controller>/<action>',
     			]
     	],
+    	'urlManagerCommon' => [
+    			'class' => 'yii\web\urlManager',
+    			'baseUrl' => '/WebSpisanieOOSI/common',
+    			'enablePrettyUrl' => true,
+    			'showScriptName' => false,
+    			'enableStrictParsing' => false,
+    			'rules' => [
+    					'<controller:\w+>/<id:\d+>'=>'<controller>/view',
+    					'<controller:\w+>/<action:\w+>/<id:\d+>'=>'<controller>/<action>',
+    					'<controller:\w+>/<action:\w+>'=>'<controller>/<action>',
+    			]
+    	],
     	'mailer' => [
     			'class' => 'yii\swiftmailer\Mailer',
     			'viewPath' => '@common/mail',

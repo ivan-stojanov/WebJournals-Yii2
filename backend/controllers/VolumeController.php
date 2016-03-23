@@ -129,23 +129,29 @@ class VolumeController extends Controller
         		$transaction = \Yii::$app->db->beginTransaction();
         		try {
         			if ($flag = $modelVolume->save(false)) {
-        				foreach ($modelsIssue as $modelIssue) {
+        				foreach ($modelsIssue as $index => $modelIssue) {
         					$modelIssue->volume_id = $modelVolume->volume_id;        					
         					$modelIssue->cover_image = \yii\web\UploadedFile::getInstance($modelIssue, "[{$index}]cover_image");
-         					 
+        					
         					if ($modelIssue->uploadIssueImage($modelVolume->volume_id)) {
-        						// file is uploaded successfully   
+        						// file is uploaded successfully
         						
-        						$newImage = new Image();
-        						$newImage->path = $modelIssue->cover_image->baseName . '.' . $modelIssue->cover_image->extension;
-        						$newImage->type = 'file';
-        						$newImage->name = $modelIssue->cover_image->baseName;
-        						$newImage->size = 100;
-        						if($newImage->save()){
-        							$modelIssue->cover_image = $newImage->image_id;
-        						}
-        					}        					
-        	
+        						if(isset($modelIssue->cover_image) && isset($modelIssue->cover_image->baseName) && isset($modelIssue->cover_image->extension)){
+	        						$newImage = new Image();
+	        						$newImage->path = $modelIssue->cover_image->baseName . '.' . $modelIssue->cover_image->extension;
+	        						$newImage->type = 'file';
+	        						$newImage->name = $modelIssue->cover_image->baseName;
+	        						$newImage->size = 100;
+	        						if($newImage->save()){
+	        							$modelIssue->cover_image = $newImage->image_id;
+	        						}  else {
+		        						$modelIssue->cover_image = null;
+		        					}
+        						}  else {
+	        						$modelIssue->cover_image = null;
+	        					}
+        					}
+        	 
         					if (($flag = $modelIssue->save(false)) === false) {
         						$transaction->rollBack();
         						break;
@@ -190,14 +196,13 @@ class VolumeController extends Controller
         if ($modelVolume->load(Yii::$app->request->post())) {
      	
         	$oldIDs = ArrayHelper::map($modelsIssue, 'issue_id', 'issue_id');
+        	// get Issue data from POST
         	$modelsIssue = DynamicForms::createMultiple(Issue::classname(), 'issue_id', $modelsIssue);
         	DynamicForms::loadMultiple($modelsIssue, Yii::$app->request->post());
         	$deletedIDs = array_diff($oldIDs, array_filter(ArrayHelper::map($modelsIssue, 'issue_id', 'issue_id')));
         	
         	foreach ($modelsIssue as $index => $modelIssue) {
         		$modelIssue->sort_in_volume = $index;
-        		//$modelIssue->sort_order = $index;
-        		//$modelIssue->img = \yii\web\UploadedFile::getInstance($modelOptionValue, "[{$index}]img");
         	}
         	
         	// ajax validation
@@ -223,8 +228,28 @@ class VolumeController extends Controller
         				}
         	
         				if ($flag) {
-        					foreach ($modelsIssue as $modelIssue) {
+        					foreach ($modelsIssue as $index => $modelIssue) {
         						$modelIssue->volume_id = $modelVolume->volume_id;
+        						//$modelIssue->cover_image = \yii\web\UploadedFile::getInstance($modelIssue, "[{$index}]cover_image");
+        						
+        						if ($modelIssue->uploadIssueImage($modelVolume->volume_id)) {
+        							// file is uploaded successfully
+        							
+        							if(isset($modelIssue->cover_image) && isset($modelIssue->cover_image->baseName) && isset($modelIssue->cover_image->extension)){
+        								/*$newImage = new Image();
+        								$newImage->path = $modelIssue->cover_image->baseName . '.' . $modelIssue->cover_image->extension;
+        								$newImage->type = 'file';
+        								$newImage->name = $modelIssue->cover_image->baseName;
+        								$newImage->size = 100;
+        								if($newImage->save()){
+        									$modelIssue->cover_image = $newImage->image_id;
+        								}  else {
+        									$modelIssue->cover_image = null;
+        								}*/
+        							}
+        						
+        						}
+        						
         						if (($flag = $modelIssue->save(false)) === false) {
         							$transaction->rollBack();
         							break;

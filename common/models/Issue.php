@@ -41,7 +41,7 @@ class Issue extends \yii\db\ActiveRecord
             [['published_on', 'created_on', 'updated_on'], 'safe'],
             [['special_editor'], 'string', 'max' => 255],
  //       	[['cover_image'], 'file', 'skipOnEmpty' => false, 'extensions' => 'png, jpg'],
-            [['cover_image'], 'exist', 'skipOnError' => true, 'targetClass' => Image::className(), 'targetAttribute' => ['cover_image' => 'image_id']],
+            [['cover_image'], 'exist', 'skipOnError' => true, 'skipOnEmpty' => true, 'targetClass' => Image::className(), 'targetAttribute' => ['cover_image' => 'image_id']],
         	[['volume_id'], 'exist', 'skipOnError' => true, 'targetClass' => Volume::className(), 'targetAttribute' => ['volume_id' => 'volume_id']],
         ]; 
     }    
@@ -51,7 +51,7 @@ class Issue extends \yii\db\ActiveRecord
     	$issueImagesPathDIR = Yii::getAlias('@common') . DIRECTORY_SEPARATOR . 'images' . DIRECTORY_SEPARATOR . 'issues' . DIRECTORY_SEPARATOR . $volume_id . DIRECTORY_SEPARATOR;
     	if (!file_exists($issueImagesPathDIR)) {
     		mkdir($issueImagesPathDIR, 0777, true);
-    	}    	
+    	}
     	
     	if(isset($this->cover_image) && isset($this->cover_image->baseName) && isset($this->cover_image->extension)){
     		$issueImagesPathFILE = $issueImagesPathDIR . $this->cover_image->baseName . '.' . $this->cover_image->extension;

@@ -122,3 +122,9 @@
 .btn-rmv-custom, .btn-brw-custom {
 	
 }
+
+/* Admin: Volumes CRUD - START */
+.fileinput-remove-button {
+	padding: 5px 5px !important;
+}
+/* Admin: Volumes CRUD - END */

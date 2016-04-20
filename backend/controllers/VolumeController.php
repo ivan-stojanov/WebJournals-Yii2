@@ -130,13 +130,16 @@ class VolumeController extends Controller
         		try {
         			if ($flag = $modelVolume->save(false)) {
         				foreach ($modelsIssue as $index => $modelIssue) {
-        					$modelIssue->volume_id = $modelVolume->volume_id;        					
-        					$modelIssue->cover_image = \yii\web\UploadedFile::getInstance($modelIssue, "[{$index}]cover_image");
+        					$modelIssue->volume_id = $modelVolume->volume_id;  
+        					$modelIssue->sort_in_volume = $index;
         					
+        					$modelIssue->cover_image = \yii\web\UploadedFile::getInstance($modelIssue, "[{$index}]cover_image");
+
         					if ($modelIssue->uploadIssueImage($modelVolume->volume_id)) {
         						// file is uploaded successfully
-        						
+
         						if(isset($modelIssue->cover_image) && isset($modelIssue->cover_image->baseName) && isset($modelIssue->cover_image->extension)){
+        						
 	        						$newImage = new Image();
 	        						$newImage->path = $modelIssue->cover_image->baseName . '.' . $modelIssue->cover_image->extension;
 	        						$newImage->type = 'file';
@@ -194,8 +197,8 @@ class VolumeController extends Controller
         $post_msg = null;
 
         if ($modelVolume->load(Yii::$app->request->post())) {
-     	
         	$oldIDs = ArrayHelper::map($modelsIssue, 'issue_id', 'issue_id');
+        	
         	// get Issue data from POST
         	$modelsIssue = DynamicForms::createMultiple(Issue::classname(), 'issue_id', $modelsIssue);
         	DynamicForms::loadMultiple($modelsIssue, Yii::$app->request->post());
@@ -204,7 +207,7 @@ class VolumeController extends Controller
         	foreach ($modelsIssue as $index => $modelIssue) {
         		$modelIssue->sort_in_volume = $index;
         	}
-        	
+     	
         	// ajax validation
         	if (Yii::$app->request->isAjax) {
         		Yii::$app->response->format = Response::FORMAT_JSON;
@@ -217,7 +220,7 @@ class VolumeController extends Controller
         	// validate all models
         	$valid = $modelVolume->validate();
         	$valid = DynamicForms::validateMultiple($modelsIssue) && $valid;
-        	
+      	
         	if ($valid) {
         		$transaction = \Yii::$app->db->beginTransaction();
         		try {
@@ -226,34 +229,44 @@ class VolumeController extends Controller
         				if (!empty($deletedIDs)) {
         					$flag = Issue::deleteByIDs($deletedIDs);
         				}
-        	
+       	
         				if ($flag) {
+
         					foreach ($modelsIssue as $index => $modelIssue) {
-        						$modelIssue->volume_id = $modelVolume->volume_id;
-        						//$modelIssue->cover_image = \yii\web\UploadedFile::getInstance($modelIssue, "[{$index}]cover_image");
-        						
-        						if ($modelIssue->uploadIssueImage($modelVolume->volume_id)) {
-        							// file is uploaded successfully
-        							
-        							if(isset($modelIssue->cover_image) && isset($modelIssue->cover_image->baseName) && isset($modelIssue->cover_image->extension)){
-        								/*$newImage = new Image();
-        								$newImage->path = $modelIssue->cover_image->baseName . '.' . $modelIssue->cover_image->extension;
-        								$newImage->type = 'file';
-        								$newImage->name = $modelIssue->cover_image->baseName;
-        								$newImage->size = 100;
-        								if($newImage->save()){
-        									$modelIssue->cover_image = $newImage->image_id;
-        								}  else {
-        									$modelIssue->cover_image = null;
-        								}*/
-        							}
-        						
+       						
+								$new_cover_image = \yii\web\UploadedFile::getInstance($modelIssue, "[{$index}]cover_image");
+								
+								$modelIssue = Issue::findOne($modelIssue->issue_id);
+								$modelIssue->volume_id = $modelVolume->volume_id;
+								$modelIssue->sort_in_volume = $index;
+							
+        						if(isset($new_cover_image) && (count($new_cover_image) > 0)) {
+	        						$modelIssue->cover_image = $new_cover_image;
+
+	        						if ($modelIssue->uploadIssueImage($modelVolume->volume_id)) {
+	        							// file is uploaded successfully
+
+	        							if(isset($modelIssue->cover_image) && isset($modelIssue->cover_image->baseName) && isset($modelIssue->cover_image->extension)){
+      								
+	        								$newImage = new Image();
+	        								$newImage->path = $modelIssue->cover_image->baseName . '.' . $modelIssue->cover_image->extension;
+	        								$newImage->type = 'file';
+	        								$newImage->name = $modelIssue->cover_image->baseName;
+	        								$newImage->size = 100;
+	        								if($newImage->save()){
+	        									$modelIssue->cover_image = $newImage->image_id;
+	        								}  else {
+	        									$modelIssue->cover_image = null;
+	        								}
+	        							}
+	        						
+	        						}
         						}
-        						
+
         						if (($flag = $modelIssue->save(false)) === false) {
         							$transaction->rollBack();
         							break;
-        						}
+        						}        						
         					}
         				}
         			}

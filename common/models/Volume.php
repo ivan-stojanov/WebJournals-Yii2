@@ -60,9 +60,9 @@ class Volume extends \yii\db\ActiveRecord
             'volume_id' => 'Volume ID',
             'title' => 'Title',
             'year' => 'Year',
-            'created_on' => 'Created On',
-            'updated_on' => 'Updated On',
-            'is_deleted' => 'Is Deleted',
+            'created_on' => 'Created on',
+            'updated_on' => 'Updated on',
+            'is_deleted' => 'Is deleted',
         ];
     }
 }

@@ -97,14 +97,14 @@ class Issue extends \yii\db\ActiveRecord
             'issue_id' => 'Issue ID',
             'volume_id' => 'Volume ID',
             'title' => 'Title',
-            'published_on' => 'Published On',
-            'is_special_issue' => 'Is Special Issue',
-            'special_title' => 'Special Title',
-            'special_editor' => 'Special Editor',
+            'published_on' => 'Published on',
+            'is_special_issue' => 'Is special issue',
+            'special_title' => 'Special title',
+            'special_editor' => 'Special editor',
             'cover_image' => 'Cover Image',
-            'created_on' => 'Created On',
-            'updated_on' => 'Updated On',
-            'is_deleted' => 'Is Deleted',
+            'created_on' => 'Created on',
+            'updated_on' => 'Updated on',
+            'is_deleted' => 'Is deleted',
         ];
     }
     

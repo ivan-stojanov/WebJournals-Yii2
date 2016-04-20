@@ -26,14 +26,11 @@ use yii\grid\GridView;
         'columns' => [
             ['class' => 'yii\grid\SerialColumn'],
 
-            'volume_id',
             'title:ntext',
             'year',
-            // 'created_on',
-            // 'updated_on',
-            // 'is_deleted',
+            'created_on:datetime',
 
-            ['class' => 'yii\grid\ActionColumn'],
+        	['class' => 'yii\grid\ActionColumn'],
         ],
     ]); ?>
 

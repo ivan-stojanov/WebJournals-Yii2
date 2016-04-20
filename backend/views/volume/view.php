@@ -11,12 +11,13 @@ $this->title = $model->title;
 ?>
 <div class="volume-view">
 
-    <h1><?php echo Html::encode($this->title) ?></h1>
+	
+    <h2><i>Volume: </i><?php echo Html::encode($this->title) ?></h2>
     <hr>
 
     <p>
-        <?= Html::a('Update', ['update', 'id' => $model->volume_id], ['class' => 'btn btn-primary']) ?>
-        <?= Html::a('Delete', ['delete', 'id' => $model->volume_id], [
+        <?= Html::a('Update Volume', ['update', 'id' => $model->volume_id], ['class' => 'btn btn-primary']) ?>
+        <?= Html::a('Delete Volume', ['delete', 'id' => $model->volume_id], [
             'class' => 'btn btn-danger',
             'data' => [
                 'confirm' => 'Are you sure you want to delete this item?',
@@ -33,13 +34,51 @@ $this->title = $model->title;
             'year',
             'created_on:datetime',
             'updated_on:datetime',
-        	array(
+        	/*array(
         			'class' => DataColumn::className(), // this line is optional
         			'attribute' => 'is_deleted',
         			'value' => ($model->is_deleted == 0) ? "<div class='glyphicon glyphicon-remove'></div>" : "<div class='glyphicon glyphicon-ok'></div>",
         			'format' => 'HTML'
-        	),
+        	),*/
         ],
     ]) ?>
+    
+    <h2><i>Issue(s):</i></h2>
+    <hr>
+    
+    <?php     
+    	foreach ($model->issues as $index => $issue){
+    		
+    		$issueImagesPath = Yii::$app->urlManagerCommon->createUrl('images/issues/cover.jpg');
+    		if(isset($issue->cover_image) && ($issue->cover_image > 0) && isset($issue->coverimage)){
+    			$modelImage = $issue->coverimage;
+    		
+    			if ($modelImage) {
+    				$issueImagesPath = Yii::$app->urlManagerCommon->createUrl('images/issues') . DIRECTORY_SEPARATOR . $model->volume_id . DIRECTORY_SEPARATOR;
+    				$issueImagesPath = $issueImagesPath . $modelImage->path;
+    			}
+    		} 
+	?>	
+    		<p>
+    		    <?= Html::a('View Issue', ['view'], ['class' => 'btn btn-success']) ?>
+    		    <?= Html::a('Update Issue', ['update'], ['class' => 'btn btn-primary']) ?>
+    		</p>
+    <?php 		
+    		echo DetailView::widget([
+    			'model' => $issue,
+    			'attributes' => [
+    				'title:ntext',
+    				array(
+    						'class' => DataColumn::className(), // this line is optional
+    						'attribute' => 'cover_image',
+    						'value' => "<div><img src='".$issueImagesPath."'/></div>",
+    						'format' => 'HTML'
+    				),
+    				'created_on:datetime',
+    				'updated_on:datetime',
+		        ],
+		    ]);
+    	}
+    ?>
 
 </div>

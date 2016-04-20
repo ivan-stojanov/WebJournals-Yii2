@@ -110,6 +110,7 @@ class VolumeController extends Controller
 
         	foreach ($modelsIssue as $index => $modelIssue) {
         		$modelIssue->sort_in_volume = $index;
+        		$modelIssue->created_on = date("Y-m-d H:i:s");
         	}
         	
         	// ajax validation
@@ -132,6 +133,7 @@ class VolumeController extends Controller
         				foreach ($modelsIssue as $index => $modelIssue) {
         					$modelIssue->volume_id = $modelVolume->volume_id;  
         					$modelIssue->sort_in_volume = $index;
+        					$modelIssue->created_on = date("Y-m-d H:i:s");
         					
         					$modelIssue->cover_image = \yii\web\UploadedFile::getInstance($modelIssue, "[{$index}]cover_image");
 
@@ -236,9 +238,17 @@ class VolumeController extends Controller
        						
 								$new_cover_image = \yii\web\UploadedFile::getInstance($modelIssue, "[{$index}]cover_image");
 								
+								$is_modified = false;
 								$modelIssue = Issue::findOne($modelIssue->issue_id);
 								$modelIssue->volume_id = $modelVolume->volume_id;
-								$modelIssue->sort_in_volume = $index;
+								if($modelIssue->title != Yii::$app->request->post()['Issue'][$index]['title']){
+									$is_modified = true;
+									$modelIssue->title = Yii::$app->request->post()['Issue'][$index]['title'];
+								}
+								if($modelIssue->sort_in_volume != $index){
+									$is_modified = true;
+									$modelIssue->sort_in_volume = $index;
+								}								
 							
         						if(isset($new_cover_image) && (count($new_cover_image) > 0)) {
 	        						$modelIssue->cover_image = $new_cover_image;
@@ -258,12 +268,18 @@ class VolumeController extends Controller
 	        								}  else {
 	        									$modelIssue->cover_image = null;
 	        								}
+	        								
+	        								$is_modified = true;
 	        							}
 	        						
 	        						}
         						}
-
-        						if (($flag = $modelIssue->save(false)) === false) {
+        						
+        						if($is_modified){
+        							$modelIssue->updated_on = date("Y-m-d H:i:s");
+        						}
+        						 
+        						if (($flag = $modelIssue->save(false)) === false) {        							
         							$transaction->rollBack();
         							break;
         						}        						

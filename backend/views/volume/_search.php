@@ -3,6 +3,8 @@
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 use yii\grid\GridView;
+use yii\jui\DatePicker;
+use yii\base\Widget;
 
 /* @var $this yii\web\View */
 /* @var $model backend\models\VolumeSearch */
@@ -28,7 +30,21 @@ use yii\grid\GridView;
 
             'title:ntext',
             'year',
-            'created_on:datetime',
+        	'created_on:datetime',
+        	/*[
+        		//'attribute' => 'created_on',
+        		'header'		=> 'Created on',
+        		'value'		=> 'created_on',
+        		'format'	=> 'datetime',
+        		'filter'	=> DatePicker::widget([
+        			'model' 		=> $searchModel,
+        			'attribute' 	=> 'created_on',
+        			'clientOptions' => [
+        				'autoclose' => true,
+        				'format'	=> 'datetime',
+    				]
+    			]),
+        	],*/            
 
         	['class' => 'yii\grid\ActionColumn'],
         ],

@@ -127,4 +127,14 @@
 .fileinput-remove-button {
 	padding: 5px 5px !important;
 }
+
+.volume-view-image {
+	width: 177px;
+	border: 1px solid #3e3e3e;
+}
+
+.volume-search #w0-filters td:nth-child(4) input {
+    /* visibility: hidden; */
+    display: none;
+}
 /* Admin: Volumes CRUD - END */

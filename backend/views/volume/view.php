@@ -71,7 +71,7 @@ $this->title = $model->title;
     				array(
     						'class' => DataColumn::className(), // this line is optional
     						'attribute' => 'cover_image',
-    						'value' => "<div><img src='".$issueImagesPath."'/></div>",
+    						'value' => "<div><img class='volume-view-image' src='".$issueImagesPath."'/></div>",
     						'format' => 'HTML'
     				),
     				'created_on:datetime',

@@ -153,6 +153,20 @@ AppAsset::register($this);
                             <!-- /.nav-second-level -->
                         </li>
                         <?php } ?>
+                        <?php if (Yii::$app->session->get('user.is_admin') == true){ ?>
+                        <li>
+                            <a href='#'><i class="fa fa-users fa-fw"></i> Issues / Sections<span class="fa arrow"></span></a>
+                            <ul class="nav nav-second-level">
+                            	<li>
+                                    <a href='<?php echo Url::to(['/issue/index']); ?>'><i class="fa fa-list fa-fw"></i> List All</a>
+                                </li>
+                                <li>
+                                    <a href='<?php echo Url::to(['/issue/create']); ?>'><i class="fa fa-plus fa-fw"></i> Create New</a>
+                                </li>
+                            </ul>
+                            <!-- /.nav-second-level -->
+                        </li>
+                        <?php } ?>
 						<!-- 
                         <li>
                             <a href="forms.html"><i class="fa fa-edit fa-fw"></i> Forms</a>

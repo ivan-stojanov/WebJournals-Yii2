@@ -58,7 +58,7 @@ class Volume extends \yii\db\ActiveRecord
     {
         return [
             'volume_id' => 'Volume ID',
-            'title' => 'Title',
+            'title' => 'Volume title',
             'year' => 'Year',
             'created_on' => 'Created on',
             'updated_on' => 'Updated on',

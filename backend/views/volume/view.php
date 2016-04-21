@@ -34,12 +34,12 @@ $this->title = $model->title;
             'year',
             'created_on:datetime',
             'updated_on:datetime',
-        	/*array(
+        	/*[
         			'class' => DataColumn::className(), // this line is optional
         			'attribute' => 'is_deleted',
         			'value' => ($model->is_deleted == 0) ? "<div class='glyphicon glyphicon-remove'></div>" : "<div class='glyphicon glyphicon-ok'></div>",
         			'format' => 'HTML'
-        	),*/
+        	],*/
         ],
     ]) ?>
     
@@ -60,20 +60,20 @@ $this->title = $model->title;
     		} 
 	?>	
     		<p>
-    		    <?= Html::a('View Issue', ['view'], ['class' => 'btn btn-success']) ?>
-    		    <?= Html::a('Update Issue', ['update'], ['class' => 'btn btn-primary']) ?>
+    		    <?= Html::a('View Issue', ['issue/view/'.$issue->issue_id], ['class' => 'btn btn-success']) ?>
+    		    <?= Html::a('Update Issue', ['issue/update/'.$issue->issue_id], ['class' => 'btn btn-primary']) ?>
     		</p>
     <?php 		
     		echo DetailView::widget([
     			'model' => $issue,
     			'attributes' => [
     				'title:ntext',
-    				array(
-    						'class' => DataColumn::className(), // this line is optional
-    						'attribute' => 'cover_image',
-    						'value' => "<div><img class='volume-view-image' src='".$issueImagesPath."'/></div>",
-    						'format' => 'HTML'
-    				),
+    				[
+    					'class' => DataColumn::className(), // this line is optional
+    					'attribute' => 'cover_image',
+    					'value' => "<div><img class='volume-view-image' src='".$issueImagesPath."'/></div>",
+    					'format' => 'HTML'
+    				],
     				'created_on:datetime',
     				'updated_on:datetime',
 		        ],

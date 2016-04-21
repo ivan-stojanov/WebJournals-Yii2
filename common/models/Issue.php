@@ -3,6 +3,7 @@
 namespace common\models;
 
 use Yii;
+use yii\helpers\ArrayHelper;
 
 /**
  * This is the model class for table "issue".
@@ -86,7 +87,14 @@ class Issue extends \yii\db\ActiveRecord
     public function getCoverimage()
     {
     	return $this->hasOne(Image::className(), ['image_id' => 'cover_image']);
-    }    
+    }   
+    
+    public static function  get_volumes(){
+    	$volumes = Volume::find()->all();
+    	$volumes = ArrayHelper::map($volumes, 'volume_id', 'title');
+    	return $volumes;
+    }
+    
 
     /**
      * @inheritdoc
@@ -96,12 +104,12 @@ class Issue extends \yii\db\ActiveRecord
         return [
             'issue_id' => 'Issue ID',
             'volume_id' => 'Volume ID',
-            'title' => 'Title',
+            'title' => 'Issue title',
             'published_on' => 'Published on',
             'is_special_issue' => 'Is special issue',
             'special_title' => 'Special title',
             'special_editor' => 'Special editor',
-            'cover_image' => 'Cover Image',
+            'cover_image' => 'Cover image',
             'created_on' => 'Created on',
             'updated_on' => 'Updated on',
             'is_deleted' => 'Is deleted',

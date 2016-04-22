@@ -36,7 +36,7 @@ class Issue extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['title'], 'required'],
+            [['title', 'volume_id'], 'required'],
             [['volume_id', 'is_special_issue', 'is_deleted'], 'integer'],
             [['title', 'special_title'], 'string'],
             [['published_on', 'created_on', 'updated_on'], 'safe'],
@@ -103,7 +103,7 @@ class Issue extends \yii\db\ActiveRecord
     {
         return [
             'issue_id' => 'Issue ID',
-            'volume_id' => 'Volume ID',
+            'volume_id' => 'Volume name',
             'title' => 'Issue title',
             'published_on' => 'Published on',
             'is_special_issue' => 'Is special issue',

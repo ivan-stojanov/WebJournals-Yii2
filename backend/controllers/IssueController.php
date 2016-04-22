@@ -76,6 +76,10 @@ class IssueController extends Controller
      */
     public function actionView($id)
     {
+    	if (Yii::$app->user->isGuest || Yii::$app->session->get('user.is_admin') != true){
+    		return $this->redirect(['error']);
+    	}
+    	
         return $this->render('view', [
             'model' => $this->findModel($id),
         ]);
@@ -88,6 +92,10 @@ class IssueController extends Controller
      */
     public function actionCreate()
     {
+    	if (Yii::$app->user->isGuest || Yii::$app->session->get('user.is_admin') != true){
+    		return $this->redirect(['error']);
+    	}
+    	
         $model = new Issue();
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
@@ -107,6 +115,10 @@ class IssueController extends Controller
      */
     public function actionUpdate($id)
     {
+    	if (Yii::$app->user->isGuest || Yii::$app->session->get('user.is_admin') != true){
+    		return $this->redirect(['error']);
+    	}
+    	
         $model = $this->findModel($id);
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
@@ -126,6 +138,10 @@ class IssueController extends Controller
      */
     public function actionDelete($id)
     {
+    	if (Yii::$app->user->isGuest || Yii::$app->session->get('user.is_admin') != true){
+    		return $this->redirect(['error']);
+    	}
+    	
         $this->findModel($id)->delete();
 
         return $this->redirect(['index']);

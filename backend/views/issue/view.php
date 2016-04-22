@@ -55,7 +55,7 @@ $this->title = $model->title;
         	],
         	[
         		'class' => DataColumn::className(), // this line is optional
-        		'attribute' => 'cover_image',
+        		'attribute' => 'is_special_issue',
         		'value' => ($model->is_special_issue == 0) ? "<div class='glyphicon glyphicon-remove'></div>" : "<div class='glyphicon glyphicon-ok'></div>",
         		'format' => 'HTML'
         	],

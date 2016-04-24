@@ -96,15 +96,6 @@ $this->registerJsFile("@web/js/issueScript.js", [ 'depends' => ['\yii\web\Jquery
             'layoutTemplates' => ['footer' => '']
         ]
     ]) ?>
-    
-    <?php /*
-	<label class="switch">
-		<input onclick="issueScript_changeIsSpecialIssue('check_<?php echo '1'?>','<?php echo '1'?>')" 
-			type="checkbox" id='check_<?php echo '1'?>'<?php echo ((true) ? 'checked' : '')?> />
-		<span></span>
-	</label>
-	<?= $form->field($model, 'is_special_issue')->checkbox() ?>	
-	*/ ?>
 	
 	<?php 
 		$is_special_issue_flag = false;
@@ -113,6 +104,8 @@ $this->registerJsFile("@web/js/issueScript.js", [ 'depends' => ['\yii\web\Jquery
 		}
 	?>
 	
+	<label class="control-label" for="issue-is_special_issue">Is special issue</label>
+	<br>
 	<label class="switch">
 	 	<input type="checkbox" id="issue-is_special_issue" name="Issue[is_special_issue]" 
 	 		<?php echo (($is_special_issue_flag) ? 'checked' : '')?>>

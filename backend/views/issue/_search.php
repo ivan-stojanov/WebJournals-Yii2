@@ -58,7 +58,16 @@ use common\models\Issue;
 		         ],
         		
         	],
-        	'published_on:datetime',
+        	[
+        		'class' => DataColumn::className(), // this line is optional
+        		'attribute' => 'published_on',
+        		'value' =>function ($data) {
+        			if (isset($data->published_on))
+        				return date("M d, Y, g:i:s A", strtotime($data->published_on));
+        		},        			
+        		'format' => 'HTML'
+        	],         	
+        	//'published_on:datetime',
             // 'special_title:ntext',
             // 'special_editor',
             // 'cover_image',

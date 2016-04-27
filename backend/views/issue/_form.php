@@ -40,14 +40,14 @@ $this->registerJsFile("@web/js/issueScript.js", [ 'depends' => ['\yii\web\Jquery
         ]
     ]); ?>    
     
-    <?= $form->field($model, 'title')->textInput(['maxlength' => true]) ?>
+    <?= $form->field($modelIssue, 'title')->textInput(['maxlength' => true]) ?>
 
-    <?= $form->field($model, 'volume_id')->dropDownList(
+    <?= $form->field($modelIssue, 'volume_id')->dropDownList(
     		ArrayHelper::map(Volume::find()->all(), 'volume_id', 'title'),
     		['prompt' => 'Select Volume']
     ) ?>
 
-	<?= $form->field($model, 'published_on')->widget(DateTimePicker::classname(), [
+	<?= $form->field($modelIssue, 'published_on')->widget(DateTimePicker::classname(), [
         'size' => 'ms',
     	'template' => '{input}',
     	'pickButtonIcon' => 'glyphicon glyphicon-time',
@@ -63,17 +63,17 @@ $this->registerJsFile("@web/js/issueScript.js", [ 'depends' => ['\yii\web\Jquery
 	<?php	                            
 		$issueImagesPath = Yii::$app->urlManagerCommon->createUrl('images/issues/cover.jpg');
 		$initialPreview = [];
-		if(isset($model->cover_image) && ($model->cover_image > 0) && isset($model->coverimage)){
-			$modelImage = $model->coverimage;
+		if(isset($modelIssue->cover_image) && ($modelIssue->cover_image > 0) && isset($modelIssue->coverimage)){
+			$modelImage = $modelIssue->coverimage;
 		                            
 			if ($modelImage) {	                        		
-				$issueImagesPath = Yii::$app->urlManagerCommon->createUrl('images/issues') . DIRECTORY_SEPARATOR . $model->volume->volume_id . DIRECTORY_SEPARATOR;
+				$issueImagesPath = Yii::$app->urlManagerCommon->createUrl('images/issues') . DIRECTORY_SEPARATOR . $modelIssue->volume->volume_id . DIRECTORY_SEPARATOR;
 				$issueImagesPath = $issueImagesPath . $modelImage->path;
 			}
 		}
 		$initialPreview[] = Html::img($issueImagesPath, ['class' => 'file-preview-image', 'type' => 'file']);
 	?>
-    <?= $form->field($model, "cover_image")->widget(FileInput::classname(), [
+    <?= $form->field($modelIssue, "cover_image")->widget(FileInput::classname(), [
     	'options' => [
         'multiple' => false,
         'accept' => 'image/*',
@@ -99,7 +99,7 @@ $this->registerJsFile("@web/js/issueScript.js", [ 'depends' => ['\yii\web\Jquery
 	
 	<?php 
 		$is_special_issue_flag = false;
-		if(isset($model) && isset($model->is_special_issue) && ($model->is_special_issue)){
+		if(isset($modelIssue) && isset($modelIssue->is_special_issue) && ($modelIssue->is_special_issue)){
 			$is_special_issue_flag = true;
 		}
 	?>
@@ -113,9 +113,9 @@ $this->registerJsFile("@web/js/issueScript.js", [ 'depends' => ['\yii\web\Jquery
 	</label>
 	
 	<div class="special-issue-div<?php echo ((!$is_special_issue_flag) ? ' hidden-div' : '') ?>">
-		<?= $form->field($model, 'special_title')->textInput(['maxlength' => true]) ?>
+		<?= $form->field($modelIssue, 'special_title')->textInput(['maxlength' => true]) ?>
 	
-	    <?= $form->field($model, 'special_editor')->textInput(['maxlength' => true]) ?>
+	    <?= $form->field($modelIssue, 'special_editor')->textInput(['maxlength' => true]) ?>
 	</div>
 
     <div class="form-group">

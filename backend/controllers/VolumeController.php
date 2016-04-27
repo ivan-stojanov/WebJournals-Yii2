@@ -109,6 +109,7 @@ class VolumeController extends Controller
         	DynamicForms::loadMultiple($modelsIssue, Yii::$app->request->post());        	
 
         	foreach ($modelsIssue as $index => $modelIssue) {
+        		$modelIssue->scenario = 'volume_crud';        		
         		$modelIssue->sort_in_volume = $index;
         		$modelIssue->created_on = date("Y-m-d H:i:s");
         	}
@@ -125,7 +126,7 @@ class VolumeController extends Controller
         	// validate all models
         	$valid = $modelVolume->validate();
         	$valid = DynamicForms::validateMultiple($modelsIssue) && $valid;
-        	
+
         	if ($valid) {
         		$transaction = \Yii::$app->db->beginTransaction();
         		try {
@@ -162,7 +163,8 @@ class VolumeController extends Controller
         						break;
         					}
         				}
-        			}
+        			}         			
+        			
         			if ($flag) {
         				$transaction->commit();
         				return $this->redirect(['view', 'id' => $modelVolume->volume_id]);
@@ -207,6 +209,7 @@ class VolumeController extends Controller
         	$deletedIDs = array_diff($oldIDs, array_filter(ArrayHelper::map($modelsIssue, 'issue_id', 'issue_id')));
         	
         	foreach ($modelsIssue as $index => $modelIssue) {
+        		$modelIssue->scenario = 'volume_crud';
         		$modelIssue->sort_in_volume = $index;
         	}
      	
@@ -233,9 +236,7 @@ class VolumeController extends Controller
         				}
        	
         				if ($flag) {
-
-        					foreach ($modelsIssue as $index => $modelIssue) {
-       						
+        					foreach ($modelsIssue as $index => $modelIssue) {       						
 								$new_cover_image = \yii\web\UploadedFile::getInstance($modelIssue, "[{$index}]cover_image");
 								
 								$is_modified = false;

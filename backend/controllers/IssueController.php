@@ -96,15 +96,104 @@ class IssueController extends Controller
     		return $this->redirect(['error']);
     	}
     	
-        $model = new Issue();
+        $modelIssue = new Issue();
+        //$modelsSection = [new Section()];
+        $post_msg = null;
+        
+        $modelIssue->created_on = date("Y-m-d H:i:s");
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->issue_id]);
-        } else {
-            return $this->render('create', [
-                'model' => $model,
-            ]);
+        if ($modelIssue->load(Yii::$app->request->post())) {
+        	$modelVolume = Volume::findOne($modelIssue->volume_id);
+        	
+        	$modelIssue->sort_in_volume = count($modelVolume->issues) + 1;
+        	if(isset($modelIssue->published_on)){
+        		$year_int = intval(date("Y", strtotime($modelIssue->published_on)));
+        		if($year_int > 2010){
+        			$modelIssue->published_on = date("Y-m-d H:i:s", strtotime($modelIssue->published_on));
+        		}
+        	}
+        	$modelIssue->is_special_issue = 0;
+        	if(isset($modelIssue->is_special_issue)){
+        		if(($modelIssue->is_special_issue) || ($modelIssue->is_special_issue == "on")){
+        			$modelIssue->is_special_issue = 1;
+        		}
+        	}
+        	
+        	$modelIssue->cover_image = \yii\web\UploadedFile::getInstance($modelIssue, "cover_image");        	
+        	if ($modelIssue->uploadIssueImage($modelVolume->volume_id)) {
+        		// file is uploaded successfully
+        	
+        		if(isset($modelIssue->cover_image) && isset($modelIssue->cover_image->baseName) && isset($modelIssue->cover_image->extension)){
+        	
+        			$newImage = new Image();
+        			$newImage->path = $modelIssue->cover_image->baseName . '.' . $modelIssue->cover_image->extension;
+        			$newImage->type = 'file';
+        			$newImage->name = $modelIssue->cover_image->baseName;
+        			$newImage->size = 100;
+        			if($newImage->save()){
+        				$modelIssue->cover_image = $newImage->image_id;
+        			}  else {
+        				$modelIssue->cover_image = null;
+        			}
+        		}  else {
+        			$modelIssue->cover_image = null;
+        		}
+        	}
+        	 
+        	// get Section data from POST
+        	/*$modelsSection = DynamicForms::createMultiple(Section::classname(), 'section_id');
+        	DynamicForms::loadMultiple($modelsSection, Yii::$app->request->post());
+        	
+        	foreach ($modelsSection as $index => $modelSection) {
+        		$modelSection->sort_in_issue = $index;
+        		$modelSection->created_on = date("Y-m-d H:i:s");
+        	}*/
+        	
+        	// ajax validation
+        	/*if (Yii::$app->request->isAjax) {
+        		Yii::$app->response->format = Response::FORMAT_JSON;
+        		return ArrayHelper::merge(
+        				ActiveForm::validateMultiple($modelsSection),
+        				ActiveForm::validate($modelIssue)
+        		);
+        	}*/
+        	
+        	// validate all models
+        	$valid = $modelIssue->validate();
+        	//$valid = DynamicForms::validateMultiple($modelsSection) && $valid;
+	         	
+        	if ($valid) {
+        		$transaction = \Yii::$app->db->beginTransaction();
+        		try {
+        			if ($flag = $modelIssue->save(false)) {
+        				/* 
+        				 foreach ($modelsSection as $index => $modelSection) {
+        					$modelSection->issue_id = $modelIssue->issue_id;
+        					$modelSection->sort_in_issue = $index;
+        					$modelSection->created_on = date("Y-m-d H:i:s");
+        	
+        					if (($flag = $modelSection->save(false)) === false) {
+        						$transaction->rollBack();
+        						break;
+        					}
+        				}*/
+        			}
+        			if ($flag) {
+        				$transaction->commit();
+        				return $this->redirect(['view', 'id' => $modelIssue->issue_id]);
+        			}
+        		} catch (Exception $e) {
+        			$transaction->rollBack();
+        		}
+        	}
+            
         }
+        
+        return $this->render('create', [
+            'modelIssue' => $modelIssue,
+        	//modelsSection' => (empty($modelsSection)) ? [new Section()] : $modelsSection,
+         	'post_msg' => $post_msg,
+        ]);
     }
 
     /**
@@ -119,15 +208,150 @@ class IssueController extends Controller
     		return $this->redirect(['error']);
     	}
     	
-        $model = $this->findModel($id);
-
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->issue_id]);
-        } else {
-            return $this->render('update', [
-                'model' => $model,
-            ]);
+        $modelIssue = $this->findModel($id);
+        $modelIssue->updated_on = date("Y-m-d H:i:s");
+        
+        $initial_cover_image = null;
+        if(isset($modelIssue->cover_image)){
+        	$initial_cover_image = $modelIssue->cover_image;
         }
+        
+        $initial_volume_id = $modelIssue->volume_id;
+       
+        //$modelsSection = $modelIssue->sections;
+        $post_msg = null;
+        
+        if ($modelIssue->load(Yii::$app->request->post())) {
+        	//$oldIDs = ArrayHelper::map($modelsSection, 'section_id', 'section_id');
+        	
+        	if(isset($modelIssue->published_on)){
+        		$year_int = intval(date("Y", strtotime($modelIssue->published_on)));
+        		if($year_int > 2010){
+        			$modelIssue->published_on = date("Y-m-d H:i:s", strtotime($modelIssue->published_on));
+        		}
+        	}
+        	$modelIssue->is_special_issue = 0;
+        	if(isset($modelIssue->is_special_issue)){
+        		if(($modelIssue->is_special_issue) || ($modelIssue->is_special_issue == "on")){
+        			$modelIssue->is_special_issue = 1;
+        		}
+        	}
+      	
+        	$new_cover_image = \yii\web\UploadedFile::getInstance($modelIssue, "cover_image");
+
+        	if(isset($new_cover_image) && (count($new_cover_image) > 0)) {
+        		$modelIssue->cover_image = $new_cover_image;
+       		
+	        	if ($modelIssue->uploadIssueImage($modelIssue->volume_id)) {
+	        		// file is uploaded successfully
+	        		 
+	        		if(isset($modelIssue->cover_image) && isset($modelIssue->cover_image->baseName) && isset($modelIssue->cover_image->extension)){
+	        			 
+	        			$newImage = new Image();
+	        			$newImage->path = $modelIssue->cover_image->baseName . '.' . $modelIssue->cover_image->extension;
+	        			$newImage->type = 'file';
+	        			$newImage->name = $modelIssue->cover_image->baseName;
+	        			$newImage->size = 100;
+	        			if($newImage->save()){
+	        				$modelIssue->cover_image = $newImage->image_id;
+	        			}  else {
+	        				$modelIssue->cover_image = null;
+	        			}
+	        		}
+	        	}   
+        	} else {
+        		$modelIssue->cover_image = $initial_cover_image;
+        		
+        		if((isset($modelIssue->cover_image)) && ($modelIssue->volume_id != $initial_volume_id)){
+        			$image_path = $modelIssue->coverimage->path;
+        			$issueImagesOldPathDIR = Yii::getAlias('@common') . DIRECTORY_SEPARATOR . 'images' . DIRECTORY_SEPARATOR . 'issues' . DIRECTORY_SEPARATOR . $initial_volume_id . DIRECTORY_SEPARATOR;
+        			$issueImagesNewPathDIR = Yii::getAlias('@common') . DIRECTORY_SEPARATOR . 'images' . DIRECTORY_SEPARATOR . 'issues' . DIRECTORY_SEPARATOR . $modelIssue->volume_id . DIRECTORY_SEPARATOR;
+        			
+        			if (!file_exists($issueImagesNewPathDIR)) {
+        				mkdir($issueImagesNewPathDIR, 0777, true);
+        			}
+        			
+        			copy($issueImagesOldPathDIR.$image_path, $issueImagesNewPathDIR.$image_path);
+        		}        		
+        	}
+        	 
+        	// get Section data from POST
+        	/*$modelsSection = DynamicForms::createMultiple(Section::classname(), 'section_id', $modelsSection);
+        	DynamicForms::loadMultiple($modelsSection, Yii::$app->request->post());
+        	$deletedIDs = array_diff($oldIDs, array_filter(ArrayHelper::map($modelsSection, 'section_id', 'section_id')));
+        	 
+        	foreach ($modelsSection as $index => $modelSection) {
+        		$modelSection->sort_in_issue = $index;
+        	}*/
+        	
+        	// ajax validation
+        	/*if (Yii::$app->request->isAjax) {
+        		Yii::$app->response->format = Response::FORMAT_JSON;
+        		return ArrayHelper::merge(
+        				ActiveForm::validateMultiple($modelsSection),
+        				ActiveForm::validate($modelIssue)
+        		);
+        	}*/
+        	
+        	// validate all models
+        	$valid = $modelIssue->validate();
+        	//$valid = DynamicForms::validateMultiple($modelsSection) && $valid;
+        	 
+        	if ($valid) {
+        		$transaction = \Yii::$app->db->beginTransaction();
+        		try {
+        			if ($flag = $modelIssue->save(false)) {
+        				 
+        				/*if (!empty($deletedIDs)) {
+        					$flag = Section::deleteByIDs($deletedIDs);
+        				}*/
+        	
+        				if ($flag) {
+        	
+        					/*foreach ($modelsSection as $index => $modelSection) {
+        						 
+        						$new_cover_image = \yii\web\UploadedFile::getInstance($modelIssue, "[{$index}]cover_image");
+        	
+        						$is_modified = false;
+        						$modelSection = Section::findOne($modelSection->section_id);
+        						$modelSection->issue_id = $modelIssue->issue_id;
+        						if($modelSection->title != Yii::$app->request->post()['Issue'][$index]['title']){
+        							$is_modified = true;
+        							$modelSection->title = Yii::$app->request->post()['Issue'][$index]['title'];
+        						}
+        						if($modelSection->sort_in_issue != $index){
+        							$is_modified = true;
+        							$modelSection->sort_in_issue = $index;
+        						}
+        	
+        						if($is_modified){
+        							$modelSection->updated_on = date("Y-m-d H:i:s");
+        						}
+        						 
+        						if (($flag = $modelSection->save(false)) === false) {
+        							$transaction->rollBack();
+        							break;
+        						}
+        					}*/
+        				}
+        			}
+        			 
+        			if ($flag) {
+        				$transaction->commit();
+        				return $this->redirect(['view', 'id' => $modelIssue->issue_id]);
+        			}
+        			 
+        		} catch (Exception $e) {
+        			$transaction->rollBack();
+        		}
+        	}
+        }        
+
+        return $this->render('update', [
+        		'modelIssue' => $modelIssue,
+        		//'modelsSection' => (empty($modelsSection)) ? [new Section()] : $modelsSection,
+        		'post_msg' => $post_msg,
+        ]);
     }
 
     /**

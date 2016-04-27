@@ -23,6 +23,7 @@ $this->title = $model->title;
                 'method' => 'post',
             ],
         ]) ?>
+        <?= Html::a('View Volume', ['volume/view', 'id' => $model->volume_id], ['class' => 'btn btn-default']) ?>
     </p>
     
     <?php 
@@ -55,22 +56,51 @@ $this->title = $model->title;
         	],
         	[
         		'class' => DataColumn::className(), // this line is optional
-        		'attribute' => 'is_special_issue',
-        		'value' => ($model->is_special_issue == 0) ? "<div class='glyphicon glyphicon-remove'></div>" : "<div class='glyphicon glyphicon-ok'></div>",
+        		'attribute' => 'published_on',
+        		'value' => (isset($model->published_on)) ? date("M d, Y, g:i:s A", strtotime($model->published_on)) : null,
         		'format' => 'HTML'
         	],
-            'published_on:datetime',
     		[
     			'class' => DataColumn::className(), // this line is optional
     			'attribute' => 'cover_image',
     			'value' => "<div><img class='volume-view-image' src='".$issueImagesPath."'/></div>",
     			'format' => 'HTML'
     		],
-            'special_title:ntext',
-            'special_editor',            
+        	[
+        		'class' => DataColumn::className(), // this line is optional
+        		'attribute' => 'is_special_issue',
+        		'value' => ($model->is_special_issue == 0) ? "<div class='glyphicon glyphicon-remove'></div>" : "<div class='glyphicon glyphicon-ok'></div>",
+        		'format' => 'HTML'
+        	],
+        	//'special_title:ntext',
+        	[
+        		'class' => DataColumn::className(), // this line is optional
+        		'attribute' => 'special_title',
+        		'value' => (($model->is_special_issue) && (isset($model->special_title)) && (strlen($model->special_title) > 0)) ? $model->special_title : null,
+        		'format' => 'HTML'
+        	],       
+        	//'special_editor',
+        	[
+        		'class' => DataColumn::className(), // this line is optional
+        		'attribute' => 'special_editor',
+        		'value' => (($model->is_special_issue) && (isset($model->special_editor)) && (strlen($model->special_editor) > 0)) ? $model->special_editor : null,
+        		'format' => 'HTML'
+        	],      
             // 'sort_in_volume',
-            'created_on:datetime',
-            'updated_on:datetime',
+        	[
+        		'class' => DataColumn::className(), // this line is optional
+        		'attribute' => 'created_on',
+        		'value' => (isset($model->created_on)) ? date("M d, Y, g:i:s A", strtotime($model->created_on)) : null,        			
+        		'format' => 'HTML'
+        	],
+        	[
+        		'class' => DataColumn::className(), // this line is optional
+        		'attribute' => 'updated_on',
+        		'value' => (isset($model->updated_on)) ? date("M d, Y, g:i:s A", strtotime($model->updated_on)) : null, 
+        		'format' => 'HTML'
+        	],
+            //'created_on:datetime',
+            //'updated_on:datetime',
             // 'is_deleted',
         ],
     ]) ?>

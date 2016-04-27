@@ -10,7 +10,9 @@ $this->title = 'Update Issue';
 <div class="issue-update">
 
     <?= $this->render('_form', [
-        'model' => $model,
+        'modelIssue' => $modelIssue,
+    	//'modelsSection' => $modelsSection,    		
+    	'post_msg' => $post_msg
     ]) ?>
 
 </div>

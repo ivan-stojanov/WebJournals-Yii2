@@ -5,6 +5,7 @@ use yii\widgets\ActiveForm;
 use yii\grid\GridView;
 use yii\jui\DatePicker;
 use yii\base\Widget;
+use yii\grid\DataColumn;
 
 /* @var $this yii\web\View */
 /* @var $model backend\models\VolumeSearch */
@@ -30,7 +31,16 @@ use yii\base\Widget;
 
             'title:ntext',
             'year',
-        	'created_on:datetime',
+        	//'created_on:datetime',
+        	[
+        		'class' => DataColumn::className(), // this line is optional
+        		'attribute' => 'created_on',
+        		'value' =>function ($data) {
+        			if (isset($data->created_on))
+        				return date("M d, Y, g:i:s A", strtotime($data->created_on));
+        		},
+        		'format' => 'HTML'
+        	],        		
         	/*[
         		//'attribute' => 'created_on',
         		'header'		=> 'Created on',

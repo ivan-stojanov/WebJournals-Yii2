@@ -32,8 +32,20 @@ $this->title = $model->title;
             // 'volume_id',
             'title:ntext',
             'year',
-            'created_on:datetime',
-            'updated_on:datetime',
+            //'created_on:datetime',
+            //'updated_on:datetime',
+        	[
+        		'class' => DataColumn::className(), // this line is optional
+        		'attribute' => 'created_on',
+        		'value' => (isset($model->created_on)) ? date("M d, Y, g:i:s A", strtotime($model->created_on)) : null,
+        		'format' => 'HTML'
+        	],
+        	[
+        		'class' => DataColumn::className(), // this line is optional
+        		'attribute' => 'updated_on',
+        		'value' => (isset($model->updated_on)) ? date("M d, Y, g:i:s A", strtotime($model->updated_on)) : null,
+        		'format' => 'HTML'
+        	],
         	/*[
         			'class' => DataColumn::className(), // this line is optional
         			'attribute' => 'is_deleted',
@@ -74,8 +86,20 @@ $this->title = $model->title;
     					'value' => "<div><img class='volume-view-image' src='".$issueImagesPath."'/></div>",
     					'format' => 'HTML'
     				],
-    				'created_on:datetime',
-    				'updated_on:datetime',
+    				//'created_on:datetime',
+    				//'updated_on:datetime',
+    				[
+    					'class' => DataColumn::className(), // this line is optional
+    					'attribute' => 'created_on',
+    					'value' => (isset($issue->created_on)) ? date("M d, Y, g:i:s A", strtotime($issue->created_on)) : null,
+    					'format' => 'HTML'
+    				],
+    				[
+    					'class' => DataColumn::className(), // this line is optional
+    					'attribute' => 'updated_on',
+    					'value' => (isset($issue->updated_on)) ? date("M d, Y, g:i:s A", strtotime($issue->updated_on)) : null,
+    					'format' => 'HTML'
+    				],
 		        ],
 		    ]);
     	}

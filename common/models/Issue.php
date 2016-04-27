@@ -47,6 +47,14 @@ class Issue extends \yii\db\ActiveRecord
         ]; 
     }    
     
+    public function scenarios()
+    {
+    	$scenarios = parent::scenarios();
+    	$scenarios['volume_crud'] = ['title']; //Scenario Attributes that will be validated
+    	return $scenarios;
+    }
+    
+    
     public function uploadIssueImage($volume_id)
     {
     	$issueImagesPathDIR = Yii::getAlias('@common') . DIRECTORY_SEPARATOR . 'images' . DIRECTORY_SEPARATOR . 'issues' . DIRECTORY_SEPARATOR . $volume_id . DIRECTORY_SEPARATOR;

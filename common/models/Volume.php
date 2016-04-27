@@ -48,6 +48,7 @@ class Volume extends \yii\db\ActiveRecord
     public function getIssues()
     {
     	return $this->hasMany(\common\models\Issue::className(),  ['volume_id' => 'volume_id'])
+    				->andOnCondition(['is_deleted' => 0])
     				->orderBy(['sort_in_volume' => SORT_ASC]);
     }
 

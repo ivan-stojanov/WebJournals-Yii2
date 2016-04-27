@@ -11,7 +11,8 @@ $this->title = 'Create Issue';
 <div class="issue-create">
 
     <?= $this->render('_form', [
-        'model' => $model,
+        'modelIssue' => $modelIssue,
+    	'post_msg' => $post_msg
     ]) ?>
 
 </div>

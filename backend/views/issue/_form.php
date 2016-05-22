@@ -11,10 +11,6 @@ use kartik\file\FileInput;
 /* @var $this yii\web\View */
 /* @var $model common\models\Issue */
 /* @var $form yii\widgets\ActiveForm */
-
-\backend\assets\AppAsset::register($this);
-$this->registerJsFile("@web/js/issueScript.js", [ 'depends' => ['\yii\web\JqueryAsset'], 'position' => \yii\web\View::POS_END]);
-
 ?>
 
 <?php if(isset($post_msg)){ ?>
@@ -108,7 +104,7 @@ $this->registerJsFile("@web/js/issueScript.js", [ 'depends' => ['\yii\web\Jquery
 	<br>
 	<label class="switch">
 	 	<input type="checkbox" id="issue-is_special_issue" name="Issue[is_special_issue]" 
-	 		<?php echo (($is_special_issue_flag) ? 'checked' : '')?>>
+	 		<?php echo (($is_special_issue_flag) ? 'checked' : '')?> value="<?php echo $is_special_issue_flag ?>">
 		<span></span>
 	</label>
 	
@@ -117,6 +113,12 @@ $this->registerJsFile("@web/js/issueScript.js", [ 'depends' => ['\yii\web\Jquery
 	
 	    <?= $form->field($modelIssue, 'special_editor')->textInput(['maxlength' => true]) ?>
 	</div>
+	
+	<?= $this->render('_form_sections', [
+        'form' => $form,
+    	'modelIssue' => $modelIssue,
+		'modelsSection' => $modelsSection
+    ]) ?>
 
     <div class="form-group">
         <?= Html::submitButton('Save', ['class' => 'btn btn-primary', 'name' => 'signup-button']) ?>

@@ -11,7 +11,7 @@ $this->title = 'Update Issue';
 
     <?= $this->render('_form', [
         'modelIssue' => $modelIssue,
-    	//'modelsSection' => $modelsSection,    		
+    	'modelsSection' => $modelsSection,    		
     	'post_msg' => $post_msg
     ]) ?>
 

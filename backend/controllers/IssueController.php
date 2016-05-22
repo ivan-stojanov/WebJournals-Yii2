@@ -5,12 +5,14 @@ namespace backend\controllers;
 use Yii;
 use common\models\Volume;
 use common\models\Issue;
+use common\models\Section;
 use common\models\Image;
 use common\models\DynamicForms;
 use backend\models\IssueSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
+use yii\helpers\ArrayHelper;
 
 /**
  * IssueController implements the CRUD actions for Issue model.
@@ -97,12 +99,13 @@ class IssueController extends Controller
     	}
     	
         $modelIssue = new Issue();
-        //$modelsSection = [new Section()];
+        $modelsSection = [new Section()];
         $post_msg = null;
         
         $modelIssue->created_on = date("Y-m-d H:i:s");
 
         if ($modelIssue->load(Yii::$app->request->post())) {
+     	
         	$modelVolume = Volume::findOne($modelIssue->volume_id);
         	
         	$modelIssue->sort_in_volume = count($modelVolume->issues) + 1;
@@ -112,11 +115,13 @@ class IssueController extends Controller
         			$modelIssue->published_on = date("Y-m-d H:i:s", strtotime($modelIssue->published_on));
         		}
         	}
-        	$modelIssue->is_special_issue = 0;
+        	
         	if(isset($modelIssue->is_special_issue)){
         		if(($modelIssue->is_special_issue) || ($modelIssue->is_special_issue == "on")){
         			$modelIssue->is_special_issue = 1;
         		}
+        	} else {
+        		$modelIssue->is_special_issue = 0;
         	}
         	
         	$modelIssue->cover_image = \yii\web\UploadedFile::getInstance($modelIssue, "cover_image");        	
@@ -141,32 +146,33 @@ class IssueController extends Controller
         	}
         	 
         	// get Section data from POST
-        	/*$modelsSection = DynamicForms::createMultiple(Section::classname(), 'section_id');
+        	$modelsSection = DynamicForms::createMultiple(Section::classname(), 'section_id');
         	DynamicForms::loadMultiple($modelsSection, Yii::$app->request->post());
         	
         	foreach ($modelsSection as $index => $modelSection) {
+        		$modelSection->scenario = 'issue_crud';
         		$modelSection->sort_in_issue = $index;
         		$modelSection->created_on = date("Y-m-d H:i:s");
-        	}*/
+        	}
         	
         	// ajax validation
-        	/*if (Yii::$app->request->isAjax) {
+        	if (Yii::$app->request->isAjax) {
         		Yii::$app->response->format = Response::FORMAT_JSON;
         		return ArrayHelper::merge(
         				ActiveForm::validateMultiple($modelsSection),
         				ActiveForm::validate($modelIssue)
         		);
-        	}*/
+        	}
         	
         	// validate all models
         	$valid = $modelIssue->validate();
-        	//$valid = DynamicForms::validateMultiple($modelsSection) && $valid;
-	         	
+        	$valid = DynamicForms::validateMultiple($modelsSection) && $valid;
+
         	if ($valid) {
         		$transaction = \Yii::$app->db->beginTransaction();
         		try {
         			if ($flag = $modelIssue->save(false)) {
-        				/* 
+        				 
         				 foreach ($modelsSection as $index => $modelSection) {
         					$modelSection->issue_id = $modelIssue->issue_id;
         					$modelSection->sort_in_issue = $index;
@@ -176,7 +182,7 @@ class IssueController extends Controller
         						$transaction->rollBack();
         						break;
         					}
-        				}*/
+        				}
         			}
         			if ($flag) {
         				$transaction->commit();
@@ -186,12 +192,12 @@ class IssueController extends Controller
         			$transaction->rollBack();
         		}
         	}
-            
+        	
         }
         
         return $this->render('create', [
             'modelIssue' => $modelIssue,
-        	//modelsSection' => (empty($modelsSection)) ? [new Section()] : $modelsSection,
+        	'modelsSection' => (empty($modelsSection)) ? [new Section()] : $modelsSection,
          	'post_msg' => $post_msg,
         ]);
     }
@@ -215,31 +221,40 @@ class IssueController extends Controller
         if(isset($modelIssue->cover_image)){
         	$initial_cover_image = $modelIssue->cover_image;
         }
-        
+       
         $initial_volume_id = $modelIssue->volume_id;
        
-        //$modelsSection = $modelIssue->sections;
+        $modelsSection = $modelIssue->sections;
         $post_msg = null;
         
         if ($modelIssue->load(Yii::$app->request->post())) {
-        	//$oldIDs = ArrayHelper::map($modelsSection, 'section_id', 'section_id');
-        	
+        	$oldIDs = ArrayHelper::map($modelsSection, 'section_id', 'section_id');
+      	
         	if(isset($modelIssue->published_on)){
         		$year_int = intval(date("Y", strtotime($modelIssue->published_on)));
         		if($year_int > 2010){
         			$modelIssue->published_on = date("Y-m-d H:i:s", strtotime($modelIssue->published_on));
         		}
         	}
-        	$modelIssue->is_special_issue = 0;
-        	if(isset($modelIssue->is_special_issue)){
+/*var_dump($modelIssue->is_special_issue);
+return $this->render('update', [
+		'modelIssue' => $modelIssue,
+		'modelsSection' => (empty($modelsSection)) ? [new Section()] : $modelsSection,
+		'post_msg' => $post_msg,
+]);*/
+            if(isset($modelIssue->is_special_issue)){
         		if(($modelIssue->is_special_issue) || ($modelIssue->is_special_issue == "on")){
         			$modelIssue->is_special_issue = 1;
+        		} else {
+        			$modelIssue->is_special_issue = 0;
         		}
+        	} else {
+        		$modelIssue->is_special_issue = 0;
         	}
-      	
+     	
         	$new_cover_image = \yii\web\UploadedFile::getInstance($modelIssue, "cover_image");
 
-        	if(isset($new_cover_image) && (count($new_cover_image) > 0)) {
+        	if(isset($new_cover_image) && (count($new_cover_image) > 0)) { 
         		$modelIssue->cover_image = $new_cover_image;
        		
 	        	if ($modelIssue->uploadIssueImage($modelIssue->volume_id)) {
@@ -274,50 +289,50 @@ class IssueController extends Controller
         			copy($issueImagesOldPathDIR.$image_path, $issueImagesNewPathDIR.$image_path);
         		}        		
         	}
-        	 
+      	 
         	// get Section data from POST
-        	/*$modelsSection = DynamicForms::createMultiple(Section::classname(), 'section_id', $modelsSection);
+        	$modelsSection = DynamicForms::createMultiple(Section::classname(), 'section_id', $modelsSection);
         	DynamicForms::loadMultiple($modelsSection, Yii::$app->request->post());
         	$deletedIDs = array_diff($oldIDs, array_filter(ArrayHelper::map($modelsSection, 'section_id', 'section_id')));
-        	 
+      	 
         	foreach ($modelsSection as $index => $modelSection) {
+        		$modelSection->scenario = 'issue_crud';
         		$modelSection->sort_in_issue = $index;
-        	}*/
+        	}
         	
         	// ajax validation
-        	/*if (Yii::$app->request->isAjax) {
+        	if (Yii::$app->request->isAjax) {
         		Yii::$app->response->format = Response::FORMAT_JSON;
         		return ArrayHelper::merge(
         				ActiveForm::validateMultiple($modelsSection),
         				ActiveForm::validate($modelIssue)
         		);
-        	}*/
-        	
+        	}
+      	
         	// validate all models
-        	$valid = $modelIssue->validate();
-        	//$valid = DynamicForms::validateMultiple($modelsSection) && $valid;
-        	 
+        	$valid = $modelIssue->validate();//var_dump("302"); var_dump($modelIssue->getErrors());
+        	$valid = DynamicForms::validateMultiple($modelsSection) && $valid;//var_dump("303"); var_dump($valid);
+      	 
         	if ($valid) {
         		$transaction = \Yii::$app->db->beginTransaction();
         		try {
         			if ($flag = $modelIssue->save(false)) {
         				 
-        				/*if (!empty($deletedIDs)) {
+        				if (!empty($deletedIDs)) {
         					$flag = Section::deleteByIDs($deletedIDs);
-        				}*/
+        				}
         	
         				if ($flag) {
-        	
-        					/*foreach ($modelsSection as $index => $modelSection) {
+        					foreach ($modelsSection as $index => $modelSection) {
         						 
         						$new_cover_image = \yii\web\UploadedFile::getInstance($modelIssue, "[{$index}]cover_image");
         	
         						$is_modified = false;
         						$modelSection = Section::findOne($modelSection->section_id);
         						$modelSection->issue_id = $modelIssue->issue_id;
-        						if($modelSection->title != Yii::$app->request->post()['Issue'][$index]['title']){
+        						if($modelSection->title != Yii::$app->request->post()['Section'][$index]['title']){
         							$is_modified = true;
-        							$modelSection->title = Yii::$app->request->post()['Issue'][$index]['title'];
+        							$modelSection->title = Yii::$app->request->post()['Section'][$index]['title'];
         						}
         						if($modelSection->sort_in_issue != $index){
         							$is_modified = true;
@@ -332,10 +347,10 @@ class IssueController extends Controller
         							$transaction->rollBack();
         							break;
         						}
-        					}*/
+        					}
         				}
         			}
-        			 
+
         			if ($flag) {
         				$transaction->commit();
         				return $this->redirect(['view', 'id' => $modelIssue->issue_id]);
@@ -349,7 +364,7 @@ class IssueController extends Controller
 
         return $this->render('update', [
         		'modelIssue' => $modelIssue,
-        		//'modelsSection' => (empty($modelsSection)) ? [new Section()] : $modelsSection,
+        		'modelsSection' => (empty($modelsSection)) ? [new Section()] : $modelsSection,
         		'post_msg' => $post_msg,
         ]);
     }

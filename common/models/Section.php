@@ -3,6 +3,7 @@
 namespace common\models;
 
 use Yii;
+use yii\helpers\ArrayHelper;
 
 /**
  * This is the model class for table "section".
@@ -48,22 +49,6 @@ class Section extends \yii\db\ActiveRecord
     	$scenarios['issue_crud'] = ['title']; //Scenario Attributes that will be validated
     	return $scenarios;
     }    
-
-    /**
-     * @inheritdoc
-     */
-    public function attributeLabels()
-    {
-        return [
-            'section_id' => 'Section ID',
-            'issue_id' => 'Issue ID',
-            'title' => 'Title',
-            'sort_in_issue' => 'Sort In Issue',
-            'created_on' => 'Created On',
-            'updated_on' => 'Updated On',
-            'is_deleted' => 'Is Deleted',
-        ];
-    }
     
     public static function deleteByIDs($deletedIDs = []){
     	 
@@ -94,5 +79,27 @@ class Section extends \yii\db\ActiveRecord
     public function getIssue()
     {
         return $this->hasOne(Issue::className(), ['issue_id' => 'issue_id']);
+    }
+    
+    public static function  get_issues(){
+    	$issues = Issue::find()->all();
+    	$issues = ArrayHelper::map($issues, 'issue_id', 'title');
+    	return $issues;
+    }    
+
+    /**
+     * @inheritdoc
+     */
+    public function attributeLabels()
+    {
+    	return [
+    		'section_id' => 'Section ID',
+    		'issue_id' => 'Issue name',
+    		'title' => 'Section title',
+    		'sort_in_issue' => 'Sort In Issue',
+    		'created_on' => 'Created on',
+    		'updated_on' => 'Updated on',
+    		'is_deleted' => 'Is deleted',
+    	];
     }
 }

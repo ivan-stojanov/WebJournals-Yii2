@@ -7,6 +7,7 @@ use yii\helpers\ArrayHelper;
 use wbraganca\dynamicform\DynamicFormWidget;
 use dosamigos\datetimepicker\DateTimePicker;
 use kartik\file\FileInput;
+use kartik\switchinput\SwitchInput;
 
 /* @var $this yii\web\View */
 /* @var $model common\models\Issue */
@@ -99,19 +100,31 @@ use kartik\file\FileInput;
 			$is_special_issue_flag = true;
 		}
 	?>
+
+    <?= $form->field($modelIssue, 'is_special_issue', [
+    		'options' => [
+    			'id' => 'is_special_issue_container'
+    		]		
+    ])->widget(SwitchInput::classname(), [
+    		'options' => [
+    			'id' => 'is_special_issue'    		
+    		]
+    ]); ?>
 	
-	<label class="control-label" for="issue-is_special_issue">Is special issue</label>
-	<br>
-	<label class="switch">
-	 	<input type="checkbox" id="issue-is_special_issue" name="Issue[is_special_issue]" 
-	 		<?php echo (($is_special_issue_flag) ? 'checked' : '')?> value="<?php echo $is_special_issue_flag ?>">
-		<span></span>
-	</label>
-	
-	<div class="special-issue-div<?php echo ((!$is_special_issue_flag) ? ' hidden-div' : '') ?>">
-		<?= $form->field($modelIssue, 'special_title')->textInput(['maxlength' => true]) ?>
-	
-	    <?= $form->field($modelIssue, 'special_editor')->textInput(['maxlength' => true]) ?>
+	<div class="special-issue-div">		
+		<?= $form->field($modelIssue, 'special_title', [
+	    		'options' => [
+	    			'id' => 'special_title_container',
+					'style' => ($is_special_issue_flag) ? '' : 'display:none'
+	    		]    		
+	    ])->textInput(['maxlength' => true]) ?>
+	    
+		<?= $form->field($modelIssue, 'special_editor', [
+	    		'options' => [
+	    			'id' => 'special_editor_container',
+					'style' => ($is_special_issue_flag) ? '' : 'display:none'
+	    		]    		
+	    ])->textInput(['maxlength' => true]) ?>	    
 	</div>
 	
 	<?= $this->render('_form_sections', [

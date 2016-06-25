@@ -19,6 +19,7 @@ use yii\helpers\ArrayHelper;
  * @property string $created_on
  * @property string $updated_on
  * @property integer $is_deleted
+ * @property integer $is_current
  */
 class Issue extends \yii\db\ActiveRecord
 {
@@ -37,7 +38,7 @@ class Issue extends \yii\db\ActiveRecord
     {
         return [
             [['title', 'volume_id'], 'required'],
-            [['volume_id', 'is_special_issue', 'is_deleted'], 'integer'],
+            [['volume_id', 'is_special_issue', 'is_deleted', 'is_current'], 'integer'],
             [['title', 'special_title'], 'string'],
             [['published_on', 'created_on', 'updated_on'], 'safe'],
             [['special_editor'], 'string', 'max' => 255],
@@ -127,6 +128,7 @@ class Issue extends \yii\db\ActiveRecord
             'created_on' => 'Created on',
             'updated_on' => 'Updated on',
             'is_deleted' => 'Is deleted',
+        	'is_current' => 'Is current',        		
         ];
     }
     

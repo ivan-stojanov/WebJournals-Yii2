@@ -104,5 +104,48 @@ $this->title = $model->title;
             // 'is_deleted',
         ],
     ]) ?>
+    
+    <?php 
+    	if(isset($model->sections) && (count($model->sections) > 0)){
+    ?>
+			<h2><i>Section(s):</i></h2>
+	    	<hr>    		    
+    <?php
+    		foreach ($model->sections as $index => $section){
+    ?>
+				<p>
+					<?= Html::a('View Section', ['section/view/'.$section->section_id], ['class' => 'btn btn-success']) ?>
+    				<?= Html::a('Update Section', ['section/update/'.$section->section_id], ['class' => 'btn btn-primary']) ?>
+				</p>
+    <?php
+			    echo DetailView::widget([
+			    	'model' => $section,
+			    	'attributes' => [			    			
+			    		'title:ntext',
+			    		//'created_on:datetime',
+			    		//'updated_on:datetime',
+			    		[
+			    			'class' => DataColumn::className(), // this line is optional
+			    			'attribute' => 'created_on',
+			    			'value' => (isset($section->created_on)) ? date("M d, Y, g:i:s A", strtotime($section->created_on)) : null,
+			    			'format' => 'HTML'
+			    		],
+			    		[
+			    			'class' => DataColumn::className(), // this line is optional
+			    			'attribute' => 'updated_on',
+			    			'value' => (isset($section->updated_on)) ? date("M d, Y, g:i:s A", strtotime($section->updated_on)) : null,
+			    			'format' => 'HTML'
+			    		],
+			    	],
+			    ]);    
+    		}    
+    	} else {
+    ?>
+    		<hr>
+    		<h2>There are no any <i>Sections</i> for this <i>Issue</i> yet!</h2>
+	    	<hr>
+    <?php		
+    	}
+    ?>
 
 </div>

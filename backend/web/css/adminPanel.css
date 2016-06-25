@@ -150,3 +150,15 @@
     opacity: inherit;
 }
 /* Admin: Volumes CRUD - END */
+
+/* Admin: Issues CRUD - START */
+#is_special_issue_container span.bootstrap-switch-handle-on,
+#is_special_issue_container span.bootstrap-switch-handle-off,
+#is_special_issue_container span.bootstrap-switch-label {
+	width: 50px !important;
+}
+
+.is_current {
+	background: #ABA !important;
+}
+/* Admin: Issues CRUD - END */

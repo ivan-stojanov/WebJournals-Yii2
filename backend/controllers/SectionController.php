@@ -28,6 +28,19 @@ class SectionController extends Controller
             ],
         ];
     }
+    
+    /**
+     * @inheritdoc
+     */
+    public function actions()
+    {
+    	$this->layout = 'adminlayout';
+    	return [
+    			'error' => [
+    					'class' => 'yii\web\ErrorAction',
+    			],
+    	];
+    }
 
     /**
      * Lists all Section models.
@@ -35,12 +48,21 @@ class SectionController extends Controller
      */
     public function actionIndex()
     {
+    	if (Yii::$app->user->isGuest || Yii::$app->session->get('user.is_admin') != true){
+    		return $this->redirect(['error']);
+    	}
+    	
+    	$queryParams = Yii::$app->request->queryParams;
+    	$queryParams['is_deleted'] = 0;
+    	
         $searchModel = new SectionSearch();
-        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+        $dataProvider = $searchModel->search($queryParams);
+        $post_msg = null;
 
         return $this->render('index', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
+        	'post_msg' => $post_msg,
         ]);
     }
 
@@ -51,6 +73,10 @@ class SectionController extends Controller
      */
     public function actionView($id)
     {
+    	if (Yii::$app->user->isGuest || Yii::$app->session->get('user.is_admin') != true){
+    		return $this->redirect(['error']);
+    	}
+    	
         return $this->render('view', [
             'model' => $this->findModel($id),
         ]);
@@ -63,13 +89,23 @@ class SectionController extends Controller
      */
     public function actionCreate()
     {
-        $model = new Section();
+    	if (Yii::$app->user->isGuest || Yii::$app->session->get('user.is_admin') != true){
+    		return $this->redirect(['error']);
+    	}
+    	
+        $modelSection = new Section();
+        //$modelsArticle = [new Article()];
+        $post_msg = null;
+        
+        $modelSection->created_on = date("Y-m-d H:i:s");
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->section_id]);
+        if ($modelSection->load(Yii::$app->request->post()) && $modelSection->save()) {
+            return $this->redirect(['view', 'id' => $modelSection->section_id]);
         } else {
             return $this->render('create', [
-                'model' => $model,
+                'modelSection' => $modelSection,
+            	//'modelsArticle' => (empty($modelsArticle)) ? [new Article()] : $modelsArticle,
+            	'post_msg' => $post_msg,
             ]);
         }
     }
@@ -82,13 +118,23 @@ class SectionController extends Controller
      */
     public function actionUpdate($id)
     {
-        $model = $this->findModel($id);
+    	if (Yii::$app->user->isGuest || Yii::$app->session->get('user.is_admin') != true){
+    		return $this->redirect(['error']);
+    	}
+    	
+        $modelSection = $this->findModel($id);
+        $modelSection->updated_on = date("Y-m-d H:i:s");
+        
+        //$modelsArticle = $modelSection->articles;
+        $post_msg = null;
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->section_id]);
+        if ($modelSection->load(Yii::$app->request->post()) && $modelSection->save()) {
+            return $this->redirect(['view', 'id' => $modelSection->section_id]);
         } else {
             return $this->render('update', [
-                'model' => $model,
+                'modelSection' => $modelSection,
+            	//'modelsArticle' => (empty($modelsArticle)) ? [new Article()] : $modelsArticle,
+            	'post_msg' => $post_msg,
             ]);
         }
     }
@@ -101,6 +147,10 @@ class SectionController extends Controller
      */
     public function actionDelete($id)
     {
+    	if (Yii::$app->user->isGuest || Yii::$app->session->get('user.is_admin') != true){
+    		return $this->redirect(['error']);
+    	}
+    	
         $this->findModel($id)->delete();
 
         return $this->redirect(['index']);

@@ -5,6 +5,7 @@ namespace backend\controllers;
 use Yii;
 use common\models\Volume;
 use common\models\Issue;
+use common\models\Section;
 use common\models\Image;
 use common\models\DynamicForms;
 use backend\models\VolumeSearch;
@@ -240,16 +241,25 @@ class VolumeController extends Controller
 								$new_cover_image = \yii\web\UploadedFile::getInstance($modelIssue, "[{$index}]cover_image");
 								
 								$is_modified = false;
+								$can_modify = true;
 								$modelIssue = Issue::findOne($modelIssue->issue_id);
-								$modelIssue->volume_id = $modelVolume->volume_id;
-								if($modelIssue->title != Yii::$app->request->post()['Issue'][$index]['title']){
-									$is_modified = true;
+								if(!isset($modelIssue)){
+									$modelIssue = new Issue();
 									$modelIssue->title = Yii::$app->request->post()['Issue'][$index]['title'];
-								}
-								if($modelIssue->sort_in_volume != $index){
-									$is_modified = true;
 									$modelIssue->sort_in_volume = $index;
-								}								
+									$modelIssue->created_on = date("Y-m-d H:i:s");
+									$can_modify = false;
+								} else {									
+									if($modelIssue->title != Yii::$app->request->post()['Issue'][$index]['title']){
+										$is_modified = true;
+										$modelIssue->title = Yii::$app->request->post()['Issue'][$index]['title'];
+									}
+									if($modelIssue->sort_in_volume != $index){
+										$is_modified = true;
+										$modelIssue->sort_in_volume = $index;
+									}
+								}
+								$modelIssue->volume_id = $modelVolume->volume_id;
 							
         						if(isset($new_cover_image) && (count($new_cover_image) > 0)) {
 	        						$modelIssue->cover_image = $new_cover_image;
@@ -270,7 +280,9 @@ class VolumeController extends Controller
 	        									$modelIssue->cover_image = null;
 	        								}
 	        								
-	        								$is_modified = true;
+	        								if($can_modify == true){
+	        									$is_modified = true;
+	        								}	        								
 	        							}
 	        						
 	        						}
@@ -283,7 +295,18 @@ class VolumeController extends Controller
         						if (($flag = $modelIssue->save(false)) === false) {        							
         							$transaction->rollBack();
         							break;
-        						}        						
+        						} else {
+        							$modelSection = new Section();
+        							$modelSection->title = 'Original/research articles';
+        							$modelSection->sort_in_issue = 0;
+        							$modelSection->issue_id = $modelIssue->issue_id;
+        							$modelSection->created_on = date("Y-m-d H:i:s");
+        							
+        							if (($flag = $modelSection->save(false)) === false) {
+        								$transaction->rollBack();
+        								break;
+        							}
+        						}
         					}
         				}
         			}

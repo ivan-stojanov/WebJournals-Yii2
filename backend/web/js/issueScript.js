@@ -34,3 +34,20 @@ $("#issue-is_special_issue").change(function() {
     	$(".special-issue-div").addClass("hidden-div");
     }
 });
+
+$('#is_special_issue').on('switchChange.bootstrapSwitch', function(event, state) {
+	//console.log(this); // DOM element
+	//console.log(event); // jQuery event
+	//console.log(state); // true | false
+	
+//	var switchInput = $(this);	
+	var new_state = state;
+	if(new_state === true) {
+		$('#special_title_container').show( "slow" );
+		$('#special_editor_container').show( "slow" );			
+	} else {
+		$('#special_title_container').hide( "slow" );
+		$('#special_editor_container').hide( "slow" );			
+	}		
+});
+			

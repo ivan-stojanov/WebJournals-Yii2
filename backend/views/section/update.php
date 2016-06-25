@@ -3,19 +3,16 @@
 use yii\helpers\Html;
 
 /* @var $this yii\web\View */
-/* @var $model common\models\Section */
+/* @var $model common\models\Volume */
 
-$this->title = 'Update Section: ' . $model->title;
-$this->params['breadcrumbs'][] = ['label' => 'Sections', 'url' => ['index']];
-$this->params['breadcrumbs'][] = ['label' => $model->title, 'url' => ['view', 'id' => $model->section_id]];
-$this->params['breadcrumbs'][] = 'Update';
+$this->title = 'Update Section';
 ?>
 <div class="section-update">
 
-    <h1><?= Html::encode($this->title) ?></h1>
-
     <?= $this->render('_form', [
-        'model' => $model,
-    ]) ?>
+        'modelSection' => $modelSection,
+    	//'modelsArticle' => $modelsArticle,    		
+    	'post_msg' => $post_msg
+    ]) ?>   
 
 </div>

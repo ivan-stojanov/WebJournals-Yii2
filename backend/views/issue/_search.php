@@ -27,6 +27,14 @@ use common\models\Issue;
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
         'filterModel' => $searchModel,
+    	'rowOptions' => function ($data) {
+        	if($data->is_current == 1){
+        		return [
+        				'class' => 'is_current',
+        				'title' => 'Current Issue',
+        		];
+        	}
+        },
         'columns' => [
             ['class' => 'yii\grid\SerialColumn'],
 

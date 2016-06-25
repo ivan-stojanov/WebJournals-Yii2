@@ -8,24 +8,24 @@ use yii\widgets\ActiveForm;
 /* @var $form yii\widgets\ActiveForm */
 ?>
 
+<?php if(isset($post_msg)){ ?>
+    <div class="alert alert-dismissable <?php echo "alert-".$post_msg["type"];?>" id="homepage-section-alert"> <?php /*alert-danger alert-success alert-warning */ ?>
+	    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+	    <strong><span id="homepage-section-alert-msg"></span><?php echo $post_msg["text"]; ?></strong>
+	</div>
+<?php } ?>
+
+<h1><?= Html::encode($this->title) ?></h1>
+<hr>
+
 <div class="section-form">
 
     <?php $form = ActiveForm::begin(); ?>
 
-    <?= $form->field($model, 'issue_id')->textInput() ?>
-
-    <?= $form->field($model, 'title')->textarea(['rows' => 6]) ?>
-
-    <?= $form->field($model, 'sort_in_issue')->textInput() ?>
-
-    <?= $form->field($model, 'created_on')->textInput() ?>
-
-    <?= $form->field($model, 'updated_on')->textInput() ?>
-
-    <?= $form->field($model, 'is_deleted')->textInput() ?>
+    <?= $form->field($modelSection, 'title')->textarea(['rows' => 6]) ?>
 
     <div class="form-group">
-        <?= Html::submitButton($model->isNewRecord ? 'Create' : 'Update', ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary']) ?>
+        <?= Html::submitButton($modelSection->isNewRecord ? 'Create' : 'Update', ['class' => $modelSection->isNewRecord ? 'btn btn-success' : 'btn btn-primary']) ?>
     </div>
 
     <?php ActiveForm::end(); ?>

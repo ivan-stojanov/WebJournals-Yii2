@@ -7,22 +7,23 @@ use yii\widgets\DetailView;
 /* @var $model common\models\Section */
 
 $this->title = $model->title;
-$this->params['breadcrumbs'][] = ['label' => 'Sections', 'url' => ['index']];
-$this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="section-view">
 
-    <h1><?= Html::encode($this->title) ?></h1>
+    <h2><i>Section: </i><?php echo Html::encode($this->title) ?></h2>
+    <hr>
 
     <p>
-        <?= Html::a('Update', ['update', 'id' => $model->section_id], ['class' => 'btn btn-primary']) ?>
-        <?= Html::a('Delete', ['delete', 'id' => $model->section_id], [
+        <?= Html::a('Update Section', ['update', 'id' => $model->section_id], ['class' => 'btn btn-primary']) ?>
+        <?= Html::a('Delete Section', ['delete', 'id' => $model->section_id], [
             'class' => 'btn btn-danger',
             'data' => [
                 'confirm' => 'Are you sure you want to delete this item?',
                 'method' => 'post',
             ],
         ]) ?>
+		 <?= Html::a('View Volume', ['volume/view', 'id' => $model->issue->volume_id], ['class' => 'btn btn-default']) ?>
+		 <?= Html::a('View Issue', ['issue/view', 'id' => $model->issue_id], ['class' => 'btn btn-info']) ?>
     </p>
 
     <?= DetailView::widget([

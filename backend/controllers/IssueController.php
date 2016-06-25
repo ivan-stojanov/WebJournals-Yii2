@@ -13,6 +13,7 @@ use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 use yii\helpers\ArrayHelper;
+use yii\base\Object;
 
 /**
  * IssueController implements the CRUD actions for Issue model.
@@ -323,22 +324,28 @@ return $this->render('update', [
         				}
         	
         				if ($flag) {
-        					foreach ($modelsSection as $index => $modelSection) {
-        						 
+        					foreach ($modelsSection as $index => $modelSection) {        						 
         						$new_cover_image = \yii\web\UploadedFile::getInstance($modelIssue, "[{$index}]cover_image");
         	
         						$is_modified = false;
         						$modelSection = Section::findOne($modelSection->section_id);
-        						$modelSection->issue_id = $modelIssue->issue_id;
-        						if($modelSection->title != Yii::$app->request->post()['Section'][$index]['title']){
-        							$is_modified = true;
+        						if(!isset($modelSection)){
+        							$modelSection = new Section();
         							$modelSection->title = Yii::$app->request->post()['Section'][$index]['title'];
-        						}
-        						if($modelSection->sort_in_issue != $index){
-        							$is_modified = true;
         							$modelSection->sort_in_issue = $index;
+        							$modelSection->created_on = date("Y-m-d H:i:s");
+        						} else {
+        							if($modelSection->title != Yii::$app->request->post()['Section'][$index]['title']){
+        								$is_modified = true;
+        								$modelSection->title = Yii::$app->request->post()['Section'][$index]['title'];
+        							}
+        							if($modelSection->sort_in_issue != $index){
+        								$is_modified = true;
+        								$modelSection->sort_in_issue = $index;
+        							}        							
         						}
-        	
+        						$modelSection->issue_id = $modelIssue->issue_id;
+        						        	
         						if($is_modified){
         							$modelSection->updated_on = date("Y-m-d H:i:s");
         						}

@@ -101,7 +101,7 @@ AppAsset::register($this);
                         <?php } ?>
                         <?php if (Yii::$app->session->get('user.is_admin') == true){ ?>
                         <li>
-							<a href='#'><i class="fa fa-book fa-fw"></i> Announcements<span class="fa arrow"></span></a>
+							<a href='#'><i class="fa fa-comments-o fa-fw"></i> Announcements<span class="fa arrow"></span></a>
                             <ul class="nav nav-second-level">
                             	<li>
                                     <a href='<?php echo Url::to(['/announcement/index']); ?>'><i class="fa fa-list fa-fw"></i> List All</a>
@@ -141,7 +141,7 @@ AppAsset::register($this);
                         <?php } ?>
                         <?php if (Yii::$app->session->get('user.is_admin') == true){ ?>
                         <li>
-                            <a href='#'><i class="fa fa-users fa-fw"></i> Volumes / Issues<span class="fa arrow"></span></a>
+                            <a href='#'><i class="fa fa-book fa-fw"></i> Volumes / Issues<span class="fa arrow"></span></a>
                             <ul class="nav nav-second-level">
                             	<li>
                                     <a href='<?php echo Url::to(['/volume/index']); ?>'><i class="fa fa-list fa-fw"></i> List All</a>
@@ -155,7 +155,7 @@ AppAsset::register($this);
                         <?php } ?>
                         <?php if (Yii::$app->session->get('user.is_admin') == true){ ?>
                         <li>
-                            <a href='#'><i class="fa fa-users fa-fw"></i> Issues / Sections<span class="fa arrow"></span></a>
+                            <a href='#'><i class="fa fa-edit fa-fw"></i> Issues / Sections<span class="fa arrow"></span></a>
                             <ul class="nav nav-second-level">
                             	<li>
                                     <a href='<?php echo Url::to(['/issue/index']); ?>'><i class="fa fa-list fa-fw"></i> List All</a>
@@ -169,7 +169,7 @@ AppAsset::register($this);
                         <?php } ?>
                         <?php if (Yii::$app->session->get('user.is_admin') == true){ ?>
                         <li>
-                            <a href='#'><i class="fa fa-users fa-fw"></i> Sections / Articles<span class="fa arrow"></span></a>
+                            <a href='#'><i class="fa fa-tasks fa-fw"></i> Sections<span class="fa arrow"></span></a>
                             <ul class="nav nav-second-level">
                             	<li>
                                     <a href='<?php echo Url::to(['/section/index']); ?>'><i class="fa fa-list fa-fw"></i> List All</a>
@@ -180,7 +180,21 @@ AppAsset::register($this);
                             </ul>
                             <!-- /.nav-second-level -->
                         </li>
-                        <?php } ?>                        
+                        <?php } ?>
+                        <?php if (Yii::$app->session->get('user.is_admin') == true){ ?>
+                        <li>
+                            <a href='#'><i class="fa fa-newspaper-o fa-fw"></i> Articles<span class="fa arrow"></span></a>
+                            <ul class="nav nav-second-level">
+                            	<li>
+                                    <a href='<?php echo Url::to(['/article/index']); ?>'><i class="fa fa-list fa-fw"></i> List All</a>
+                                </li>
+                                <li>
+                                    <a href='<?php echo Url::to(['/article/create']); ?>'><i class="fa fa-plus fa-fw"></i> Create New</a>
+                                </li>
+                            </ul>
+                            <!-- /.nav-second-level -->
+                        </li>
+                        <?php } ?>
 						<!-- 
                         <li>
                             <a href="forms.html"><i class="fa fa-edit fa-fw"></i> Forms</a>

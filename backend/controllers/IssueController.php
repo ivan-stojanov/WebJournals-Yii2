@@ -187,6 +187,14 @@ class IssueController extends Controller
         			}
         			if ($flag) {
         				$transaction->commit();
+        				
+        				if(isset($modelIssue) && isset($modelIssue->is_current) && ($modelIssue->is_current)){
+        					$previous_current_issues = Issue::updateAll(
+        							['is_current' => 0], 
+        							'is_current = 1 AND issue_id != '.$modelIssue->issue_id
+        					);
+        				}
+        				
         				return $this->redirect(['view', 'id' => $modelIssue->issue_id]);
         			}
         		} catch (Exception $e) {
@@ -360,6 +368,14 @@ return $this->render('update', [
 
         			if ($flag) {
         				$transaction->commit();
+        				
+        				if(isset($modelIssue) && isset($modelIssue->is_current) && ($modelIssue->is_current)){
+        					$previous_current_issues = Issue::updateAll(
+        							['is_current' => 0],
+        							'is_current = 1 AND issue_id != '.$modelIssue->issue_id
+        					);
+        				}        				
+        				
         				return $this->redirect(['view', 'id' => $modelIssue->issue_id]);
         			}
         			 

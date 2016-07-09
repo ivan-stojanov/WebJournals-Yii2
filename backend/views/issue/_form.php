@@ -99,7 +99,22 @@ use kartik\switchinput\SwitchInput;
 		if(isset($modelIssue) && isset($modelIssue->is_special_issue) && ($modelIssue->is_special_issue)){
 			$is_special_issue_flag = true;
 		}
+		
+		$is_current_issue_flag = false;
+		if(isset($modelIssue) && isset($modelIssue->is_current) && ($modelIssue->is_current)){
+			$is_current_issue_flag = true;
+		}		
 	?>
+	
+	<?= $form->field($modelIssue, 'is_current', [
+    		'options' => [
+    			'id' => 'is_current_container'
+    		]		
+    ])->widget(SwitchInput::classname(), [
+    		'options' => [
+    			'id' => 'is_current'    		
+    		]
+    ]); ?>
 
     <?= $form->field($modelIssue, 'is_special_issue', [
     		'options' => [

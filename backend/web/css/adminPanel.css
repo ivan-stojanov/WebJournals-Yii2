@@ -154,7 +154,10 @@
 /* Admin: Issues CRUD - START */
 #is_special_issue_container span.bootstrap-switch-handle-on,
 #is_special_issue_container span.bootstrap-switch-handle-off,
-#is_special_issue_container span.bootstrap-switch-label {
+#is_special_issue_container span.bootstrap-switch-label,
+#is_current_container span.bootstrap-switch-handle-on,
+#is_current_container span.bootstrap-switch-handle-off,
+#is_current_container span.bootstrap-switch-label {
 	width: 50px !important;
 }
 

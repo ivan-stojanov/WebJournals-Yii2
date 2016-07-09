@@ -6,6 +6,7 @@ use yii\grid\GridView;
 use yii\jui\DatePicker;
 use yii\base\Widget;
 use yii\grid\DataColumn;
+use yii\web\UrlManager;
 use common\models\Issue;
 
 /* @var $this yii\web\View */
@@ -22,17 +23,20 @@ use common\models\Issue;
 		</div>
 	<?php } ?>
 	<h1><?php echo "Issue List" ?></h1>
-	<hr>
-
+	<hr>	
+	
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
         'filterModel' => $searchModel,
     	'rowOptions' => function ($data) {
         	if($data->is_current == 1){
+        		$test = " is current";
         		return [
         				'class' => 'is_current',
         				'title' => 'Current Issue',
         		];
+        	} else {
+        		$test = "is NOT current";
         	}
         },
         'columns' => [
@@ -84,7 +88,7 @@ use common\models\Issue;
             // 'updated_on',
             // 'is_deleted',
 
-            ['class' => 'yii\grid\ActionColumn'],
+            ['class' => 'yii\grid\ActionColumn']
         ],
     ]); ?>
 

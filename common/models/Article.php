@@ -123,17 +123,17 @@ class Article extends \yii\db\ActiveRecord
     {
     	return [
     			'article_id' => 'Article ID',
-    			'section_id' => 'Section ID',
-    			'title' => 'Title',
+    			'section_id' => 'Section name',
+    			'title' => 'Article title',
     			'abstract' => 'Abstract',
     			'content' => 'Content',
-    			'pdf_content' => 'Pdf Content',
-    			'page_from' => 'Page From',
-    			'page_to' => 'Page To',
-    			'sort_in_section' => 'Sort In Section',
-    			'created_on' => 'Created On',
-    			'updated_on' => 'Updated On',
-    			'is_deleted' => 'Is Deleted',
+    			'pdf_content' => 'Pdf file',
+    			'page_from' => 'Page from',
+    			'page_to' => 'Page to',
+    			'sort_in_section' => 'Sort in section',
+            	'created_on' => 'Created on',
+            	'updated_on' => 'Updated on',
+            	'is_deleted' => 'Is deleted',
     	];
     }
 }

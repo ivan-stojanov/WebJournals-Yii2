@@ -1,7 +1,10 @@
 <?php
 
+use common\models\Section;
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
+use yii\helpers\ArrayHelper;
+use dosamigos\tinymce\TinyMce;
 
 /* @var $this yii\web\View */
 /* @var $model common\models\Article */
@@ -21,20 +24,55 @@ use yii\widgets\ActiveForm;
 <div class="article-form">
 
     <?php $form = ActiveForm::begin(); ?>
+    
+    <?= $form->field($modelArticle, 'title')->textInput(['maxlength' => true]) ?>
+    
+    <?= $form->field($modelArticle, 'section_id')->dropDownList(
+    		ArrayHelper::map(Section::find()->all(), 'section_id', 'title'),
+    		['prompt' => 'Select Section']
+    ) ?>
 
-    <?= $form->field($modelArticle, 'title')->textarea(['rows' => 6]) ?>
+    <?php echo $form->field($modelArticle, 'abstract')->widget(TinyMce::className(), [
+	    'options' => ['rows' => 5],
+	    'language' => 'en_GB',
+	    'clientOptions' => [
+			'theme' => "modern",
+		    'plugins' => [
+		        "advlist autolink lists link image charmap print preview hr anchor pagebreak",
+		        "searchreplace wordcount visualblocks visualchars code fullscreen",
+		        "insertdatetime media nonbreaking save table contextmenu directionality",
+		        "emoticons template paste textcolor colorpicker textpattern imagetools"
+		    ],
+		    'toolbar1' => "insertfile undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image",
+		    'toolbar2' => "print preview media | forecolor backcolor emoticons",
+		    'image_advtab' => true,			    
+	    ]
+	]);?> 
 
-    <?= $form->field($modelArticle, 'abstract')->textarea(['rows' => 6]) ?>
+    <?php echo $form->field($modelArticle, 'content')->widget(TinyMce::className(), [
+	    'options' => ['rows' => 15],
+	    'language' => 'en_GB',
+	    'clientOptions' => [
+			'theme' => "modern",
+		    'plugins' => [
+		        "advlist autolink lists link image charmap print preview hr anchor pagebreak",
+		        "searchreplace wordcount visualblocks visualchars code fullscreen",
+		        "insertdatetime media nonbreaking save table contextmenu directionality",
+		        "emoticons template paste textcolor colorpicker textpattern imagetools"
+		    ],
+		    'toolbar1' => "insertfile undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image",
+		    'toolbar2' => "print preview media | forecolor backcolor emoticons",
+		    'image_advtab' => true,			    
+	    ]
+	]);?>   
 
-    <?= $form->field($modelArticle, 'content')->textarea(['rows' => 6]) ?>
+    <?php /* <?= $form->field($modelArticle, 'pdf_content')->textarea(['rows' => 6]) ?> */ ?>
 
-    <?= $form->field($modelArticle, 'pdf_content')->textarea(['rows' => 6]) ?>
+    <?php /* <?= $form->field($modelArticle, 'page_from')->textInput(['maxlength' => true]) ?> */ ?>
 
-    <?= $form->field($modelArticle, 'page_from')->textInput(['maxlength' => true]) ?>
+    <?php /* <?= $form->field($modelArticle, 'page_to')->textInput(['maxlength' => true]) ?> */ ?>
 
-    <?= $form->field($modelArticle, 'page_to')->textInput(['maxlength' => true]) ?>
-
-    <?= $form->field($modelArticle, 'sort_in_section')->textInput() ?>
+    <?php /* <?= $form->field($modelArticle, 'sort_in_section')->textInput() ?> */ ?>
 
     <div class="form-group">
         <?= Html::submitButton($modelArticle->isNewRecord ? 'Create' : 'Update', ['class' => $modelArticle->isNewRecord ? 'btn btn-success' : 'btn btn-primary']) ?>

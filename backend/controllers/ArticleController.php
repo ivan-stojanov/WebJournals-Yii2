@@ -3,6 +3,7 @@
 namespace backend\controllers;
 
 use Yii;
+use common\models\Section;
 use common\models\Article;
 use backend\models\ArticleSearch;
 use yii\web\Controller;
@@ -98,14 +99,35 @@ class ArticleController extends Controller
         
         $modelArticle->created_on = date("Y-m-d H:i:s");
 
-        if ($modelArticle->load(Yii::$app->request->post()) && $modelArticle->save()) {
-            return $this->redirect(['view', 'id' => $modelArticle->article_id]);
-        } else {
-            return $this->render('create', [
-                'modelArticle' => $modelArticle,
-            	'post_msg' => $post_msg,
-            ]);
+        if ($modelArticle->load(Yii::$app->request->post())) {
+        	
+        	$modelSection = Section::findOne($modelArticle->section_id);
+        	 
+        	$modelArticle->sort_in_section = count($modelSection->articles);
+        	        	
+        	// validate all models
+        	$valid = $modelArticle->validate();
+        	
+        	if ($valid) {
+        		$transaction = \Yii::$app->db->beginTransaction();
+        		try {
+        			if ($flag = $modelArticle->save(false)) {
+        			}
+        			if ($flag) {
+        				$transaction->commit();
+        	
+            			return $this->redirect(['view', 'id' => $modelArticle->article_id]);
+        			}
+        		} catch (Exception $e) {
+        			$transaction->rollBack();
+        		}
+        	}        	
         }
+        
+        return $this->render('create', [
+            'modelArticle' => $modelArticle,
+            'post_msg' => $post_msg,
+        ]);
     }
 
     /**
@@ -122,17 +144,62 @@ class ArticleController extends Controller
     	
         $modelArticle = $this->findModel($id);
         $modelArticle->updated_on = date("Y-m-d H:i:s");
-
+        $update_sections_after_save = false; $section_id_old = 0; $section_id_new = 0;
+        
         $post_msg = null;
         
-        if ($modelArticle->load(Yii::$app->request->post()) && $modelArticle->save()) {
-            return $this->redirect(['view', 'id' => $modelArticle->article_id]);
-        } else {
-            return $this->render('update', [
-                'modelArticle' => $modelArticle,
-            	'post_msg' => $post_msg,
-            ]);
+        if ($modelArticle->load(Yii::$app->request->post())) {
+        	
+        	//if parent volume is changed, manage sorting of issues in both volumes
+        	if(isset($modelArticle->attributes) && isset($modelArticle->attributes['section_id']) &&
+        	   isset($modelArticle->oldAttributes) && isset($modelArticle->oldAttributes['section_id'])) {
+        			$update_sections_after_save = true;
+        			$section_id_old = $modelArticle->oldAttributes['section_id'];
+        			$section_id_new = $modelArticle->attributes['section_id'];
+        			if((string)$modelArticle->attributes['section_id'] != (string)$modelArticle->oldAttributes['section_id']){
+        				$modelNewSection = Section::findOne(['section_id' => $modelArticle->attributes['section_id']]);
+        				$modelArticle->sort_in_section = count($modelNewSection->articles);
+        			}
+        	}
+        	
+        	// validate all models
+        	$valid = $modelArticle->validate();
+        	
+        	if ($valid) {
+        		$transaction = \Yii::$app->db->beginTransaction();
+        		try {
+        			if ($flag = $modelArticle->save(false)) {
+        	
+        			}
+        			if ($flag) {
+        				$transaction->commit();
+        	
+        				if($update_sections_after_save == true && $section_id_old > 0 && $section_id_new > 0){
+        					$modelOldSection = Section::findOne(['section_id' => $section_id_old]);
+        					foreach ($modelOldSection->articles as $indexItem => $modelArticleItem) {
+        						$modelArticleItem->sort_in_section = $indexItem;
+        						$modelArticleItem->save();
+        					}
+        	
+        					$modelNewSection = Section::findOne(['section_id' => $section_id_new]);
+        					foreach ($modelNewSection->articles as $indexItem => $modelArticleItem) {
+        						$modelArticleItem->sort_in_section = $indexItem;
+        						$modelArticleItem->save();
+        					}
+        				}
+        	
+           				return $this->redirect(['view', 'id' => $modelArticle->article_id]);
+              		}
+        		} catch (Exception $e) {
+        			$transaction->rollBack();
+        		}
+        	}        			
         }
+        
+        return $this->render('update', [
+            'modelArticle' => $modelArticle,
+            'post_msg' => $post_msg,
+        ]);
     }
 
     /**
@@ -147,8 +214,15 @@ class ArticleController extends Controller
     		return $this->redirect(['error']);
     	}
     	
-        $this->findModel($id)->delete();
-
+        $article_to_delete = $this->findModel($id);
+        $parent_section = $article_to_delete->section;
+        $article_to_delete->delete();
+        
+        foreach ($parent_section->articles as $index => $modelArticle) {
+        	$modelArticle->sort_in_section = $index;
+        	$modelArticle->save();
+        }
+        
         return $this->redirect(['index']);
     }
 

@@ -70,7 +70,9 @@ class Section extends \yii\db\ActiveRecord
      */
     public function getArticles()
     {
-        return $this->hasMany(Article::className(), ['section_id' => 'section_id']);
+        return $this->hasMany(\common\models\Article::className(),  ['section_id' => 'section_id'])
+        			->andOnCondition(['is_deleted' => 0])
+        			->orderBy(['sort_in_section' => SORT_ASC]);        
     }
 
     /**

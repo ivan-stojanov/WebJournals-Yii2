@@ -109,7 +109,7 @@ class IssueController extends Controller
      	
         	$modelVolume = Volume::findOne($modelIssue->volume_id);
         	
-        	$modelIssue->sort_in_volume = count($modelVolume->issues) + 1;
+        	$modelIssue->sort_in_volume = count($modelVolume->issues);
         	if(isset($modelIssue->published_on)){
         		$year_int = intval(date("Y", strtotime($modelIssue->published_on)));
         		if($year_int > 2010){
@@ -225,6 +225,7 @@ class IssueController extends Controller
     	
         $modelIssue = $this->findModel($id);
         $modelIssue->updated_on = date("Y-m-d H:i:s");
+        $update_volumes_after_save = false; $volume_id_old = 0; $volume_id_new = 0;
         
         $initial_cover_image = null;
         if(isset($modelIssue->cover_image)){
@@ -298,6 +299,18 @@ return $this->render('update', [
         			copy($issueImagesOldPathDIR.$image_path, $issueImagesNewPathDIR.$image_path);
         		}        		
         	}
+        	
+			//if parent volume is changed, manage sorting of issues in both volumes
+			if(isset($modelIssue->attributes) && isset($modelIssue->attributes['volume_id']) &&
+			   isset($modelIssue->oldAttributes) && isset($modelIssue->oldAttributes['volume_id'])) {			   	
+			   		$update_volumes_after_save = true;
+			   		$volume_id_old = $modelIssue->oldAttributes['volume_id']; 
+			   		$volume_id_new = $modelIssue->attributes['volume_id'];
+				   	if((string)$modelIssue->attributes['volume_id'] != (string)$modelIssue->oldAttributes['volume_id']){
+				   		$modelNewVolume = Volume::findOne(['volume_id' => $modelIssue->attributes['volume_id']]);
+				   		$modelIssue->sort_in_volume = count($modelNewVolume->issues);
+				   	}			   	
+			}
       	 
         	// get Section data from POST
         	$modelsSection = DynamicForms::createMultiple(Section::classname(), 'section_id', $modelsSection);
@@ -376,9 +389,22 @@ return $this->render('update', [
         					);
         				}        				
         				
+        				if($update_volumes_after_save == true && $volume_id_old > 0 && $volume_id_new > 0){
+        					$modelOldVolume = Volume::findOne(['volume_id' => $volume_id_old]);        					
+        					foreach ($modelOldVolume->issues as $indexItem => $modelIssueItem) {
+        						$modelIssueItem->sort_in_volume = $indexItem;
+        						$modelIssueItem->save();
+        					}
+        					
+        					$modelNewVolume = Volume::findOne(['volume_id' => $volume_id_new]);
+        					foreach ($modelNewVolume->issues as $indexItem => $modelIssueItem) {
+        						$modelIssueItem->sort_in_volume = $indexItem;
+        						$modelIssueItem->save();
+        					}
+        				}
+        				
         				return $this->redirect(['view', 'id' => $modelIssue->issue_id]);
-        			}
-        			 
+        			}        			 
         		} catch (Exception $e) {
         			$transaction->rollBack();
         		}
@@ -404,7 +430,14 @@ return $this->render('update', [
     		return $this->redirect(['error']);
     	}
     	
-        $this->findModel($id)->delete();
+    	$issue_to_delete = $this->findModel($id);
+    	$parent_volume = $issue_to_delete->volume;
+        $issue_to_delete->delete();
+        
+    	foreach ($parent_volume->issues as $index => $modelIssue) {
+        	$modelIssue->sort_in_volume = $index;
+        	$modelIssue->save();
+        }
 
         return $this->redirect(['index']);
     }

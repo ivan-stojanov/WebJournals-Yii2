@@ -157,11 +157,22 @@ class VolumeController extends Controller
         						}  else {
 	        						$modelIssue->cover_image = null;
 	        					}
-        					}
-        	 
+        					}        	 
+        					
         					if (($flag = $modelIssue->save(false)) === false) {
         						$transaction->rollBack();
         						break;
+        					} else {
+        						$modelSection = new Section();
+        						$modelSection->title = 'Original/research articles';
+        						$modelSection->sort_in_issue = 0;
+        						$modelSection->issue_id = $modelIssue->issue_id;
+        						$modelSection->created_on = date("Y-m-d H:i:s");
+        						 
+        						if (($flag = $modelSection->save(false)) === false) {
+        							$transaction->rollBack();
+        							break;
+        						}
         					}
         				}
         			}         			

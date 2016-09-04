@@ -29,24 +29,35 @@ use common\models\Issue;
         'columns' => [
             ['class' => 'yii\grid\SerialColumn'],
 
-            'title:ntext',
+           // 'title:ntext',
+        	[
+        		'class' => DataColumn::className(), // this line is optional
+        		'attribute' => 'title',
+        		'label' => 'Section title',
+        		'value' =>function ($data) {
+        			return displayColumnContent($data->title, 45);
+        		},
+        		"format" => "HTML",
+        		'headerOptions' => ['style' => 'width:35%'],
+        	],
         	[
 	        	'class' => DataColumn::className(), // this line is optional
 	        	'attribute' => 'issue_id',
 	        	'label' => 'Issue title',
 	        	'value' =>function ($data) {
-	        		return $data->issue->title;
+	        		return displayColumnContent($data->issue->title, 40);
 	        	},
 	        	"format" => "HTML",
-	        	'filter'=>Section::get_issues(),
+	        	'filter' =>Section::get_issues(),
+	        	'headerOptions' => ['style' => 'width:30%'],
         	],
         	[
 	        	'class' => DataColumn::className(), // this line is optional
 	        	'attribute' => 'issue.volume.title',
 	        	'label' => 'Volume title',
-	        	'value' =>function ($data) {
-	        		return $data->issue->volume->title;
-	        	},
+        		'value' =>function ($data) {
+        			return displayColumnContent($data->issue->volume->title, 25);
+        		},        			
 	        	"format" => "HTML",
 	        	'filter'=>Issue::get_volumes(),
         	],        	
@@ -56,5 +67,13 @@ use common\models\Issue;
 
             ['class' => 'yii\grid\ActionColumn'],
         ],
-    ]); ?>
+    ]); 
+    
+    function displayColumnContent($contenttext, $contentlimitlength){
+    	$displaytext = $contenttext;
+    	if(strlen($displaytext) > $contentlimitlength) $displaytext = substr($displaytext, 0, $contentlimitlength)."...";
+    	return "<div title='".$contenttext."'>".$displaytext."</div>";
+    }
+    
+    ?>
 </div>

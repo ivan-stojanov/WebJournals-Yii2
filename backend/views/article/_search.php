@@ -30,36 +30,49 @@ use common\models\Issue;
         'columns' => [
             ['class' => 'yii\grid\SerialColumn'],
 
-            'title:ntext',
+            //'title:ntext',
+        	[
+        		'class' => DataColumn::className(), // this line is optional
+        		'attribute' => 'title',
+        		'label' => 'Article title',
+        		'value' =>function ($data) {
+        			return displayColumnContent($data->title, 30);
+        		},
+        		"format" => "HTML",
+        		'headerOptions' => ['style' => 'width:25%'],
+        	], 
         	[
 	        	'class' => DataColumn::className(), // this line is optional
 	        	'attribute' => 'section_id',
 	        	'label' => 'Section title',
 	        	'value' =>function ($data) {
-	        		return $data->section->title;
+	        		return displayColumnContent($data->section->title, 30);
 	        	},
 	        	"format" => "HTML",
 	        	'filter'=>Article::get_sections(),
+	        	'headerOptions' => ['style' => 'width:25%'],
         	],
         	[
 	        	'class' => DataColumn::className(), // this line is optional
 	        	'attribute' => 'section.issue.title',
 	        	'label' => 'Issue title',
 	        	'value' =>function ($data) {
-	        		return $data->section->issue->title;
+	        		return displayColumnContent($data->section->issue->title, 25);
 	        	},
 	        	"format" => "HTML",
 	        	'filter'=>Section::get_issues(),
+	        	'headerOptions' => ['style' => 'width:20%'],
         	],        	
         	[
 	        	'class' => DataColumn::className(), // this line is optional
 	        	'attribute' => 'section.issue.volume.title',
 	        	'label' => 'Volume title',
 	        	'value' =>function ($data) {
-	        		return $data->section->issue->volume->title;
+	        		return displayColumnContent($data->section->issue->volume->title, 25);
 	        	},
 	        	"format" => "HTML",
 	        	'filter'=>Issue::get_volumes(),
+	        	'headerOptions' => ['style' => 'width:20%'],
         	],        	
             // 'created_on',
             // 'updated_on',
@@ -67,5 +80,13 @@ use common\models\Issue;
 
             ['class' => 'yii\grid\ActionColumn'],
         ],
-    ]); ?>
+    ]); 
+    
+    function displayColumnContent($contenttext, $contentlimitlength){
+    	$displaytext = $contenttext;
+    	if(strlen($displaytext) > $contentlimitlength) $displaytext = substr($displaytext, 0, $contentlimitlength)."...";
+    	return "<div title='".$contenttext."'>".$displaytext."</div>";
+    }
+    
+    ?>
 </div>

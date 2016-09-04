@@ -28,9 +28,9 @@ use dosamigos\tinymce\TinyMce;
     <?= $form->field($modelArticle, 'title')->textInput(['maxlength' => true]) ?>
     
     <?= $form->field($modelArticle, 'section_id')->dropDownList(
-    		ArrayHelper::map(Section::find()->all(), 'section_id', 'title'),
+    		ArrayHelper::map(Section::find()->all(), 'section_id', 'volumeissuesectiontitle'),
     		['prompt' => 'Select Section']
-    ) ?>
+    )->label('Volume name >> Issue name >> Section name') ?>
 
     <?php echo $form->field($modelArticle, 'abstract')->widget(TinyMce::className(), [
 	    'options' => ['rows' => 5],

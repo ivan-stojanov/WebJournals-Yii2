@@ -29,7 +29,17 @@ use yii\grid\DataColumn;
         'columns' => [
             ['class' => 'yii\grid\SerialColumn'],
 
-            'title:ntext',
+            //'title:ntext',
+        	[
+        		'class' => DataColumn::className(), // this line is optional
+        		'attribute' => 'title',
+        		'label' => 'Volume title',
+        		'value' =>function ($data) {
+        			return displayColumnContent($data->title, 65);
+        		},
+        		"format" => "HTML",
+        		'headerOptions' => ['style' => 'width:50%'],
+        	],           
             'year',
         	//'created_on:datetime',
         	[
@@ -39,7 +49,7 @@ use yii\grid\DataColumn;
         			if (isset($data->created_on))
         				return date("M d, Y, g:i:s A", strtotime($data->created_on));
         		},
-        		'format' => 'HTML'
+        		'format' => 'HTML',
         	],        		
         	/*[
         		//'attribute' => 'created_on',
@@ -58,6 +68,13 @@ use yii\grid\DataColumn;
 
         	['class' => 'yii\grid\ActionColumn'],
         ],
-    ]); ?>
-
+    ]); 
+    
+    function displayColumnContent($contenttext, $contentlimitlength){
+    	$displaytext = $contenttext;
+    	if(strlen($displaytext) > $contentlimitlength) $displaytext = substr($displaytext, 0, $contentlimitlength)."...";
+    	return "<div title='".$contenttext."'>".$displaytext."</div>";
+    }
+    
+    ?>
 </div>

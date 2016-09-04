@@ -27,9 +27,9 @@ use yii\helpers\ArrayHelper;
     <?= $form->field($modelSection, 'title')->textInput(['maxlength' => true]) ?>
 
     <?= $form->field($modelSection, 'issue_id')->dropDownList(
-    		ArrayHelper::map(Issue::find()->all(), 'issue_id', 'title'),
+    		ArrayHelper::map(Issue::find()->all(), 'issue_id', 'volumeissuetitle'),
     		['prompt' => 'Select Issue']
-    ) ?>
+    )->label('Volume name >> Issue name') ?>
 
     <div class="form-group">
         <?= Html::submitButton($modelSection->isNewRecord ? 'Create' : 'Update', ['class' => $modelSection->isNewRecord ? 'btn btn-success' : 'btn btn-primary']) ?>

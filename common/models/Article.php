@@ -64,7 +64,7 @@ class Article extends \yii\db\ActiveRecord
     
     public static function  get_sections(){
     	$sections = Section::find()->all();
-    	$sections = ArrayHelper::map($sections, 'section_id', 'title');
+    	$sections = ArrayHelper::map($sections, 'section_id', 'volumeissuesectiontitle');
     	return $sections;
     }    
 

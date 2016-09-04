@@ -109,7 +109,12 @@ class Issue extends \yii\db\ActiveRecord
     	return $this->hasMany(\common\models\Section::className(),  ['issue_id' => 'issue_id'])
     				->andOnCondition(['is_deleted' => 0])
     				->orderBy(['sort_in_issue' => SORT_ASC]);
-    }    
+    }
+    
+    public function getVolumeissuetitle()
+    {
+    	return $this->volume->title." >> ".$this->title;
+    }
 
     /**
      * @inheritdoc

@@ -85,9 +85,14 @@ class Section extends \yii\db\ActiveRecord
     
     public static function  get_issues(){
     	$issues = Issue::find()->all();
-    	$issues = ArrayHelper::map($issues, 'issue_id', 'title');
+    	$issues = ArrayHelper::map($issues, 'issue_id', 'volumeissuetitle');
     	return $issues;
-    }    
+    } 
+    
+    public function getVolumeissuesectiontitle()
+    {
+    	return $this->issue->volume->title." >> ".$this->issue->title." >> ".$this->title;
+    }
 
     /**
      * @inheritdoc

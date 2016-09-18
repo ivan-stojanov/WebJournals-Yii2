@@ -11,7 +11,7 @@ $this->title = 'Create Section';
 
     <?= $this->render('_form', [
         'modelSection' => $modelSection,
-    	//'modelsArticle' => $modelsArticle,    		
+    	'modelsArticle' => $modelsArticle,    		
     	'post_msg' => $post_msg
     ]) ?>  
 

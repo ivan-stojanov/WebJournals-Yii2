@@ -110,6 +110,7 @@ class IssueController extends Controller
         	$modelVolume = Volume::findOne($modelIssue->volume_id);
         	
         	$modelIssue->sort_in_volume = count($modelVolume->issues);
+        	
         	if(isset($modelIssue->published_on)){
         		$year_int = intval(date("Y", strtotime($modelIssue->published_on)));
         		if($year_int > 2010){
@@ -138,10 +139,11 @@ class IssueController extends Controller
         			$newImage->size = 100;
         			if($newImage->save()){
         				$modelIssue->cover_image = $newImage->image_id;
-        			}  else {
+        			} else {
+        				Yii::error("IssueController->actionCreate(1): ".json_encode($newImage->getErrors()), "custom_errors_issues");
         				$modelIssue->cover_image = null;
         			}
-        		}  else {
+        		} else {
         			$modelIssue->cover_image = null;
         		}
         	}
@@ -180,11 +182,15 @@ class IssueController extends Controller
         					$modelSection->created_on = date("Y-m-d H:i:s");
         	
         					if (($flag = $modelSection->save(false)) === false) {
+        						Yii::error("IssueController->actionCreate(2): ".json_encode($modelSection->getErrors()), "custom_errors_issues");
         						$transaction->rollBack();
         						break;
         					}
         				}
-        			}
+        			} else {
+        				Yii::error("IssueController->actionCreate(3): ".json_encode($modelIssue->getErrors()), "custom_errors_issues");
+          			}
+        			
         			if ($flag) {
         				$transaction->commit();
         				
@@ -238,6 +244,7 @@ class IssueController extends Controller
         $post_msg = null;
         
         if ($modelIssue->load(Yii::$app->request->post())) {
+        	
         	$oldIDs = ArrayHelper::map($modelsSection, 'section_id', 'section_id');
       	
         	if(isset($modelIssue->published_on)){
@@ -246,12 +253,7 @@ class IssueController extends Controller
         			$modelIssue->published_on = date("Y-m-d H:i:s", strtotime($modelIssue->published_on));
         		}
         	}
-/*var_dump($modelIssue->is_special_issue);
-return $this->render('update', [
-		'modelIssue' => $modelIssue,
-		'modelsSection' => (empty($modelsSection)) ? [new Section()] : $modelsSection,
-		'post_msg' => $post_msg,
-]);*/
+
             if(isset($modelIssue->is_special_issue)){
         		if(($modelIssue->is_special_issue) || ($modelIssue->is_special_issue == "on")){
         			$modelIssue->is_special_issue = 1;
@@ -279,8 +281,9 @@ return $this->render('update', [
 	        			$newImage->size = 100;
 	        			if($newImage->save()){
 	        				$modelIssue->cover_image = $newImage->image_id;
-	        			}  else {
-	        				$modelIssue->cover_image = null;
+	        			} else {
+	        				Yii::error("IssueController->actionUpdate(1): ".json_encode($newImage->getErrors()), "custom_errors_issues");
+ 	        				$modelIssue->cover_image = null;
 	        			}
 	        		}
 	        	}   
@@ -332,8 +335,8 @@ return $this->render('update', [
         	}
       	
         	// validate all models
-        	$valid = $modelIssue->validate();//var_dump("302"); var_dump($modelIssue->getErrors());
-        	$valid = DynamicForms::validateMultiple($modelsSection) && $valid;//var_dump("303"); var_dump($valid);
+        	$valid = $modelIssue->validate();
+        	$valid = DynamicForms::validateMultiple($modelsSection) && $valid;
       	 
         	if ($valid) {
         		$transaction = \Yii::$app->db->beginTransaction();
@@ -372,11 +375,14 @@ return $this->render('update', [
         						}
         						 
         						if (($flag = $modelSection->save(false)) === false) {
+        							Yii::error("IssueController->actionUpdate(2): ".json_encode($modelSection->getErrors()), "custom_errors_issues");
         							$transaction->rollBack();
         							break;
         						}
         					}
         				}
+        			} else {
+        				Yii::error("IssueController->actionUpdate(3): ".json_encode($modelIssue->getErrors()), "custom_errors_issues");
         			}
 
         			if ($flag) {
@@ -393,13 +399,17 @@ return $this->render('update', [
         					$modelOldVolume = Volume::findOne(['volume_id' => $volume_id_old]);        					
         					foreach ($modelOldVolume->issues as $indexItem => $modelIssueItem) {
         						$modelIssueItem->sort_in_volume = $indexItem;
-        						$modelIssueItem->save();
+        						if(!$modelIssueItem->save()){
+        							Yii::error("IssueController->actionUpdate(4): ".json_encode($modelIssueItem->getErrors()), "custom_errors_issues");
+        						}
         					}
         					
         					$modelNewVolume = Volume::findOne(['volume_id' => $volume_id_new]);
         					foreach ($modelNewVolume->issues as $indexItem => $modelIssueItem) {
         						$modelIssueItem->sort_in_volume = $indexItem;
-        						$modelIssueItem->save();
+        					    if(!$modelIssueItem->save()){
+        							Yii::error("IssueController->actionUpdate(5): ".json_encode($modelIssueItem->getErrors()), "custom_errors_issues");
+        						}
         					}
         				}
         				
@@ -436,7 +446,9 @@ return $this->render('update', [
         
     	foreach ($parent_volume->issues as $index => $modelIssue) {
         	$modelIssue->sort_in_volume = $index;
-        	$modelIssue->save();
+        	if(!$modelIssue->save()){
+        		Yii::error("IssueController->actionDelete(1): ".json_encode($modelIssue->getErrors()), "custom_errors_sections");
+        	}
         }
 
         return $this->redirect(['index']);

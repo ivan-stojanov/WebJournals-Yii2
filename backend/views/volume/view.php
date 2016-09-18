@@ -55,54 +55,65 @@ $this->title = $model->title;
         ],
     ]) ?>
     
-    <h2><i>Issue(s):</i></h2>
-    <hr>
-    
-    <?php     
-    	foreach ($model->issues as $index => $issue){
-    		
-    		$issueImagesPath = Yii::$app->urlManagerCommon->createUrl('images/issues/cover.jpg');
-    		if(isset($issue->cover_image) && ($issue->cover_image > 0) && isset($issue->coverimage)){
-    			$modelImage = $issue->coverimage;
-    		
-    			if ($modelImage) {
-    				$issueImagesPath = Yii::$app->urlManagerCommon->createUrl('images/issues') . DIRECTORY_SEPARATOR . $model->volume_id . DIRECTORY_SEPARATOR;
-    				$issueImagesPath = $issueImagesPath . $modelImage->path;
-    			}
-    		} 
-	?>	
-    		<p>
-    		    <?= Html::a('View Issue', ['issue/view/'.$issue->issue_id], ['class' => 'btn btn-success']) ?>
-    		    <?= Html::a('Update Issue', ['issue/update/'.$issue->issue_id], ['class' => 'btn btn-primary']) ?>
-    		</p>
-    <?php 		
-    		echo DetailView::widget([
-    			'model' => $issue,
-    			'attributes' => [
-    				'title:ntext',
-    				[
-    					'class' => DataColumn::className(), // this line is optional
-    					'attribute' => 'cover_image',
-    					'value' => "<div><img class='volume-view-image' src='".$issueImagesPath."'/></div>",
-    					'format' => 'HTML'
-    				],
-    				//'created_on:datetime',
-    				//'updated_on:datetime',
-    				[
-    					'class' => DataColumn::className(), // this line is optional
-    					'attribute' => 'created_on',
-    					'value' => (isset($issue->created_on)) ? date("M d, Y, g:i:s A", strtotime($issue->created_on)) : null,
-    					'format' => 'HTML'
-    				],
-    				[
-    					'class' => DataColumn::className(), // this line is optional
-    					'attribute' => 'updated_on',
-    					'value' => (isset($issue->updated_on)) ? date("M d, Y, g:i:s A", strtotime($issue->updated_on)) : null,
-    					'format' => 'HTML'
-    				],
-		        ],
-		    ]);
-    	}
+    <?php 
+    	if(isset($model->issues) && (count($model->issues) > 0)){
     ?>
+    
+	    <h2><i>Issue(s):</i></h2>
+	    <hr>
+    
+	<?php     
+	    	foreach ($model->issues as $index => $issue){
+	    		
+	    		$issueImagesPath = Yii::$app->urlManagerCommon->createUrl('images/issues/cover.jpg');
+	    		if(isset($issue->cover_image) && ($issue->cover_image > 0) && isset($issue->coverimage)){
+	    			$modelImage = $issue->coverimage;
+	    		
+	    			if ($modelImage) {
+	    				$issueImagesPath = Yii::$app->urlManagerCommon->createUrl('images/issues') . DIRECTORY_SEPARATOR . $model->volume_id . DIRECTORY_SEPARATOR;
+	    				$issueImagesPath = $issueImagesPath . $modelImage->path;
+	    			}
+	    		} 
+	?>	
+	    		<p>
+	    		    <?= Html::a('View Issue', ['issue/view/'.$issue->issue_id], ['class' => 'btn btn-success']) ?>
+	    		    <?= Html::a('Update Issue', ['issue/update/'.$issue->issue_id], ['class' => 'btn btn-primary']) ?>
+	    		</p>
+	<?php 		
+	    		echo DetailView::widget([
+	    			'model' => $issue,
+	    			'attributes' => [
+	    				'title:ntext',
+	    				[
+	    					'class' => DataColumn::className(), // this line is optional
+	    					'attribute' => 'cover_image',
+	    					'value' => "<div><img class='volume-view-image' src='".$issueImagesPath."'/></div>",
+	    					'format' => 'HTML'
+	    				],
+	    				//'created_on:datetime',
+	    				//'updated_on:datetime',
+	    				[
+	    					'class' => DataColumn::className(), // this line is optional
+	    					'attribute' => 'created_on',
+	    					'value' => (isset($issue->created_on)) ? date("M d, Y, g:i:s A", strtotime($issue->created_on)) : null,
+	    					'format' => 'HTML'
+	    				],
+	    				[
+	    					'class' => DataColumn::className(), // this line is optional
+	    					'attribute' => 'updated_on',
+	    					'value' => (isset($issue->updated_on)) ? date("M d, Y, g:i:s A", strtotime($issue->updated_on)) : null,
+	    					'format' => 'HTML'
+	    				],
+			        ],
+			    ]);
+	    	}
+    	} else {
+    ?>
+    		<hr>
+    		<h2>There are no any <i>Issues</i> for this <i>Volume</i> yet!</h2>
+	    	<hr>
+    <?php		
+    	}
+    ?> 
 
 </div>

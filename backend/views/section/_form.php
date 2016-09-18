@@ -22,7 +22,11 @@ use yii\helpers\ArrayHelper;
 
 <div class="section-form">
 
-    <?php $form = ActiveForm::begin(); ?>
+    <?php $form = ActiveForm::begin([
+        'options' => [
+            'id' => 'dynamic-form'
+        ]
+    ]); ?>
 
     <?= $form->field($modelSection, 'title')->textInput(['maxlength' => true]) ?>
 
@@ -30,9 +34,15 @@ use yii\helpers\ArrayHelper;
     		ArrayHelper::map(Issue::find()->all(), 'issue_id', 'volumeissuetitle'),
     		['prompt' => 'Select Issue']
     )->label('Volume name >> Issue name') ?>
+    
+    <?= $this->render('_form_articles', [
+        'form' => $form,
+    	'modelSection' => $modelSection,
+		'modelsArticle' => $modelsArticle
+    ]) ?>
 
     <div class="form-group">
-        <?= Html::submitButton($modelSection->isNewRecord ? 'Create' : 'Update', ['class' => $modelSection->isNewRecord ? 'btn btn-success' : 'btn btn-primary']) ?>
+        <?= Html::submitButton('Save', ['class' => 'btn btn-primary', 'name' => 'signup-button']) ?>
     </div>
 
     <?php ActiveForm::end(); ?>

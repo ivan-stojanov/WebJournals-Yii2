@@ -53,6 +53,28 @@ class Article extends \yii\db\ActiveRecord
             [['section_id'], 'exist', 'skipOnError' => true, 'targetClass' => Section::className(), 'targetAttribute' => ['section_id' => 'section_id']],
         ];
     }
+    
+    public function scenarios()
+    {
+    	$scenarios = parent::scenarios();
+    	$scenarios['section_crud'] = ['title']; //Scenario Attributes that will be validated
+    	return $scenarios;
+    }
+    
+    public static function deleteByIDs($deletedIDs = []){
+    
+    	try {
+    		foreach ($deletedIDs as $deletedID){
+    			if (($currentModel = Article::findOne($deletedID)) !== null) {
+    				$currentModel->delete();
+    			}
+    		}
+    	} catch (Exception $e) {
+    		return false;
+    	}
+    
+    	return true;
+    }    
 
     /**
      * @return \yii\db\ActiveQuery

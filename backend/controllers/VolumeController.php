@@ -152,6 +152,7 @@ class VolumeController extends Controller
 	        						if($newImage->save()){
 	        							$modelIssue->cover_image = $newImage->image_id;
 	        						}  else {
+	        							Yii::error("VolumeController->actionCreate(1): ".json_encode($newImage->getErrors()), "custom_errors_volumes");
 		        						$modelIssue->cover_image = null;
 		        					}
         						}  else {
@@ -160,6 +161,7 @@ class VolumeController extends Controller
         					}        	 
         					
         					if (($flag = $modelIssue->save(false)) === false) {
+        						Yii::error("VolumeController->actionCreate(2): ".json_encode($modelIssue->getErrors()), "custom_errors_volumes");
         						$transaction->rollBack();
         						break;
         					} else {
@@ -170,12 +172,15 @@ class VolumeController extends Controller
         						$modelSection->created_on = date("Y-m-d H:i:s");
         						 
         						if (($flag = $modelSection->save(false)) === false) {
+        							Yii::error("VolumeController->actionCreate(3): ".json_encode($modelSection->getErrors()), "custom_errors_volumes");
         							$transaction->rollBack();
         							break;
         						}
         					}
         				}
-        			}         			
+        			} else {
+        				Yii::error("VolumeController->actionCreate(4): ".json_encode($modelVolume->getErrors()), "custom_errors_volumes");
+        			}
         			
         			if ($flag) {
         				$transaction->commit();
@@ -287,7 +292,8 @@ class VolumeController extends Controller
 	        								$newImage->size = 100;
 	        								if($newImage->save()){
 	        									$modelIssue->cover_image = $newImage->image_id;
-	        								}  else {
+	        								} else {
+	        									Yii::error("VolumeController->actionUpdate(1): ".json_encode($newImage->getErrors()), "custom_errors_volumes");
 	        									$modelIssue->cover_image = null;
 	        								}
 	        								
@@ -303,8 +309,8 @@ class VolumeController extends Controller
         							$modelIssue->updated_on = date("Y-m-d H:i:s");
         						}
         						 
-        						if (($flag = $modelIssue->save(false)) === false) {        							
-        							$transaction->rollBack();
+        						if (($flag = $modelIssue->save(false)) === false) {
+        							Yii::error("VolumeController->actionUpdate(2): ".json_encode($modelIssue->getErrors()), "custom_errors_volumes");
         							break;
         						} else {
         							$modelSection = new Section();
@@ -314,12 +320,15 @@ class VolumeController extends Controller
         							$modelSection->created_on = date("Y-m-d H:i:s");
         							
         							if (($flag = $modelSection->save(false)) === false) {
+        								Yii::error("VolumeController->actionUpdate(3): ".json_encode($modelSection->getErrors()), "custom_errors_volumes");
         								$transaction->rollBack();
         								break;
         							}
         						}
         					}
         				}
+        			} else {
+        				Yii::error("VolumeController->actionUpdate(4): ".json_encode($modelVolume->getErrors()), "custom_errors_volumes");
         			}
         	
         			if ($flag) {

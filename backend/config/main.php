@@ -24,6 +24,30 @@ return [
                     'class' => 'yii\log\FileTarget',
                     'levels' => ['error', 'warning'],
                 ],
+            	[
+            		'class' => 'yii\log\FileTarget',
+            		'levels' => ['info', 'error', 'warning'],
+            		'categories' => ['custom_errors_volumes'],
+            		'logFile' => '@backend/runtime/logs/custom_errors_volumes.log',
+            	],   
+            	[
+            		'class' => 'yii\log\FileTarget',
+            		'levels' => ['info', 'error', 'warning'],
+            		'categories' => ['custom_errors_issues'],
+            		'logFile' => '@backend/runtime/logs/custom_errors_issues.log',
+            	],            		
+            	[
+            		'class' => 'yii\log\FileTarget',
+            		'levels' => ['info', 'error', 'warning'],
+            		'categories' => ['custom_errors_sections'],
+            		'logFile' => '@backend/runtime/logs/custom_errors_sections.log',
+            	],
+            	[
+            		'class' => 'yii\log\FileTarget',
+            		'levels' => ['info', 'error', 'warning'],
+            		'categories' => ['custom_errors_articles'],
+            		'logFile' => '@backend/runtime/logs/custom_errors_articles.log',
+            	],            		
             ],
         ],
         'errorHandler' => [

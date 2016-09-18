@@ -112,6 +112,9 @@ class ArticleController extends Controller
         		$transaction = \Yii::$app->db->beginTransaction();
         		try {
         			if ($flag = $modelArticle->save(false)) {
+        				
+        			} else {
+        				Yii::error("ArticleController->actionCreate(1): ".json_encode($modelArticle->getErrors()), "custom_errors_articles");
         			}
         			if ($flag) {
         				$transaction->commit();
@@ -170,7 +173,10 @@ class ArticleController extends Controller
         		try {
         			if ($flag = $modelArticle->save(false)) {
         	
+        			} else {
+        				Yii::error("ArticleController->actionUpdate(1): ".json_encode($modelArticle->getErrors()), "custom_errors_articles");
         			}
+        			
         			if ($flag) {
         				$transaction->commit();
         	
@@ -178,13 +184,17 @@ class ArticleController extends Controller
         					$modelOldSection = Section::findOne(['section_id' => $section_id_old]);
         					foreach ($modelOldSection->articles as $indexItem => $modelArticleItem) {
         						$modelArticleItem->sort_in_section = $indexItem;
-        						$modelArticleItem->save();
+        						if(!$modelArticleItem->save()){
+        							Yii::error("ArticleController->actionUpdate(2): ".json_encode($modelArticleItem->getErrors()), "custom_errors_articles");
+        						}
         					}
         	
         					$modelNewSection = Section::findOne(['section_id' => $section_id_new]);
         					foreach ($modelNewSection->articles as $indexItem => $modelArticleItem) {
         						$modelArticleItem->sort_in_section = $indexItem;
-        						$modelArticleItem->save();
+        						if(!$modelArticleItem->save()){
+        							Yii::error("ArticleController->actionUpdate(3): ".json_encode($modelArticleItem->getErrors()), "custom_errors_articles");
+        						}
         					}
         				}
         	

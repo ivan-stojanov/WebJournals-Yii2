@@ -35,7 +35,9 @@ class Section extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['issue_id', 'title'], 'required'],
+            [['issue_id', 'title'], 'required'/*, 'except' => ['issue_crud']*/],
+        	//[['issue_id'], 'required'],
+        	//[['title'], 'required', 'except' => ['issue_crud']],
             [['issue_id', 'sort_in_issue', 'is_deleted'], 'integer'],
             [['title'], 'string'],
             [['created_on', 'updated_on'], 'safe'],
@@ -46,9 +48,9 @@ class Section extends \yii\db\ActiveRecord
     public function scenarios()
     {
     	$scenarios = parent::scenarios();
-    	$scenarios['issue_crud'] = ['title']; //Scenario Attributes that will be validated
+    	$scenarios['issue_crud'] = ['title']; // Scenario Attributes that will be validated
     	return $scenarios;
-    }    
+    } 
     
     public static function deleteByIDs($deletedIDs = []){
     	 

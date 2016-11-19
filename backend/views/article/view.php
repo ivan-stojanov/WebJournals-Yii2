@@ -2,6 +2,7 @@
 
 use yii\helpers\Html;
 use yii\widgets\DetailView;
+use yii\grid\DataColumn;
 
 /* @var $this yii\web\View */
 /* @var $model common\models\Article */
@@ -23,23 +24,55 @@ $this->params['breadcrumbs'][] = $this->title;
                 'method' => 'post',
             ],
         ]) ?>
+        <?= Html::a('View in PDF', ['pdfview', 'id' => $model->article_id], ['class' => 'btn btn-success']) ?>
     </p>
 
     <?= DetailView::widget([
         'model' => $model,
         'attributes' => [
-            'article_id',
-            'section_id',
-            'title:ntext',
-            'abstract:ntext',
-            'content:ntext',
-            'pdf_content:ntext',
-            'page_from',
-            'page_to',
-            'sort_in_section',
-            'created_on',
-            'updated_on',
-            'is_deleted',
+        	'title:ntext',
+        	//'article_id',
+        	//'section_id',
+        	[
+        		'class' => DataColumn::className(), // this line is optional
+        		'attribute' => 'section_id',
+        		'label' => 'Section title',
+        		'value' => $model->section->title,
+        		"format" => "HTML",
+        	],
+            //'abstract:ntext',
+        	[
+        		'class' => DataColumn::className(), // this line is optional
+        		'attribute' => 'abstract',        			
+        		'value' => Html::a('View in PDF', ['pdfview', 'id' => $model->article_id, 'partial' => 'abstract'], ['class' => 'btn btn-info btn-xs']),
+        		//'value' => (($model->abstract) && (isset($model->abstract)) && (strlen($model->abstract) > 0)) ? $model->abstract : null,
+        		'format' => 'HTML'
+        	],
+            //'content:ntext',
+        	[
+        		'class' => DataColumn::className(), // this line is optional
+        		'attribute' => 'content',
+        		'value' => Html::a('View in PDF', ['pdfview', 'id' => $model->article_id, 'partial' => 'content'], ['class' => 'btn btn-info btn-xs']),
+        		//'value' => (($model->content) && (isset($model->content)) && (strlen($model->content) > 0)) ? $model->content : null,
+        		'format' => 'HTML'
+        	],
+            //'pdf_content:ntext',
+            //'page_from',
+            //'page_to',
+            //'sort_in_section',
+			[
+    			'class' => DataColumn::className(), // this line is optional
+    			'attribute' => 'created_on',
+    			'value' => (isset($model->created_on)) ? date("M d, Y, g:i:s A", strtotime($model->created_on)) : null,
+    			'format' => 'HTML'
+    		],
+    		[
+    			'class' => DataColumn::className(), // this line is optional
+    			'attribute' => 'updated_on',
+    			'value' => (isset($model->updated_on)) ? date("M d, Y, g:i:s A", strtotime($model->updated_on)) : null,
+    			'format' => 'HTML'
+    		],
+            //'is_deleted',
         ],
     ]) ?>
 

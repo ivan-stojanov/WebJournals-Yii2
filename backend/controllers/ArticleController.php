@@ -251,4 +251,43 @@ class ArticleController extends Controller
             throw new NotFoundHttpException('The requested page does not exist.');
         }
     }
+    
+
+    public function actionPdfview($id, $partial = null)
+    {
+    	$modelArticle = $this->findModel($id);
+    	
+    	// get your HTML raw content without any layouts or scripts
+    	$content = $modelArticle->abstract."<br>".$modelArticle->content;
+    	if($partial != null && $partial == "abstract"){
+    		$content = $modelArticle->abstract;
+    	} else if($partial != null && $partial == "content"){
+    		$content = $modelArticle->content;
+    	}    	
+    	 
+    	$pdf = Yii::$app->pdf;
+    	//$pdf->content = $content."<br>".$content."<br>".$content."<br>".$content."<br>".$content."<br>".$content."<br>".$content."<br>".$content."<br>";
+    	$pdf->content = $content;
+    	// set mPDF properties on the fly
+    	$pdf->options = [
+    			'title' => $modelArticle->title,
+    			//'subject' => 'PDF Document Subject',
+    			'keywords' => 'krajee, grid, export, yii2-grid, pdf'
+    	];
+    	// call mPDF methods on the fly
+    	$header = "||".$modelArticle->section->title;    
+    	$pageno = "|{PAGENO}|";
+    	$pdf->methods = [
+    			'SetHeader'=>[$header],
+    			'SetFooter'=>[$pageno],
+    	];
+    	return $pdf->render();
+    	 
+    	/*	    $mpdf = $pdf->api; // fetches mpdf api
+    	 $mpdf->SetHeader('Krajee mpdf Header|f|p'); // call methods or set any properties
+    	 $mpdf->WriteHtml($content); // call mpdf write html
+    	 $mpdf->SetKeywords('Zoki, Smoki');
+    	 echo $mpdf->Output('filename.pdf', $pdf->destination); // call the mpdf api output as needed
+    	*/
+    }
 }

@@ -165,3 +165,10 @@
 	background: #ABA !important;
 }
 /* Admin: Issues CRUD - END */
+
+/* Admin: Articles CRUD - START */
+.article-update .article-form .field-article-content,
+.article-update .article-form .field-article-abstract{
+	width: 794px !important;
+}
+/* Admin: Articles CRUD - END */

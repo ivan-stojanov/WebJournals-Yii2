@@ -93,14 +93,6 @@ class Article extends \yii\db\ActiveRecord
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getArticleAuthors()
-    {
-        return $this->hasMany(ArticleAuthor::className(), ['article_id' => 'article_id']);
-    }
-
-    /**
-     * @return \yii\db\ActiveQuery
-     */
     public function getAuthors()
     {
         return $this->hasMany(User::className(), ['id' => 'author_id'])->viaTable('article_author', ['article_id' => 'article_id']);

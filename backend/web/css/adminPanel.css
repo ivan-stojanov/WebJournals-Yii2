@@ -171,4 +171,12 @@
 .article-update .article-form .field-article-abstract{
 	width: 794px !important;
 }
+.pdf-h4 {
+	text-align: center;
+    font-weight: bold;
+    font-size: 16px;
+}
+.article-view table th {
+	width: 15%;
+}
 /* Admin: Articles CRUD - END */

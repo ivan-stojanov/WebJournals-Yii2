@@ -10,6 +10,7 @@ use yii\grid\DataColumn;
 $this->title = $model->title;
 $this->params['breadcrumbs'][] = ['label' => 'Articles', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
+
 ?>
 <div class="article-view">
 
@@ -26,7 +27,7 @@ $this->params['breadcrumbs'][] = $this->title;
         ]) ?>
         <?= Html::a('View in PDF', ['pdfview', 'id' => $model->article_id], ['class' => 'btn btn-success']) ?>
     </p>
-
+    
     <?= DetailView::widget([
         'model' => $model,
         'attributes' => [
@@ -38,7 +39,19 @@ $this->params['breadcrumbs'][] = $this->title;
         		'attribute' => 'section_id',
         		'label' => 'Section title',
         		'value' => $model->section->title,
-        		"format" => "HTML",
+        		'format' => 'HTML'
+        	],
+        	[
+        		'class' => DataColumn::className(), // this line is optional
+        		'label' => 'Authors',
+        		'value' => $article_authors_string,
+        		'format' => 'HTML'
+        	],   
+        	[
+        		'class' => DataColumn::className(), // this line is optional
+        		'label' => 'Reviewers',
+        		'value' => $article_reviewers_string,
+        		'format' => 'HTML'
         	],
             //'abstract:ntext',
         	[
@@ -60,6 +73,12 @@ $this->params['breadcrumbs'][] = $this->title;
             //'page_from',
             //'page_to',
             //'sort_in_section',
+        	[
+        		'class' => DataColumn::className(), // this line is optional
+        		'label' => 'Keywords',
+        		'value' => $article_keywords_string,
+        		'format' => 'HTML'
+        	],
 			[
     			'class' => DataColumn::className(), // this line is optional
     			'attribute' => 'created_on',

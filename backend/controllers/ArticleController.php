@@ -5,6 +5,9 @@ namespace backend\controllers;
 use Yii;
 use common\models\Section;
 use common\models\Article;
+use common\models\ArticleAuthor;
+use common\models\ArticleKeyword;
+use common\models\ArticleReviewer;
 use backend\models\ArticleSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
@@ -78,8 +81,20 @@ class ArticleController extends Controller
     		return $this->redirect(['error']);
     	}
     	
+    	$articleAuthorModel = new ArticleAuthor();
+    	$article_authors_string = $articleAuthorModel->getAuthorsForArticleString($id);
+    	
+    	$articleKeywordModel = new ArticleKeyword();
+    	$article_keywords_string = $articleKeywordModel->getKeywordsForArticleString($id);
+    	 
+    	$articleReviewerModel = new ArticleReviewer();
+    	$article_reviewers_string = $articleReviewerModel->getReviewersForArticleString($id);
+    	
         return $this->render('view', [
             'model' => $this->findModel($id),
+        	'article_authors_string' => $article_authors_string,
+        	'article_keywords_string' => $article_keywords_string,
+        	'article_reviewers_string' => $article_reviewers_string,
         ]);
     }
 
@@ -257,13 +272,29 @@ class ArticleController extends Controller
     {
     	$modelArticle = $this->findModel($id);
     	
+    	$articleKeywordModel = new ArticleKeyword();
+    	$article_keywords_string = $articleKeywordModel->getKeywordsForArticleString($modelArticle->article_id);
+    	
+    	$articleAuthorModel = new ArticleAuthor();
+    	$article_authors_string = $articleAuthorModel->getAuthorsForArticleString($id);
+    	
     	// get your HTML raw content without any layouts or scripts
     	$content = $modelArticle->abstract."<br>".$modelArticle->content;
     	if($partial != null && $partial == "abstract"){
     		$content = $modelArticle->abstract;
     	} else if($partial != null && $partial == "content"){
     		$content = $modelArticle->content;
-    	}    	
+    	} else {
+    		$beforeArticleContent = "<h3 style='text-align: center;'>".$modelArticle->title."</h3>";
+    		$afterArticleContent = "";
+    		
+    		if (strlen($article_authors_string)>0)
+    			$beforeArticleContent = $beforeArticleContent."<p style='text-align: center;'><strong>Authors:&nbsp;</strong>".$article_authors_string."</p>";
+    		if (strlen($article_keywords_string)>0)
+				$afterArticleContent = "<p style='text-align: justify;'><strong>Keywords:&nbsp;</strong>".$article_keywords_string."</p>";
+    		
+    		$content = $beforeArticleContent.$content.$afterArticleContent;
+    	}
     	 
     	$pdf = Yii::$app->pdf;
     	//$pdf->content = $content."<br>".$content."<br>".$content."<br>".$content."<br>".$content."<br>".$content."<br>".$content."<br>".$content."<br>";

@@ -28,9 +28,12 @@ use yii\helpers\ArrayHelper;
  * @property Keyword[] $keywords
  * @property ArticleReviewer[] $articleReviewers
  * @property User[] $reviewers
+ * @property string[] $keyword_ids
  */
 class Article extends \yii\db\ActiveRecord
 {
+	public $modelArticle_keywordArray = [];
+	
     /**
      * @inheritdoc
      */

@@ -12,6 +12,8 @@ $this->title = 'Create Article';
 
     <?= $this->render('_form', [
         'modelArticle' => $modelArticle,
+    	'modelKeyword' => $modelKeyword,
+    	'arrayArticleKeyword' => $arrayArticleKeyword,
     	'post_msg' => $post_msg
     ]) ?>
 

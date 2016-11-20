@@ -5,6 +5,7 @@ use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 use yii\helpers\ArrayHelper;
 use dosamigos\tinymce\TinyMce;
+use kartik\select2\Select2;
 
 /* @var $this yii\web\View */
 /* @var $model common\models\Article */
@@ -66,7 +67,18 @@ use dosamigos\tinymce\TinyMce;
 		    'image_advtab' => true,	
 	    	'content_css' => './../../css/myTinyMceLayout.css',
 	    ]
-	]);?>   
+	]);?>
+	
+    <?php echo Select2::widget([
+	    'name' => 'kv-state-230',
+    	'value' => $arrayArticleKeyword,
+	    'data' => $modelKeyword->getKeywordsInAssociativeArray(),
+    	'maintainOrder' => true,
+	    'options' => ['placeholder' => 'Select a keywords ...', 'multiple' => true],
+	    'pluginOptions' => [
+	        'allowClear' => true
+	    ],
+	]);?>
 
     <?php /* <?= $form->field($modelArticle, 'pdf_content')->textarea(['rows' => 6]) ?> */ ?>
 

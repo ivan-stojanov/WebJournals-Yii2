@@ -8,6 +8,7 @@ use common\models\Article;
 use common\models\ArticleAuthor;
 use common\models\ArticleKeyword;
 use common\models\ArticleReviewer;
+use common\models\Keyword;
 use backend\models\ArticleSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
@@ -110,6 +111,8 @@ class ArticleController extends Controller
     	}
     	
         $modelArticle = new Article();
+        $modelKeyword = new Keyword();
+        $arrayArticleKeyword = [];
         $post_msg = null;
         
         $modelArticle->created_on = date("Y-m-d H:i:s");
@@ -144,6 +147,8 @@ class ArticleController extends Controller
         
         return $this->render('create', [
             'modelArticle' => $modelArticle,
+        	'modelKeyword' => $modelKeyword,
+        	'arrayArticleKeyword' => $arrayArticleKeyword,
             'post_msg' => $post_msg,
         ]);
     }
@@ -163,7 +168,16 @@ class ArticleController extends Controller
         $modelArticle = $this->findModel($id);
         $modelArticle->updated_on = date("Y-m-d H:i:s");
         $update_sections_after_save = false; $section_id_old = 0; $section_id_new = 0;
-        
+        $modelKeyword = new Keyword();
+        $modelArticleKeyword = new ArticleKeyword();
+        $arrayArticleKeyword = [];
+        $articleKeywords_array = $modelArticleKeyword->getKeywordsForArticle($id);
+        if($articleKeywords_array != null && count($articleKeywords_array)>0 ){
+        	foreach ($articleKeywords_array as $articleKeyword){
+        		$arrayArticleKeyword[] = $articleKeyword->keyword->keyword_id;
+        	}
+        }
+
         $post_msg = null;
         
         if ($modelArticle->load(Yii::$app->request->post())) {
@@ -223,6 +237,8 @@ class ArticleController extends Controller
         
         return $this->render('update', [
             'modelArticle' => $modelArticle,
+        	'modelKeyword' => $modelKeyword,
+        	'arrayArticleKeyword' => $arrayArticleKeyword,
             'post_msg' => $post_msg,
         ]);
     }

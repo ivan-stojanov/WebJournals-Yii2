@@ -69,9 +69,8 @@ use kartik\select2\Select2;
 	    ]
 	]);?>
 	
-    <?php echo Select2::widget([
-	    'name' => 'kv-state-230',
-    	'value' => $arrayArticleKeyword,
+	<?php /*var_dump($modelArticle->keywords);*/ echo $form->field($modelArticle, 'post_keywords')->widget(Select2::classname(), [ //echo Select2::widget([
+	    'name' => 'kv-state-230',    	
 	    'data' => $modelKeyword->getKeywordsInAssociativeArray(),
     	'maintainOrder' => true,
 	    'options' => ['placeholder' => 'Select a keywords ...', 'multiple' => true],
@@ -79,7 +78,7 @@ use kartik\select2\Select2;
 	        'allowClear' => true
 	    ],
 	]);?>
-
+	
     <?php /* <?= $form->field($modelArticle, 'pdf_content')->textarea(['rows' => 6]) ?> */ ?>
 
     <?php /* <?= $form->field($modelArticle, 'page_from')->textInput(['maxlength' => true]) ?> */ ?>

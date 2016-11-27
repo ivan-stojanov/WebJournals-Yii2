@@ -112,12 +112,19 @@ class ArticleController extends Controller
     	
         $modelArticle = new Article();
         $modelKeyword = new Keyword();
-        $arrayArticleKeyword = [];
-        $post_msg = null;
+        $arrayArticleKeyword = [];        
         
+        $post_msg = null;        
         $modelArticle->created_on = date("Y-m-d H:i:s");
+        $addKeywords = false;
 
         if ($modelArticle->load(Yii::$app->request->post())) {
+        	if(Yii::$app->request->post()['Article'] != null &&
+        	   Yii::$app->request->post()['Article']['post_keywords'] != null)
+        	{
+        		$modelArticle->post_keywords = Yii::$app->request->post()['Article']['post_keywords'];
+        		$addKeywords = true;
+        	}
         	
         	$modelSection = Section::findOne($modelArticle->section_id);
         	 
@@ -136,6 +143,23 @@ class ArticleController extends Controller
         			}
         			if ($flag) {
         				$transaction->commit();
+        				
+        				ArticleKeyword::deleteAll([
+        						'article_id' => intval($modelArticle->article_id)
+        				]);
+        				if($addKeywords){
+        					foreach ($modelArticle->post_keywords as $indexOrder => $keywordId) {
+        						$articleKeywordItem = new ArticleKeyword();
+        						$articleKeywordItem->article_id = $modelArticle->article_id;
+        						$articleKeywordItem->keyword_id = intval($keywordId);
+        						$articleKeywordItem->sort_order = intval($indexOrder) + 1;
+        						$articleKeywordItem->updated_on = date("Y-m-d H:i:s");
+        						$articleKeywordItem->created_on = date("Y-m-d H:i:s");
+        						if(!$articleKeywordItem->save()){
+        							Yii::error("ArticleController->actionCreate(2): ".json_encode($articleKeywordItem->getErrors()), "custom_errors_articles");
+        						}
+        					}
+        				}
         	
             			return $this->redirect(['view', 'id' => $modelArticle->article_id]);
         			}
@@ -179,9 +203,19 @@ class ArticleController extends Controller
         }
 
         $post_msg = null;
-        
+        $keywords_are_changed = true;
         if ($modelArticle->load(Yii::$app->request->post())) {
-        	
+        	if(Yii::$app->request->post()['Article'] != null &&
+        	   Yii::$app->request->post()['Article']['post_keywords'] != null)
+        	{
+        		$modelArticle->post_keywords = Yii::$app->request->post()['Article']['post_keywords'];
+        		$current_keyword_array = [];
+        		foreach ($modelArticle->keywords as $keywordObject){
+        			$current_keyword_array[] = (string)$keywordObject->keyword_id;
+        		}
+        		$keywords_are_changed = !($modelArticle->post_keywords == $current_keyword_array);
+        	}
+
         	//if parent volume is changed, manage sorting of issues in both volumes
         	if(isset($modelArticle->attributes) && isset($modelArticle->attributes['section_id']) &&
         	   isset($modelArticle->oldAttributes) && isset($modelArticle->oldAttributes['section_id'])) {
@@ -195,8 +229,7 @@ class ArticleController extends Controller
         	}
         	
         	// validate all models
-        	$valid = $modelArticle->validate();
-        	
+        	$valid = $modelArticle->validate();        	
         	if ($valid) {
         		$transaction = \Yii::$app->db->beginTransaction();
         		try {
@@ -205,16 +238,32 @@ class ArticleController extends Controller
         			} else {
         				Yii::error("ArticleController->actionUpdate(1): ".json_encode($modelArticle->getErrors()), "custom_errors_articles");
         			}
-        			
         			if ($flag) {
         				$transaction->commit();
+        				
+        				if($keywords_are_changed){
+        					ArticleKeyword::deleteAll([
+        							'article_id' => intval($id)
+        					]);
+        					foreach ($modelArticle->post_keywords as $indexOrder => $keywordId) {
+        						$articleKeywordItem = new ArticleKeyword();        						
+        						$articleKeywordItem->article_id = $id;
+        						$articleKeywordItem->keyword_id = intval($keywordId);
+        						$articleKeywordItem->sort_order = intval($indexOrder) + 1;
+        						$articleKeywordItem->updated_on = date("Y-m-d H:i:s");
+        						$articleKeywordItem->created_on = date("Y-m-d H:i:s");
+        						if(!$articleKeywordItem->save()){
+        							Yii::error("ArticleController->actionUpdate(2): ".json_encode($articleKeywordItem->getErrors()), "custom_errors_articles");
+        						}
+        					}
+        				}
         	
         				if($update_sections_after_save == true && $section_id_old > 0 && $section_id_new > 0){
         					$modelOldSection = Section::findOne(['section_id' => $section_id_old]);
         					foreach ($modelOldSection->articles as $indexItem => $modelArticleItem) {
         						$modelArticleItem->sort_in_section = $indexItem;
         						if(!$modelArticleItem->save()){
-        							Yii::error("ArticleController->actionUpdate(2): ".json_encode($modelArticleItem->getErrors()), "custom_errors_articles");
+        							Yii::error("ArticleController->actionUpdate(3): ".json_encode($modelArticleItem->getErrors()), "custom_errors_articles");
         						}
         					}
         	
@@ -222,7 +271,7 @@ class ArticleController extends Controller
         					foreach ($modelNewSection->articles as $indexItem => $modelArticleItem) {
         						$modelArticleItem->sort_in_section = $indexItem;
         						if(!$modelArticleItem->save()){
-        							Yii::error("ArticleController->actionUpdate(3): ".json_encode($modelArticleItem->getErrors()), "custom_errors_articles");
+        							Yii::error("ArticleController->actionUpdate(4): ".json_encode($modelArticleItem->getErrors()), "custom_errors_articles");
         						}
         					}
         				}
@@ -234,6 +283,8 @@ class ArticleController extends Controller
         		}
         	}        			
         }
+        
+        $modelArticle->post_keywords = $arrayArticleKeyword;
         
         return $this->render('update', [
             'modelArticle' => $modelArticle,

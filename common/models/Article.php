@@ -32,7 +32,7 @@ use yii\helpers\ArrayHelper;
  */
 class Article extends \yii\db\ActiveRecord
 {
-	public $modelArticle_keywordArray = [];
+	public $post_keywords = [];
 	
     /**
      * @inheritdoc
@@ -50,10 +50,11 @@ class Article extends \yii\db\ActiveRecord
         return [
             [['section_id', 'title', 'abstract', 'content'], 'required'],
             [['section_id', 'sort_in_section', 'is_deleted'], 'integer'],
-            [['title', 'abstract', 'content', 'pdf_content'], 'string'],
+            [['title', 'abstract', 'content', 'pdf_content'], 'string'],       		
             [['created_on', 'updated_on'], 'safe'],
             [['page_from', 'page_to'], 'string', 'max' => 6],
             [['section_id'], 'exist', 'skipOnError' => true, 'targetClass' => Section::className(), 'targetAttribute' => ['section_id' => 'section_id']],
+        	['post_keywords', 'each', 'rule' => ['integer']],        		
         ];
     }
     
@@ -151,6 +152,7 @@ class Article extends \yii\db\ActiveRecord
             	'created_on' => 'Created on',
             	'updated_on' => 'Updated on',
             	'is_deleted' => 'Is deleted',
+    			'post_keywords' => 'Keywords',
     	];
     }
 }

@@ -80,7 +80,7 @@ class ArticleReviewer extends \yii\db\ActiveRecord
      */
     public function getReviewersForArticle($articleID)
     {
-    	return ArticleReviewer::find()->where(['article_id' => $articleID, 'user.status' => User::STATUS_ACTIVE])
+    	return ArticleReviewer::find()->where(['article_id' => $articleID, 'user.status' => User::STATUS_ACTIVE, 'user.is_reviewer' => true])
 							    	  ->innerJoinWith('reviewer')
 							    	  ->orderBy('user.first_name ASC, user.last_name ASC')
 							    	  ->all();

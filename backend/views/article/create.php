@@ -13,8 +13,11 @@ $this->title = 'Create Article';
     <?= $this->render('_form', [
         'modelArticle' => $modelArticle,
     	'modelKeyword' => $modelKeyword,
+		'modelUser' => $modelUser,
     	'arrayArticleKeyword' => $arrayArticleKeyword,
-    	'post_msg' => $post_msg
+    	'arrayArticleAuthor' => $arrayArticleAuthor,
+    	'arrayArticleReviewer' => $arrayArticleReviewer,
+    	'post_msg' => $post_msg,
     ]) ?>
 
 </div>

@@ -41,18 +41,6 @@ $this->params['breadcrumbs'][] = $this->title;
         		'value' => $model->section->title,
         		'format' => 'HTML'
         	],
-        	[
-        		'class' => DataColumn::className(), // this line is optional
-        		'label' => 'Authors',
-        		'value' => $article_authors_string,
-        		'format' => 'HTML'
-        	],   
-        	[
-        		'class' => DataColumn::className(), // this line is optional
-        		'label' => 'Reviewers',
-        		'value' => $article_reviewers_string,
-        		'format' => 'HTML'
-        	],
             //'abstract:ntext',
         	[
         		'class' => DataColumn::className(), // this line is optional
@@ -73,6 +61,18 @@ $this->params['breadcrumbs'][] = $this->title;
             //'page_from',
             //'page_to',
             //'sort_in_section',
+        	[
+        		'class' => DataColumn::className(), // this line is optional
+        		'label' => 'Reviewers',
+        		'value' => $article_reviewers_string,
+        		'format' => 'HTML'
+        	],
+        	[
+        		'class' => DataColumn::className(), // this line is optional
+        		'label' => 'Authors',
+        		'value' => $article_authors_string,
+        		'format' => 'HTML'
+        	],
         	[
         		'class' => DataColumn::className(), // this line is optional
         		'label' => 'Keywords',

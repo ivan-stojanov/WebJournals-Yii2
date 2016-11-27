@@ -200,4 +200,17 @@ class User extends ActiveRecord implements IdentityInterface
     {
     	return $this->attributes["is_admin"];
     }*/
+    
+    public function getUsersInAssociativeArray($conditionRoles)
+    {
+    	$userModel_array = User::find()->where($conditionRoles)->all();
+    	$dataUsers = [];
+    	 
+    	if($userModel_array != null && count($userModel_array)>0){
+    		foreach ($userModel_array as $userModel){
+    			$dataUsers[$userModel->id] = $userModel->fullName;
+    		}
+    	}
+    	return $dataUsers;
+    }
 }

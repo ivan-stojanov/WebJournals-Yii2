@@ -33,7 +33,9 @@ use yii\helpers\ArrayHelper;
 class Article extends \yii\db\ActiveRecord
 {
 	public $post_keywords = [];
-	
+	public $post_authors = [];
+	public $post_reviewers = [];
+		
     /**
      * @inheritdoc
      */
@@ -54,7 +56,7 @@ class Article extends \yii\db\ActiveRecord
             [['created_on', 'updated_on'], 'safe'],
             [['page_from', 'page_to'], 'string', 'max' => 6],
             [['section_id'], 'exist', 'skipOnError' => true, 'targetClass' => Section::className(), 'targetAttribute' => ['section_id' => 'section_id']],
-        	['post_keywords', 'each', 'rule' => ['integer']],        		
+        	[['post_reviewers', 'post_authors', 'post_keywords'], 'each', 'rule' => ['integer']],        		
         ];
     }
     
@@ -151,8 +153,10 @@ class Article extends \yii\db\ActiveRecord
     			'sort_in_section' => 'Sort in section',
             	'created_on' => 'Created on',
             	'updated_on' => 'Updated on',
-            	'is_deleted' => 'Is deleted',
+            	'is_deleted' => 'Is deleted',    			
     			'post_keywords' => 'Keywords',
+    			'post_authors' => 'Authors',
+    			'post_reviewers' => 'Reviewers',
     	];
     }
 }

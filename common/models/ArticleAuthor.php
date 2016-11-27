@@ -77,7 +77,7 @@ class ArticleAuthor extends \yii\db\ActiveRecord
      */
     public function getAuthorsForArticle($articleID)
     {
-    	return ArticleAuthor::find()->where(['article_id' => $articleID, 'user.status' => User::STATUS_ACTIVE])
+    	return ArticleAuthor::find()->where(['article_id' => $articleID, 'user.status' => User::STATUS_ACTIVE, 'user.is_author' => true])
 							    	->innerJoinWith('author')
 							    	->orderBy('sort_order ASC')
 							    	->all();

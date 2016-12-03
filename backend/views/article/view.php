@@ -63,6 +63,18 @@ $this->params['breadcrumbs'][] = $this->title;
             //'sort_in_section',
         	[
         		'class' => DataColumn::className(), // this line is optional
+        		'attribute' => 'is_archived',
+        		'value' => ($model->is_archived == 0) ? "<div class='glyphicon glyphicon-remove'></div>" : "<div class='glyphicon glyphicon-ok'></div>",
+        		'format' => 'HTML'
+        	],
+        	[
+        		'class' => DataColumn::className(), // this line is optional
+        		'attribute' => 'file_attach',
+        		'value' => "<a href='../@web/uploads/".$model->file->file_name."' download='".$model->file->file_name."'>".$model->file->file_original_name."</a>",
+        		'format' => 'HTML'
+        	],
+        	[
+        		'class' => DataColumn::className(), // this line is optional
         		'label' => 'Reviewers',
         		'value' => $article_reviewers_string,
         		'format' => 'HTML'

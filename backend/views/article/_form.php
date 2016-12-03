@@ -6,6 +6,8 @@ use yii\widgets\ActiveForm;
 use yii\helpers\ArrayHelper;
 use dosamigos\tinymce\TinyMce;
 use kartik\select2\Select2;
+use kartik\switchinput\SwitchInput;
+use kartik\file\FileInput;
 
 /* @var $this yii\web\View */
 /* @var $model common\models\Article */
@@ -24,7 +26,7 @@ use kartik\select2\Select2;
 
 <div class="article-form">
 
-    <?php $form = ActiveForm::begin(); ?>
+    <?php $form = ActiveForm::begin(['options' => ['enctype' => 'multipart/form-data']]); ?>
     
     <?= $form->field($modelArticle, 'title')->textInput(['maxlength' => true]) ?>
     
@@ -68,6 +70,29 @@ use kartik\select2\Select2;
 	    	'content_css' => './../../css/myTinyMceLayout.css',
 	    ]
 	]);?>
+	
+    <?php echo $form->field($modelArticle, 'is_archived', [
+    		'options' => [
+    			'id' => 'article_attribute__is_advertised_container'
+    		]    		
+    ])->widget(SwitchInput::classname(), [
+    		'options' => [
+    			'id' => 'article_attribute__is_advertised'
+    		]
+    ]); ?>
+
+    <?php echo $form->field($modelArticle, "file_attach", [
+    		'options' => [
+    			'id' => 'article_attribute__file_attach'
+    		]    		
+    ])->widget(FileInput::classname(), [
+    		'options' => [
+	    	    'multiple' => false,                            	
+    		],
+    		'pluginOptions' => [
+    			'showUpload' => false,
+    		],
+    ]);?> 
 	
 	<?php echo $form->field($modelArticle, 'post_reviewers')->widget(Select2::classname(), [ //echo Select2::widget([
 	    'name' => 'kv-state-230',    	

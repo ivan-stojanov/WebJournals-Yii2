@@ -213,4 +213,28 @@ class User extends ActiveRecord implements IdentityInterface
     	}
     	return $dataUsers;
     }
+    
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getArticleAuthors()
+    {
+    	return $this->hasMany(ArticleAuthor::className(), ['author_id' => 'id']);
+    }
+    
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getArticleFiles()
+    {
+    	return $this->hasMany(ArticleFile::className(), ['user_id' => 'id']);
+    }
+    
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getArticleReviewers()
+    {
+    	return $this->hasMany(ArticleReviewer::className(), ['reviewer_id' => 'id']);
+    }
 }

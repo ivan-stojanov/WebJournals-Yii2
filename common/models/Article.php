@@ -4,10 +4,11 @@ namespace common\models;
 
 use Yii;
 use yii\helpers\ArrayHelper;
+use yii\base\Object;
 
-/**
- * This is the model class for table "article".
- *
+/** 
+ * This is the model class for table "article". 
+ * 
  * @property integer $article_id
  * @property integer $section_id
  * @property string $title
@@ -17,10 +18,13 @@ use yii\helpers\ArrayHelper;
  * @property string $page_from
  * @property string $page_to
  * @property integer $sort_in_section
+ * @property integer $is_archived
+ * @property integer $file_id
  * @property string $created_on
  * @property string $updated_on
  * @property integer $is_deleted
- *
+ * 
+ * @property ArticleFile $file
  * @property Section $section
  * @property ArticleAuthor[] $articleAuthors
  * @property User[] $authors
@@ -28,13 +32,13 @@ use yii\helpers\ArrayHelper;
  * @property Keyword[] $keywords
  * @property ArticleReviewer[] $articleReviewers
  * @property User[] $reviewers
- * @property string[] $keyword_ids
- */
+ */ 
 class Article extends \yii\db\ActiveRecord
 {
 	public $post_keywords = [];
 	public $post_authors = [];
-	public $post_reviewers = [];
+	public $post_reviewers = [];	
+	public $file_attach;
 		
     /**
      * @inheritdoc
@@ -51,11 +55,14 @@ class Article extends \yii\db\ActiveRecord
     {
         return [
             [['section_id', 'title', 'abstract', 'content'], 'required'],
-            [['section_id', 'sort_in_section', 'is_deleted'], 'integer'],
+            [['section_id', 'sort_in_section', 'is_archived', 'is_deleted'], 'integer'],
             [['title', 'abstract', 'content', 'pdf_content'], 'string'],       		
             [['created_on', 'updated_on'], 'safe'],
             [['page_from', 'page_to'], 'string', 'max' => 6],
-            [['section_id'], 'exist', 'skipOnError' => true, 'targetClass' => Section::className(), 'targetAttribute' => ['section_id' => 'section_id']],
+        	[['file_id'], 'exist', 'skipOnError' => true, 'targetClass' => ArticleFile::className(), 'targetAttribute' => ['file_id' => 'file_id']],
+        	//	[['file_attach'], 'file', 'skipOnEmpty' => false, 'extensions' => 'png, jpg, pdf'],
+        	[['file_attach'], 'file', 'skipOnEmpty' => true],
+        	[['section_id'], 'exist', 'skipOnError' => true, 'targetClass' => Section::className(), 'targetAttribute' => ['section_id' => 'section_id']],
         	[['post_reviewers', 'post_authors', 'post_keywords'], 'each', 'rule' => ['integer']],        		
         ];
     }
@@ -90,12 +97,29 @@ class Article extends \yii\db\ActiveRecord
         return $this->hasOne(Section::className(), ['section_id' => 'section_id']);
     }
     
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getFile()
+    {
+    	return $this->hasOne(ArticleFile::className(), ['file_id' => 'file_id']);
+    }
+    
     public static function  get_sections(){
     	$sections = Section::find()->all();
     	$sections = ArrayHelper::map($sections, 'section_id', 'volumeissuesectiontitle');
     	return $sections;
     }    
 
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getArticleAuthors()
+    {
+    	return $this->hasMany(ArticleAuthor::className(), ['article_id' => 'article_id'])
+    				->orderBy(['sort_order' => SORT_ASC]);
+    }
+    
     /**
      * @return \yii\db\ActiveQuery
      */
@@ -109,7 +133,8 @@ class Article extends \yii\db\ActiveRecord
      */
     public function getArticleKeywords()
     {
-        return $this->hasMany(ArticleKeyword::className(), ['article_id' => 'article_id']);
+        return $this->hasMany(ArticleKeyword::className(), ['article_id' => 'article_id'])
+        			->orderBy(['sort_order' => SORT_ASC]);
     }
 
     /**
@@ -136,6 +161,34 @@ class Article extends \yii\db\ActiveRecord
         return $this->hasMany(User::className(), ['id' => 'reviewer_id'])->viaTable('article_reviewer', ['article_id' => 'article_id']);
     }
     
+    public function uploadFile($file_attach)
+    {
+    	try {
+    		if(!isset($file_attach)) {
+    			Yii::error("Article->uploadFile(1): input function parameters not valid", "custom_errors_articles");
+    			return null;
+    		}    		
+
+    		$articleFile = new ArticleFile();
+    		$articleFile->user_id = Yii::$app->user->identity->attributes["id"];
+    		$articleFile->file_original_name = $file_attach->baseName.'.'.$file_attach->extension;
+    		$articleFile->file_name = md5(uniqid(rand(), true)).'.'.$file_attach->extension;
+    		$articleFile->file_mime_type = $file_attach->type;
+    		$articleFile->created_on = date("Y-m-d H:i:s");
+  		
+    		if(!$articleFile->save()){
+    			Yii::error("Article->uploadFile(2): ".json_encode($articleFile->getErrors()), "custom_errors_articles");
+    			return null;
+    		}
+			$file_attach->saveAs('@web/uploads/'.$articleFile->file_name);
+    		return $articleFile->file_id;
+    		
+    	} catch (Exception $e) {
+    		Yii::error("Article->uploadFile(3): ".json_encode($e), "custom_errors_articles");
+    		return null;
+    	}    	
+    }
+    
     /**
      * @inheritdoc
      */
@@ -151,7 +204,10 @@ class Article extends \yii\db\ActiveRecord
     			'page_from' => 'Page from',
     			'page_to' => 'Page to',
     			'sort_in_section' => 'Sort in section',
-            	'created_on' => 'Created on',
+    			'is_archived' => 'Is archived',
+    			'file_id' => 'File ID',
+    			'file_attach' => 'File',    			
+    			'created_on' => 'Created on',
             	'updated_on' => 'Updated on',
             	'is_deleted' => 'Is deleted',    			
     			'post_keywords' => 'Keywords',

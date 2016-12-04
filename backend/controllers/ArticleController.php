@@ -137,15 +137,12 @@ class ArticleController extends Controller
         if ($modelArticle->load(Yii::$app->request->post())) {
         	if(Yii::$app->request->post()['Article'] != null)
         	{
-        		if(Yii::$app->request->post()['Article'] != null)
+        		$file_attach = UploadedFile::getInstance($modelArticle, "file_attach");
+        		if($file_attach != null)
         		{
-        			$file_attach = UploadedFile::getInstance($modelArticle, "file_attach");
-        			if($file_attach != null)
-        			{
-        				$modelArticle->file_attach = $file_attach;
-        				$modelArticle->file_id = $modelArticle->uploadFile($file_attach);
-        			}
-        		}        		
+        			$modelArticle->file_attach = $file_attach;
+        			$modelArticle->file_id = $modelArticle->uploadFile($file_attach);
+        		}	
         		
         		if(Yii::$app->request->post()['Article']['post_keywords'] != null)
         		{

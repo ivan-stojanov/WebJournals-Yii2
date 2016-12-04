@@ -118,14 +118,14 @@ $this->registerJsFile("@web/js/articleScript.js", [ 'depends' => ['backend\asset
     	'maintainOrder' => true,
 	    'options' => ['placeholder' => 'Select a reviewers ...', 'multiple' => true],
 	    'pluginOptions' => [
-	        'allowClear' => true
+	        'allowClear' => true,
 	    ],
 	]);?>
 	
 	<?php echo $form->field($modelArticle, 'post_authors')->widget(Select2::classname(), [ //echo Select2::widget([
 	    'name' => 'kv-state-230',    	
 	    'data' => $modelUser->getUsersInAssociativeArray(['is_author' => true]),
-    	'maintainOrder' => true,
+    	'maintainOrder' => true,		
 	    'options' => ['placeholder' => 'Select an authors ...', 'multiple' => true],
 	    'pluginOptions' => [
 	        'allowClear' => true

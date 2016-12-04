@@ -89,7 +89,7 @@ $this->title = $model->title;
         	[
         		'class' => DataColumn::className(), // this line is optional
         		'attribute' => 'special_editor',
-        		'value' => (($model->is_special_issue) && (isset($model->special_editor)) && (strlen($model->special_editor) > 0)) ? $model->special_editor : null,
+        		'value' => (($model->is_special_issue) && (isset($model->specialEditor))) ? $model->specialEditor->fullName : null,
         		'format' => 'HTML'
         	],      
             // 'sort_in_volume',

@@ -12,6 +12,7 @@ $this->title = 'Create Issue';
     <?= $this->render('_form', [
         'modelIssue' => $modelIssue,
     	'modelsSection' => $modelsSection,
+    	'modelUser' => $modelUser,
     	'post_msg' => $post_msg
     ]) ?>
 

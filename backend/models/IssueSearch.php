@@ -18,8 +18,8 @@ class IssueSearch extends Issue
     public function rules()
     {
         return [
-            [['issue_id', 'volume_id', 'is_special_issue', 'cover_image', 'sort_in_volume', 'is_deleted'], 'integer'],
-            [['title', 'published_on', 'special_title', 'special_editor', 'created_on', 'updated_on'], 'safe'],
+            [['issue_id', 'volume_id', 'is_special_issue', 'special_editor', 'cover_image', 'sort_in_volume', 'is_deleted'], 'integer'],
+            [['title', 'published_on', 'special_title', 'created_on', 'updated_on'], 'safe'],
         ];
     }
 
@@ -63,6 +63,7 @@ class IssueSearch extends Issue
             'volume_id' => $this->volume_id,
             'published_on' => $this->published_on,
             'is_special_issue' => $this->is_special_issue,
+        	'special_editor' => $this->special_editor,
             'cover_image' => $this->cover_image,
             'sort_in_volume' => $this->sort_in_volume,
             'created_on' => $this->created_on,
@@ -71,8 +72,7 @@ class IssueSearch extends Issue
         ]);
 
         $query->andFilterWhere(['like', 'title', $this->title])
-            ->andFilterWhere(['like', 'special_title', $this->special_title])
-            ->andFilterWhere(['like', 'special_editor', $this->special_editor]);
+            ->andFilterWhere(['like', 'special_title', $this->special_title]);
 
         return $dataProvider;
     }

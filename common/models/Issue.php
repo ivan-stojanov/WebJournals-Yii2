@@ -14,7 +14,7 @@ use yii\helpers\ArrayHelper;
  * @property string $published_on
  * @property integer $is_special_issue
  * @property string $special_title
- * @property string $special_editor
+ * @property integer $special_editor
  * @property integer $cover_image
  * @property string $created_on
  * @property string $updated_on
@@ -23,6 +23,8 @@ use yii\helpers\ArrayHelper;
  */
 class Issue extends \yii\db\ActiveRecord
 {
+	public $post_editors = [];
+	
     /**
      * @inheritdoc
      */
@@ -38,14 +40,12 @@ class Issue extends \yii\db\ActiveRecord
     {
         return [
             [['title', 'volume_id'], 'required'],
-            [['volume_id', 'is_special_issue', 'is_deleted', 'is_current'], 'integer'],
+            [['volume_id', 'is_special_issue', 'special_editor', 'is_deleted', 'is_current'], 'integer'],
             [['title', 'special_title'], 'string'],
             [['published_on', 'created_on', 'updated_on'], 'safe'],
-            [['special_editor'], 'string', 'max' => 255],
- //       	[['cover_image'], 'file', 'skipOnEmpty' => false, 'extensions' => 'png, jpg'],
-            [['cover_image'], 'exist', 'skipOnError' => true, 'skipOnEmpty' => true, 'targetClass' => Image::className(), 'targetAttribute' => ['cover_image' => 'image_id']],
-        	[['volume_id'], 'exist', 'skipOnError' => true, 'targetClass' => Volume::className(), 'targetAttribute' => ['volume_id' => 'volume_id']],
-        ]; 
+			[['special_editor'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['special_editor' => 'id']],
+            [['cover_image'], 'exist', 'skipOnError' => true, 'targetClass' => Image::className(), 'targetAttribute' => ['cover_image' => 'image_id']],
+            [['volume_id'], 'exist', 'skipOnError' => true, 'targetClass' => Volume::className(), 'targetAttribute' => ['volume_id' => 'volume_id']],        ]; 
     }    
     
     public function scenarios()
@@ -86,6 +86,11 @@ class Issue extends \yii\db\ActiveRecord
     	}
     	
     	return true;
+    }
+    
+    public function getSpecialEditor()
+    {
+    	return $this->hasOne(User::className(), ['id' => 'special_editor'])->one();
     }
     
     public function getVolume()
@@ -129,6 +134,7 @@ class Issue extends \yii\db\ActiveRecord
             'is_special_issue' => 'Is special issue',
             'special_title' => 'Special title',
             'special_editor' => 'Special editor',
+        	'post_editors' => 'Special (Guest) editor',
             'cover_image' => 'Cover image',
             'created_on' => 'Created on',
             'updated_on' => 'Updated on',

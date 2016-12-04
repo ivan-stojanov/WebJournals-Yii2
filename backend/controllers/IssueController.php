@@ -7,6 +7,7 @@ use common\models\Volume;
 use common\models\Issue;
 use common\models\Section;
 use common\models\Image;
+use common\models\User;
 use common\models\DynamicForms;
 use backend\models\IssueSearch;
 use yii\web\Controller;
@@ -101,12 +102,17 @@ class IssueController extends Controller
     	
         $modelIssue = new Issue();
         $modelsSection = [new Section()];
+        $modelUser = new User();
         $post_msg = null;
         
         $modelIssue->created_on = date("Y-m-d H:i:s");
 
         if ($modelIssue->load(Yii::$app->request->post())) {
-     	
+        	if(Yii::$app->request->post()['Issue'] != null && Yii::$app->request->post()['Issue']['post_editors'] != null)
+        	{
+        		$modelIssue->post_editors = Yii::$app->request->post()['Issue']['post_editors'];
+        	}
+        	
         	$modelVolume = Volume::findOne($modelIssue->volume_id);
         	
         	$modelIssue->sort_in_volume = count($modelVolume->issues);
@@ -213,7 +219,8 @@ class IssueController extends Controller
         return $this->render('create', [
             'modelIssue' => $modelIssue,
         	'modelsSection' => (empty($modelsSection)) ? [new Section()] : $modelsSection,
-         	'post_msg' => $post_msg,
+        	'modelUser' => $modelUser,
+        	'post_msg' => $post_msg,
         ]);
     }
 
@@ -233,6 +240,15 @@ class IssueController extends Controller
         $modelIssue->updated_on = date("Y-m-d H:i:s");
         $update_volumes_after_save = false; $volume_id_old = 0; $volume_id_new = 0;
         
+        $modelUser = new User();
+        $arrayIssueSpecialEditor = [];
+        $arrayIssueSpecialEditor_int = [];
+        $issueSpecialEditor = $modelIssue->getSpecialEditor();
+        if($issueSpecialEditor != null && $issueSpecialEditor != null){ 
+        	$arrayIssueSpecialEditor[] = (string)$issueSpecialEditor->id;
+        	$arrayIssueSpecialEditor_int[] = $issueSpecialEditor->id;
+        }
+        
         $initial_cover_image = null;
         if(isset($modelIssue->cover_image)){
         	$initial_cover_image = $modelIssue->cover_image;
@@ -243,7 +259,22 @@ class IssueController extends Controller
         $modelsSection = $modelIssue->sections;
         $post_msg = null;
         
-        if ($modelIssue->load(Yii::$app->request->post())) {
+        if ($modelIssue->load(Yii::$app->request->post())) {   
+        	if(Yii::$app->request->post()['Issue'] != null && Yii::$app->request->post()['Issue']['post_editors'] != null)
+        	{
+          		$current_SpecialEditor_array = Yii::$app->request->post()['Issue']['post_editors'];
+          		$specialEditor_is_changed = !($arrayIssueSpecialEditor == $current_SpecialEditor_array);
+          		if($specialEditor_is_changed && count($current_SpecialEditor_array)>0)
+          		{
+          			$arrayIssueSpecialEditor_int = $current_SpecialEditor_array;
+          			$modelIssue->special_editor = $arrayIssueSpecialEditor_int[0];         			         			
+          		}
+        	}
+        	else 
+        	{
+        		$arrayIssueSpecialEditor_int = null;
+        		$modelIssue->special_editor = null;
+        	}
         	
         	$oldIDs = ArrayHelper::map($modelsSection, 'section_id', 'section_id');
       	
@@ -419,12 +450,16 @@ class IssueController extends Controller
         			$transaction->rollBack();
         		}
         	}
-        }        
+        }
+        
+        $modelIssue->post_editors = $arrayIssueSpecialEditor_int;
+        //var_dump($arrayIssueSpecialEditor);
 
         return $this->render('update', [
-        		'modelIssue' => $modelIssue,
-        		'modelsSection' => (empty($modelsSection)) ? [new Section()] : $modelsSection,
-        		'post_msg' => $post_msg,
+        	'modelIssue' => $modelIssue,
+        	'modelsSection' => (empty($modelsSection)) ? [new Section()] : $modelsSection,
+        	'modelUser' => $modelUser,
+        	'post_msg' => $post_msg,
         ]);
     }
 

@@ -60,7 +60,6 @@ class Article extends \yii\db\ActiveRecord
             [['created_on', 'updated_on'], 'safe'],
             [['page_from', 'page_to'], 'string', 'max' => 6],
         	[['file_id'], 'exist', 'skipOnError' => true, 'targetClass' => ArticleFile::className(), 'targetAttribute' => ['file_id' => 'file_id']],
-        	//	[['file_attach'], 'file', 'skipOnEmpty' => false, 'extensions' => 'png, jpg, pdf'],
         	[['file_attach'], 'file', 'skipOnEmpty' => true],
         	[['section_id'], 'exist', 'skipOnError' => true, 'targetClass' => Section::className(), 'targetAttribute' => ['section_id' => 'section_id']],
         	[['post_reviewers', 'post_authors', 'post_keywords'], 'each', 'rule' => ['integer']],        		

@@ -6,8 +6,9 @@ use yii\widgets\ActiveForm;
 use yii\helpers\ArrayHelper;
 use wbraganca\dynamicform\DynamicFormWidget;
 use dosamigos\datetimepicker\DateTimePicker;
-use kartik\file\FileInput;
+use kartik\select2\Select2;
 use kartik\switchinput\SwitchInput;
+use kartik\file\FileInput;
 
 /* @var $this yii\web\View */
 /* @var $model common\models\Issue */
@@ -134,12 +135,31 @@ use kartik\switchinput\SwitchInput;
 	    		]    		
 	    ])->textInput(['maxlength' => true]) ?>
 	    
-		<?= $form->field($modelIssue, 'special_editor', [
+		<?php echo $form->field($modelIssue, 'post_editors', [
+	    		'options' => [
+	    			'id' => 'special_editor_container',
+					'style' => ($is_special_issue_flag) ? '' : 'display:none'
+	    		]				
+			])->widget(Select2::classname(), [ //echo Select2::widget([
+			    'name' => 'kv-state-230',    	
+			    'data' => $modelUser->getUsersInAssociativeArray(['is_editor' => true]),
+				'showToggleAll' => false,
+			    'options' => ['placeholder' => 'Select an editor ...', 'multiple' => true],
+			    'pluginOptions' => [
+			        'allowClear' => true,
+			    	'maximumSelectionLength' => 1,	    	
+			    ],
+		]);?>	    
+	    
+		<?/*= $form->field($modelIssue, 'special_editor', [
 	    		'options' => [
 	    			'id' => 'special_editor_container',
 					'style' => ($is_special_issue_flag) ? '' : 'display:none'
 	    		]    		
-	    ])->textInput(['maxlength' => true]) ?>	    
+	    ])->textInput(['maxlength' => true]) */?>	  
+	    
+	    
+	      
 	</div>
 	
 	<?= $this->render('_form_sections', [

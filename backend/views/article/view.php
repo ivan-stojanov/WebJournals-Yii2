@@ -70,7 +70,7 @@ $this->params['breadcrumbs'][] = $this->title;
         	[
         		'class' => DataColumn::className(), // this line is optional
         		'attribute' => 'file_attach',
-        		'value' => "<a href='../@web/uploads/".$model->file->file_name."' download='".$model->file->file_name."'>".$model->file->file_original_name."</a>",
+        		'value' => ($model->file != null) ? "<a href='../@web/uploads/".$model->file->file_name."' download='".$model->file->file_name."'>".$model->file->file_original_name."</a>" : null,
         		'format' => 'HTML'
         	],
         	[

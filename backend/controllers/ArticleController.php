@@ -49,6 +49,13 @@ class ArticleController extends Controller
     			],
     	];
     }
+    
+    /*public function beforeAction($action) {
+    	if($action->id == "create" || $action->id == "update"){
+    		$this->enableCsrfValidation = false;
+    	}
+    	return parent::beforeAction($action);
+    }*/
 
     /**
      * Lists all Article models.
@@ -221,6 +228,7 @@ class ArticleController extends Controller
             			return $this->redirect(['view', 'id' => $modelArticle->article_id]);
         			}
         		} catch (Exception $e) {
+        			Yii::error("ArticleController->actionCreate(5): ".json_encode($e), "custom_errors_articles");
         			$transaction->rollBack();
         		}
         	}        	
@@ -439,6 +447,7 @@ class ArticleController extends Controller
           				return $this->redirect(['view', 'id' => $modelArticle->article_id]);
               		}
         		} catch (Exception $e) {
+        			Yii::error("ArticleController->actionUpdate(7): ".json_encode($e), "custom_errors_articles");
         			$transaction->rollBack();
         		}
         	}        			
@@ -507,6 +516,41 @@ class ArticleController extends Controller
         } else {
             throw new NotFoundHttpException('The requested page does not exist.');
         }
+    }    
+    
+    /*
+     * Asynch functions called with Ajax - Article (form of articles - remove file)
+     */
+    public function actionAsynchRemoveArticleFile()
+    {
+    	$articleReceivedID = Yii::$app->getRequest()->post('clickedElementID');
+    
+    	$articleID = json_decode($articleReceivedID);
+    	
+    	$modelArticle = $this->findModel($articleID);
+    	
+    	if ($modelArticle != null && $modelArticle->file_id != null) {
+    		$modelArticle->file_id = null;
+    		$modelArticle->updated_on = date("Y-m-d H:i:s");
+    		if(!$modelArticle->save()){
+    			throw new \Exception('Data not saved: '.print_r($modelArticle->errors, true), 500);
+    		} else {
+    			return "Article file has been successfully removed.";
+    		}
+    	}
+    	 
+    	/*header('HTTP/1.1 404');
+    	 header('Content-type: application/json');
+    	 $response = new Response();
+    	 $response->format = Response::FORMAT_JSON;
+    	 //$response->statusText = "Article file has been successfully removed.";
+    	 $response->statusCode = 200;
+    	 $response->data = [
+    	 'message' => "Article file has been successfully removed.",
+    	 ];
+    	 Yii::$app->end();*/
+    	 
+    	return "Empty message!";
     }
     
 

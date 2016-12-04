@@ -12,6 +12,9 @@ use kartik\file\FileInput;
 /* @var $this yii\web\View */
 /* @var $model common\models\Article */
 /* @var $form yii\widgets\ActiveForm */
+
+\backend\assets\AppAsset::register($this);
+$this->registerJsFile("@web/js/articleScript.js", [ 'depends' => ['backend\assets\CustomJuiAsset'], 'position' => \yii\web\View::POS_END]);
 ?>
 
 <?php if(isset($post_msg)){ ?>
@@ -81,9 +84,21 @@ use kartik\file\FileInput;
     		]
     ]); ?>
 
+	<?php 
+		$initialCaption = null;
+		$initialPreview = [];
+		if($modelArticle->file != null) {
+			$initialCaption = " ".$modelArticle->file->file_original_name;
+			$initialPreview = [
+				"<div class='file-preview-other'>".$modelArticle->file->file_name."</div>",
+			];
+		}
+	?>
+
     <?php echo $form->field($modelArticle, "file_attach", [
     		'options' => [
-    			'id' => 'article_attribute__file_attach'
+    			'class' => 'article_attribute__file_attach',
+    			'id' => 'article_attribute__file_attach-'.$modelArticle->article_id
     		]    		
     ])->widget(FileInput::classname(), [
     		'options' => [
@@ -91,6 +106,9 @@ use kartik\file\FileInput;
     		],
     		'pluginOptions' => [
     			'showUpload' => false,
+    			'showPreview' => false,
+    			'initialCaption' => $initialCaption,
+    			'initialPreview' => $initialPreview,
     		],
     ]);?> 
 	

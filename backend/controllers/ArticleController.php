@@ -8,6 +8,7 @@ use common\models\Article;
 use common\models\ArticleAuthor;
 use common\models\ArticleKeyword;
 use common\models\ArticleReviewer;
+use common\models\ArticleFile;
 use common\models\Keyword;
 use common\models\User;
 use backend\models\ArticleSearch;
@@ -491,12 +492,25 @@ class ArticleController extends Controller
     	]);
     	
         $article_to_delete = $this->findModel($id);
+        $file_id_to_delete = $article_to_delete->file_id;
         $parent_section = $article_to_delete->section;
-        $article_to_delete->delete();
+        if(!$article_to_delete->delete()){
+        	Yii::error("ArticleController->actionDelete(1): ".json_encode($article_to_delete->getErrors()), "custom_errors_articles");
+        }
         
         foreach ($parent_section->articles as $index => $modelArticle) {
-        	$modelArticle->sort_in_section = $index;
-        	$modelArticle->save();
+        	$modelArticle->sort_in_section = $index;      	
+        	if(!$modelArticle->save()){
+        		Yii::error("ArticleController->actionDelete(2): ".json_encode($modelArticle->getErrors()), "custom_errors_articles");
+        	}        	 
+        }
+        
+        if($file_id_to_delete != null) {
+        	$modelFile = ArticleFile::findOne(['file_id' => $file_id_to_delete]);
+        	$modelFile->is_deleted = true;
+        	if(!$modelFile->save()){
+        		Yii::error("ArticleController->actionDelete(3): ".json_encode($modelFile->getErrors()), "custom_errors_articles");
+        	}
         }
         
         return $this->redirect(['index']);

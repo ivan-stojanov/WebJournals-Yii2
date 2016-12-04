@@ -2,66 +2,68 @@
 
 namespace backend\models;
 
-use Yii;
-use yii\base\Model;
-use yii\data\ActiveDataProvider;
-use common\models\Article;
+use Yii; 
+use yii\base\Model; 
+use yii\data\ActiveDataProvider; 
+use common\models\Article; 
 
-/**
- * ArticleSearch represents the model behind the search form about `common\models\Article`.
- */
-class ArticleSearch extends Article
-{
-    /**
-     * @inheritdoc
-     */
-    public function rules()
-    {
-        return [
-            [['article_id', 'section_id', 'sort_in_section', 'is_deleted'], 'integer'],
+/** 
+ * ArticleSearch represents the model behind the search form about `common\models\Article`. 
+ */ 
+class ArticleSearch extends Article 
+{ 
+    /** 
+     * @inheritdoc 
+     */ 
+    public function rules() 
+    { 
+        return [ 
+            [['article_id', 'section_id', 'sort_in_section', 'is_archived', 'file_id', 'is_deleted'], 'integer'],
             [['title', 'abstract', 'content', 'pdf_content', 'page_from', 'page_to', 'created_on', 'updated_on'], 'safe'],
-        ];
-    }
+        ]; 
+    } 
 
-    /**
-     * @inheritdoc
-     */
-    public function scenarios()
-    {
-        // bypass scenarios() implementation in the parent class
-        return Model::scenarios();
-    }
+    /** 
+     * @inheritdoc 
+     */ 
+    public function scenarios() 
+    { 
+        // bypass scenarios() implementation in the parent class 
+        return Model::scenarios(); 
+    } 
 
-    /**
-     * Creates data provider instance with search query applied
-     *
-     * @param array $params
-     *
-     * @return ActiveDataProvider
-     */
-    public function search($params)
-    {
-        $query = Article::find();
+    /** 
+     * Creates data provider instance with search query applied 
+     * 
+     * @param array $params 
+     * 
+     * @return ActiveDataProvider 
+     */ 
+    public function search($params) 
+    { 
+        $query = Article::find(); 
 
-        // add conditions that should always apply here
+        // add conditions that should always apply here 
 
-        $dataProvider = new ActiveDataProvider([
-            'query' => $query,
-        ]);
+        $dataProvider = new ActiveDataProvider([ 
+            'query' => $query, 
+        ]); 
 
-        $this->load($params);
+        $this->load($params); 
 
-        if (!$this->validate()) {
+        if (!$this->validate()) { 
             // uncomment the following line if you do not want to return any records when validation fails
-            // $query->where('0=1');
-            return $dataProvider;
-        }
+            // $query->where('0=1'); 
+            return $dataProvider; 
+        } 
 
-        // grid filtering conditions
+        // grid filtering conditions 
         $query->andFilterWhere([
             'article_id' => $this->article_id,
             'section_id' => $this->section_id,
             'sort_in_section' => $this->sort_in_section,
+            'is_archived' => $this->is_archived,
+            'file_id' => $this->file_id,
             'created_on' => $this->created_on,
             'updated_on' => $this->updated_on,
             'is_deleted' => $this->is_deleted,
@@ -74,6 +76,6 @@ class ArticleSearch extends Article
             ->andFilterWhere(['like', 'page_from', $this->page_from])
             ->andFilterWhere(['like', 'page_to', $this->page_to]);
 
-        return $dataProvider;
-    }
-}
+        return $dataProvider; 
+    } 
+} 

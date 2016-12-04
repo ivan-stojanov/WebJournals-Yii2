@@ -7,6 +7,7 @@ use yii\grid\DataColumn;
 use common\models\Article;
 use common\models\Section;
 use common\models\Issue;
+use common\models\ArticleAuthor;
 
 /* @var $this yii\web\View */
 /* @var $model backend\models\ArticleSearch */
@@ -54,6 +55,32 @@ use common\models\Issue;
         	],
         	[
 	        	'class' => DataColumn::className(), // this line is optional
+	        	'attribute' => 'is_archived',
+	        	'value' =>function ($data) {
+	        		if ($data->is_archived == 1)
+	        			return "<div class='glyphicon glyphicon-remove'> Archived</div>";
+	        		else
+	        			return "<div class='glyphicon glyphicon-ok'> Active</div>";
+	        	},
+	        	"label" => "Status",
+	        	"format" => "HTML",
+	        	'filter'=>[
+	        			"1" => "Archived",
+	        			"0" => "Active"
+	        	],        	
+        	],
+        	[
+	        	'class' => DataColumn::className(), // this line is optional
+	        	'label' => 'Authors',
+	        	'value' =>function ($data) {
+	        		$articleAuthorModel = new ArticleAuthor();
+    				return $articleAuthorModel->getAuthorsForArticleString($data->article_id);
+	        	},
+	        	"format" => "HTML",
+	        	'headerOptions' => ['style' => 'width:20%'],
+        	],
+        	/*[
+	        	'class' => DataColumn::className(), // this line is optional
 	        	'attribute' => 'section.issue.title',
 	        	'label' => 'Issue title',
 	        	'value' =>function ($data) {
@@ -73,7 +100,7 @@ use common\models\Issue;
 	        	"format" => "HTML",
 	        	'filter'=>Issue::get_volumes(),
 	        	'headerOptions' => ['style' => 'width:20%'],
-        	],        	
+        	],*/        	
             // 'created_on',
             // 'updated_on',
             // 'is_deleted',

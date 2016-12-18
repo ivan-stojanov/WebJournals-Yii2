@@ -22,13 +22,11 @@ use common\models\ArticleAuthor;
 		    <strong><span id="homepage-section-alert-msg"></span><?php echo $post_msg["text"]; ?></strong>
 		</div>
 	<?php } ?>
-	<h1><?php echo "Article List" ?></h1>
+	<h1><?php echo $title_msg ?></h1>
 	<hr>
-
-    <?= GridView::widget([
-        'dataProvider' => $dataProvider,
-        'filterModel' => $searchModel,
-        'columns' => [
+	
+	<?php	
+		$columns = [
             ['class' => 'yii\grid\SerialColumn'],
 
             //'title:ntext',
@@ -74,7 +72,7 @@ use common\models\ArticleAuthor;
 	        	'label' => 'Authors',
 	        	'value' =>function ($data) {
 	        		$articleAuthorModel = new ArticleAuthor();
-    				return $articleAuthorModel->getAuthorsForArticleString($data->article_id);
+    				return $articleAuthorModel->getAuthorsForArticleString($data->article_id)['string'];
 	        	},
 	        	"format" => "HTML",
 	        	'headerOptions' => ['style' => 'width:20%'],
@@ -104,9 +102,20 @@ use common\models\ArticleAuthor;
             // 'created_on',
             // 'updated_on',
             // 'is_deleted',
+	        ['class' => 'yii\grid\ActionColumn']
+        ];
+		
+		/*if(Yii::$app->session->get('user.is_admin') == true) {
+			$columns[] = ['class' => 'yii\grid\ActionColumn'];
+		} else {
+			$columns[] = ['class' => 'yii\grid\ActionColumn', 'template' => '{view} {update} {delete}'];
+		}*/
+	?>
 
-            ['class' => 'yii\grid\ActionColumn'],
-        ],
+    <?= GridView::widget([
+        'dataProvider' => $dataProvider,
+        'filterModel' => $searchModel,
+        'columns' => $columns,
     ]); 
     
     function displayColumnContent($contenttext, $contentlimitlength){

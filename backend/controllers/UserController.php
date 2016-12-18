@@ -70,7 +70,7 @@ class UserController extends Controller
     public function actionIndex()
     {
     	if (Yii::$app->user->isGuest || Yii::$app->session->get('user.is_admin') != true){
-    		return $this->redirect(['error']);
+    		return $this->redirect(['site/error']);
     	}
     	
     	$queryParams = Yii::$app->request->queryParams; 	
@@ -94,7 +94,7 @@ class UserController extends Controller
     public function actionView($id)
     {
     	if (Yii::$app->user->isGuest || Yii::$app->session->get('user.is_admin') != true){
-    		return $this->redirect(['error']);
+    		return $this->redirect(['site/error']);
     	}
     	
         return $this->render('view', [
@@ -110,7 +110,7 @@ class UserController extends Controller
     public function actionCreate()
     {
     	if (Yii::$app->user->isGuest || Yii::$app->session->get('user.is_admin') != true){
-    		return $this->redirect(['error']);
+    		return $this->redirect(['site/error']);
     	}
     	
         $model = new User();
@@ -131,13 +131,9 @@ class UserController extends Controller
     public function actionUpdate($id)
     {
     	if (Yii::$app->user->isGuest || Yii::$app->session->get('user.is_admin') != true){
-    		return $this->redirect(['error']);
+    		return $this->redirect(['site/error']);
     	}
-    	
-    	if (Yii::$app->user->isGuest) {
-    		return $this->redirect(['error']);
-    	}
-    	
+   	
         return $this->_editUserForm($id);
     }
 
@@ -150,7 +146,7 @@ class UserController extends Controller
     public function actionDelete($id)
     {
     	if (Yii::$app->user->isGuest || Yii::$app->session->get('user.is_admin') != true){
-    		return $this->redirect(['error']);
+    		return $this->redirect(['site/error']);
     	}
     	
         $this->findModel($id)->delete();
@@ -162,7 +158,7 @@ class UserController extends Controller
     public function actionProfile()
     {   	
     	if (Yii::$app->user->isGuest) {
-    		return $this->redirect(['error']);
+    		return $this->redirect(['site/error']);
     	}
     
     	$currentId = Yii::$app->user->identity->attributes["id"];
@@ -174,7 +170,7 @@ class UserController extends Controller
     		return $this->_editUserForm($currentId);
     	}
 
-    	return $this->redirect(['error']);
+    	return $this->redirect(['site/error']);
     }
     
     //called on actionProfile & actionEdit

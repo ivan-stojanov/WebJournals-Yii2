@@ -14,17 +14,19 @@ $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="article-view">
 
-    <h1><?= Html::encode($this->title) ?></h1>
+    <h1><?= Html::encode($this->title) ?></h1>    
 
     <p>
-        <?= Html::a('Update', ['update', 'id' => $model->article_id], ['class' => 'btn btn-primary']) ?>
-        <?= Html::a('Delete', ['delete', 'id' => $model->article_id], [
-            'class' => 'btn btn-danger',
-            'data' => [
-                'confirm' => 'Are you sure you want to delete this item?',
-                'method' => 'post',
-            ],
-        ]) ?>
+	    <?php if($user_can_modify) { ?>
+	        <?= Html::a('Update', ['update', 'id' => $model->article_id], ['class' => 'btn btn-primary']) ?>
+	        <?= Html::a('Delete', ['delete', 'id' => $model->article_id], [
+	            'class' => 'btn btn-danger',
+	            'data' => [
+	                'confirm' => 'Are you sure you want to delete this item?',
+	                'method' => 'post',
+	            ],
+	        ]) ?>    	
+	    <?php } ?>
         <?= Html::a('View in PDF', ['pdfview', 'id' => $model->article_id], ['class' => 'btn btn-success']) ?>
     </p>
     
@@ -82,7 +84,7 @@ $this->params['breadcrumbs'][] = $this->title;
         	[
         		'class' => DataColumn::className(), // this line is optional
         		'label' => 'Authors',
-        		'value' => $article_authors_string,
+        		'value' => $article_authors['string'],
         		'format' => 'HTML'
         	],
         	[

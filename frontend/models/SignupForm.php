@@ -68,7 +68,10 @@ class SignupForm extends Model
         	['last_name', 'match', 'pattern' => '/^[a-zA-Z]{0,100}$/', 'message' => 'The last name must contain only letters.'],
         		
         	['initials', 'match', 'pattern' => '/^[A-Z]{0,10}$/', 'message' => 'The initials must contain only uppercase letters.'],
-
+        		
+        	['gender', 'required'],
+        		
+        	['affiliation', 'required'],
         	['affiliation', 'string', 'max' => 255],        		
         		
         	['signature', 'string', 'max' => 255],         		
@@ -95,7 +98,10 @@ class SignupForm extends Model
         		
         	['fax', 'match', 'pattern' => '/^[0-9]{0,30}$/', 'message' => 'The fax must contain only numbers.'],
         		
+        	['mailing_address', 'required'],
         	['mailing_address', 'string', 'max' => 255],
+        		
+        	['country', 'required'],        		
         		
         	['reviewer_interests', 'string', 'max' => 255],
         		
@@ -191,6 +197,7 @@ class SignupForm extends Model
     		'is_author' => 'Author: Able to submit items to the journal',
     		'is_reviewer' => 'Reviewer: Willing to conduct peer review of submissions to the site. Identify reviewing interests (substantive areas and research methods):',  
     		'reviewer_interests' => 'Reviewer Interests',    			
+    		'mailing_address' => 'Mailing Address, City, Province',
     	);
     }
 }

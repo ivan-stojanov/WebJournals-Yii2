@@ -65,7 +65,7 @@ class ArticleController extends Controller
     public function actionIndex()
     {
     	if (Yii::$app->user->isGuest || Yii::$app->session->get('user.is_admin') != true){
-    		return $this->redirect(['error']);
+    		return $this->redirect(['site/error']);
     	}
     	
     	$queryParams = Yii::$app->request->queryParams;
@@ -79,7 +79,33 @@ class ArticleController extends Controller
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
         	'post_msg' => $post_msg,
+        	'title_msg' => "Article List"
         ]);
+    }
+    
+    /**
+     * Lists my Articles models.
+     * @return mixed
+     */
+    public function actionMyarticles()
+    {
+    	if (Yii::$app->user->isGuest){
+    		return $this->redirect(['site/error']);
+    	}
+    	 
+    	$queryParams = Yii::$app->request->queryParams;
+    	$queryParams['is_deleted'] = 0;
+    	 
+    	$searchModel = new ArticleSearch();
+    	$dataProvider = $searchModel->search($queryParams, Yii::$app->user->id);
+    	$post_msg = null;
+    
+    	return $this->render('index', [
+    			'searchModel' => $searchModel,
+    			'dataProvider' => $dataProvider,
+    			'post_msg' => $post_msg,
+    			'title_msg' => "My Article List"
+    	]);
     }
 
     /**
@@ -89,12 +115,12 @@ class ArticleController extends Controller
      */
     public function actionView($id)
     {
-    	if (Yii::$app->user->isGuest || Yii::$app->session->get('user.is_admin') != true){
-    		return $this->redirect(['error']);
+    	if (Yii::$app->user->isGuest /*|| Yii::$app->session->get('user.is_admin') != true*/){
+    		return $this->redirect(['site/error']);
     	}
     	
     	$articleAuthorModel = new ArticleAuthor();
-    	$article_authors_string = $articleAuthorModel->getAuthorsForArticleString($id);
+    	$article_authors = $articleAuthorModel->getAuthorsForArticleString($id);
     	
     	$articleKeywordModel = new ArticleKeyword();
     	$article_keywords_string = $articleKeywordModel->getKeywordsForArticleString($id);
@@ -102,11 +128,16 @@ class ArticleController extends Controller
     	$articleReviewerModel = new ArticleReviewer();
     	$article_reviewers_string = $articleReviewerModel->getReviewersForArticleString($id);
     	
+    	$current_user_id = ','.Yii::$app->user->id.',';
+    	$user_can_modify = (strpos($article_authors['ids'], $current_user_id) !== false);
+    	$user_can_modify = ($user_can_modify || Yii::$app->session->get('user.is_admin'));
+    	
         return $this->render('view', [
             'model' => $this->findModel($id),
-        	'article_authors_string' => $article_authors_string,
+        	'article_authors' => $article_authors,
         	'article_keywords_string' => $article_keywords_string,
         	'article_reviewers_string' => $article_reviewers_string,
+        	'user_can_modify' => $user_can_modify,
         ]);
     }
 
@@ -117,130 +148,130 @@ class ArticleController extends Controller
      */
     public function actionCreate()
     {
-    	if (Yii::$app->user->isGuest || Yii::$app->session->get('user.is_admin') != true){
-    		return $this->redirect(['error']);
+    	if (Yii::$app->user->isGuest){
+    		return $this->redirect(['site/error']);
     	}
-    	
-        $modelArticle = new Article();
-        $modelKeyword = new Keyword();
-        $arrayArticleKeyword = [];
-        $modelUser = new User();
-        $arrayArticleAuthor = [];
-        $arrayArticleReviewer = [];
-        
-        $post_msg = null;        
-        $modelArticle->created_on = date("Y-m-d H:i:s");
-        $addKeywords = false;
-        $addAuthors = false;
-        $addReviewers = false;
 
-        if ($modelArticle->load(Yii::$app->request->post())) {
-        	if(Yii::$app->request->post()['Article'] != null)
-        	{
-        		$file_attach = UploadedFile::getInstance($modelArticle, "file_attach");
-        		if($file_attach != null)
-        		{
-        			$modelArticle->file_attach = $file_attach;
-        			$modelArticle->file_id = $modelArticle->uploadFile($file_attach);
-        		}	
-        		
-        		if(Yii::$app->request->post()['Article']['post_keywords'] != null)
-        		{
-        			$modelArticle->post_keywords = Yii::$app->request->post()['Article']['post_keywords'];
-        			$addKeywords = true;
-        		}
-        		if(Yii::$app->request->post()['Article']['post_authors'] != null)
-        		{
-        			$modelArticle->post_authors = Yii::$app->request->post()['Article']['post_authors'];
-        			$addAuthors = true;
-        		}
-        		if(Yii::$app->request->post()['Article']['post_reviewers'] != null)
-        		{
-        			$modelArticle->post_reviewers = Yii::$app->request->post()['Article']['post_reviewers'];
-        			$addReviewers = true;
-        		}
-        	}
-        	
-        	$modelSection = Section::findOne($modelArticle->section_id);        	 
-        	$modelArticle->sort_in_section = count($modelSection->articles);
-        	        	
-        	// validate all models
-        	$valid = $modelArticle->validate();
-        	
-        	if ($valid) {
-        		$transaction = \Yii::$app->db->beginTransaction();
-        		try {
-        			if ($flag = $modelArticle->save(false)) {
-        				
-        			} else {
-        				Yii::error("ArticleController->actionCreate(1): ".json_encode($modelArticle->getErrors()), "custom_errors_articles");
-        			}
-        			if ($flag) {
-        				$transaction->commit();
-        				
-        				ArticleKeyword::deleteAll([
-        						'article_id' => intval($modelArticle->article_id)
-        				]);
-        				if($addKeywords && $modelArticle != null && $modelArticle->post_keywords != null && count($modelArticle->post_keywords)>0) {
-        					foreach ($modelArticle->post_keywords as $indexOrder => $keywordId) {
-        						$articleKeywordItem = new ArticleKeyword();
-        						$articleKeywordItem->article_id = $modelArticle->article_id;
-        						$articleKeywordItem->keyword_id = intval($keywordId);
-        						$articleKeywordItem->sort_order = intval($indexOrder) + 1;
-        						$articleKeywordItem->created_on = date("Y-m-d H:i:s");
-        						if(!$articleKeywordItem->save()){
-        							Yii::error("ArticleController->actionCreate(2): ".json_encode($articleKeywordItem->getErrors()), "custom_errors_articles");
-        						}
-        					}
-        				}        				
-        				ArticleAuthor::deleteAll([
-        						'article_id' => intval($modelArticle->article_id)
-        				]);
-        				if($addKeywords && $modelArticle != null && $modelArticle->post_authors != null && count($modelArticle->post_authors)>0) {
-        					foreach ($modelArticle->post_authors as $indexAuthorOrder => $authorId) {
-	        					$articleAuthorItem = new ArticleAuthor();
-	        					$articleAuthorItem->article_id = $modelArticle->article_id;
-	        					$articleAuthorItem->author_id = intval($authorId);
-	        					$articleAuthorItem->sort_order = intval($indexAuthorOrder) + 1;
-	        					$articleAuthorItem->created_on = date("Y-m-d H:i:s");
-	        					if(!$articleAuthorItem->save()){
-	        						Yii::error("ArticleController->actionCreate(3): ".json_encode($articleAuthorItem->getErrors()), "custom_errors_articles");
-	        					}
-	        				}
-        				}
-        				ArticleReviewer::deleteAll([
-        						'article_id' => intval($modelArticle->article_id)
-        				]);
-        				if($addReviewers && $modelArticle != null && $modelArticle->post_reviewers != null && count($modelArticle->post_reviewers)>0){
-	        				foreach ($modelArticle->post_reviewers as $indexReviewerOrder => $reviewerId) {
-	        					$articleReviewerItem = new ArticleReviewer();
-	        					$articleReviewerItem->article_id = $modelArticle->article_id;
-	        					$articleReviewerItem->reviewer_id = intval($reviewerId);
-	        					$articleReviewerItem->created_on = date("Y-m-d H:i:s");
-	        					if(!$articleReviewerItem->save()){
-	        						Yii::error("ArticleController->actionCreate(4): ".json_encode($articleReviewerItem->getErrors()), "custom_errors_articles");
-	        					}
-	        				}
-        				}
-        				
-            			return $this->redirect(['view', 'id' => $modelArticle->article_id]);
-        			}
-        		} catch (Exception $e) {
-        			Yii::error("ArticleController->actionCreate(5): ".json_encode($e), "custom_errors_articles");
-        			$transaction->rollBack();
-        		}
-        	}        	
-        }
-        
-        return $this->render('create', [
-            'modelArticle' => $modelArticle,
-        	'modelKeyword' => $modelKeyword,
-        	'modelUser' => $modelUser,
-        	'arrayArticleKeyword' => $arrayArticleKeyword,
-        	'arrayArticleAuthor' => $arrayArticleAuthor,
-        	'arrayArticleReviewer' => $arrayArticleReviewer,
-            'post_msg' => $post_msg,
-        ]);
+    	$modelArticle = new Article();
+    	$modelKeyword = new Keyword();
+    	$arrayArticleKeyword = [];
+    	$modelUser = new User();
+    	$arrayArticleAuthor = [];
+    	$arrayArticleReviewer = [];
+    		
+    	$post_msg = null;
+    	$modelArticle->created_on = date("Y-m-d H:i:s");
+    	$addKeywords = false;
+    	$addAuthors = false;
+    	$addReviewers = false;
+    		
+    	if ($modelArticle->load(Yii::$app->request->post())) {
+    		if(Yii::$app->request->post()['Article'] != null)
+    		{
+    			$file_attach = UploadedFile::getInstance($modelArticle, "file_attach");
+    			if($file_attach != null)
+    			{
+    				$modelArticle->file_attach = $file_attach;
+    				$modelArticle->file_id = $modelArticle->uploadFile($file_attach);
+    			}
+    		
+    			if(Yii::$app->request->post()['Article']['post_keywords'] != null)
+    			{
+    				$modelArticle->post_keywords = Yii::$app->request->post()['Article']['post_keywords'];
+    				$addKeywords = true;
+    			}
+    			if(Yii::$app->request->post()['Article']['post_authors'] != null)
+    			{
+    				$modelArticle->post_authors = Yii::$app->request->post()['Article']['post_authors'];
+    				$addAuthors = true;
+    			}
+    			if(Yii::$app->request->post()['Article']['post_reviewers'] != null)
+    			{
+    				$modelArticle->post_reviewers = Yii::$app->request->post()['Article']['post_reviewers'];
+    				$addReviewers = true;
+    			}
+    		}
+    			 
+    		$modelSection = Section::findOne($modelArticle->section_id);
+    		$modelArticle->sort_in_section = count($modelSection->articles);
+    		
+    		// validate all models
+    		$valid = $modelArticle->validate();
+    			 
+    		if ($valid) {
+    			$transaction = \Yii::$app->db->beginTransaction();
+    			try {
+    				if ($flag = $modelArticle->save(false)) {
+    		
+    				} else {
+    					Yii::error("ArticleController->actionCreate(1): ".json_encode($modelArticle->getErrors()), "custom_errors_articles");
+    				}
+    				if ($flag) {
+    					$transaction->commit();
+    		
+    					ArticleKeyword::deleteAll([
+    							'article_id' => intval($modelArticle->article_id)
+    					]);
+    					if($addKeywords && $modelArticle != null && $modelArticle->post_keywords != null && count($modelArticle->post_keywords)>0) {
+    						foreach ($modelArticle->post_keywords as $indexOrder => $keywordId) {
+    							$articleKeywordItem = new ArticleKeyword();
+    							$articleKeywordItem->article_id = $modelArticle->article_id;
+    							$articleKeywordItem->keyword_id = intval($keywordId);
+    							$articleKeywordItem->sort_order = intval($indexOrder) + 1;
+    							$articleKeywordItem->created_on = date("Y-m-d H:i:s");
+    							if(!$articleKeywordItem->save()){
+    								Yii::error("ArticleController->actionCreate(2): ".json_encode($articleKeywordItem->getErrors()), "custom_errors_articles");
+    							}
+    						}
+    					}
+    					ArticleAuthor::deleteAll([
+    							'article_id' => intval($modelArticle->article_id)
+    					]);
+    					if($addKeywords && $modelArticle != null && $modelArticle->post_authors != null && count($modelArticle->post_authors)>0) {
+    						foreach ($modelArticle->post_authors as $indexAuthorOrder => $authorId) {
+    							$articleAuthorItem = new ArticleAuthor();
+    							$articleAuthorItem->article_id = $modelArticle->article_id;
+    							$articleAuthorItem->author_id = intval($authorId);
+    							$articleAuthorItem->sort_order = intval($indexAuthorOrder) + 1;
+    							$articleAuthorItem->created_on = date("Y-m-d H:i:s");
+    							if(!$articleAuthorItem->save()){
+    								Yii::error("ArticleController->actionCreate(3): ".json_encode($articleAuthorItem->getErrors()), "custom_errors_articles");
+    							}
+   							}
+   						}
+   						ArticleReviewer::deleteAll([
+    							'article_id' => intval($modelArticle->article_id)
+    					]);
+    					if($addReviewers && $modelArticle != null && $modelArticle->post_reviewers != null && count($modelArticle->post_reviewers)>0){
+    						foreach ($modelArticle->post_reviewers as $indexReviewerOrder => $reviewerId) {
+    							$articleReviewerItem = new ArticleReviewer();
+    							$articleReviewerItem->article_id = $modelArticle->article_id;
+   								$articleReviewerItem->reviewer_id = intval($reviewerId);
+   								$articleReviewerItem->created_on = date("Y-m-d H:i:s");
+   								if(!$articleReviewerItem->save()){
+    								Yii::error("ArticleController->actionCreate(4): ".json_encode($articleReviewerItem->getErrors()), "custom_errors_articles");
+    							}
+    						}
+    					}
+    	
+    					return $this->redirect(['view', 'id' => $modelArticle->article_id]);
+    				}
+    			} catch (Exception $e) {
+    				Yii::error("ArticleController->actionCreate(5): ".json_encode($e), "custom_errors_articles");
+    				$transaction->rollBack();
+   				}
+   			}
+    	}
+    		
+    	return $this->render('create_admin', [
+   				'modelArticle' => $modelArticle,
+    			'modelKeyword' => $modelKeyword,
+    			'modelUser' => $modelUser,
+    			'arrayArticleKeyword' => $arrayArticleKeyword,
+   				'arrayArticleAuthor' => $arrayArticleAuthor,
+    			'arrayArticleReviewer' => $arrayArticleReviewer,
+    			'post_msg' => $post_msg,
+    	]);  	
     }
 
     /**
@@ -251,9 +282,18 @@ class ArticleController extends Controller
      */
     public function actionUpdate($id)
     {
-    	if (Yii::$app->user->isGuest || Yii::$app->session->get('user.is_admin') != true){
-    		return $this->redirect(['error']);
+    	if (Yii::$app->user->isGuest){
+    		return $this->redirect(['site/error']);
     	}
+    	
+    	$articleAuthorModel = new ArticleAuthor();
+    	$article_authors = $articleAuthorModel->getAuthorsForArticleString($id);
+    	$current_user_id = ','.Yii::$app->user->id.',';
+    	$user_can_modify = (strpos($article_authors['ids'], $current_user_id) !== false);
+    	$user_can_modify = ($user_can_modify || Yii::$app->session->get('user.is_admin'));
+    	if ($user_can_modify != true){
+    		return $this->redirect(['site/error']);
+    	}    	
     	
         $modelArticle = $this->findModel($id);
         $modelArticle->updated_on = date("Y-m-d H:i:s");
@@ -474,8 +514,17 @@ class ArticleController extends Controller
      */
     public function actionDelete($id)
     {
-    	if (Yii::$app->user->isGuest || Yii::$app->session->get('user.is_admin') != true){
-    		return $this->redirect(['error']);
+    	if (Yii::$app->user->isGuest /*|| Yii::$app->session->get('user.is_admin') != true*/){
+    		return $this->redirect(['site/error']);
+    	}
+    	
+    	$articleAuthorModel = new ArticleAuthor();
+    	$article_authors = $articleAuthorModel->getAuthorsForArticleString($id);
+    	$current_user_id = ','.Yii::$app->user->id.',';
+    	$user_can_modify = (strpos($article_authors['ids'], $current_user_id) !== false);
+    	$user_can_modify = ($user_can_modify || Yii::$app->session->get('user.is_admin'));
+    	if ($user_can_modify != true){
+    		return $this->redirect(['site/error']);
     	}
     	
     	ArticleKeyword::deleteAll([
@@ -573,7 +622,7 @@ class ArticleController extends Controller
     	$article_keywords_string = $articleKeywordModel->getKeywordsForArticleString($modelArticle->article_id);
     	
     	$articleAuthorModel = new ArticleAuthor();
-    	$article_authors_string = $articleAuthorModel->getAuthorsForArticleString($id);
+    	$article_authors_string = $articleAuthorModel->getAuthorsForArticleString($id)['string'];
     	
     	// get your HTML raw content without any layouts or scripts
     	$content = $modelArticle->abstract."<br>".$modelArticle->content;

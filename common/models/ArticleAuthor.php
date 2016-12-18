@@ -88,16 +88,23 @@ class ArticleAuthor extends \yii\db\ActiveRecord
      */
     public function getAuthorsForArticleString($articleID)
     {
+    	$article_authors_ids = null;
     	$article_authors_string = null;
     	$articleAuthors_array = $this->getAuthorsForArticle($articleID);
-    	if($articleAuthors_array != null && count($articleAuthors_array)>0 ){
-    		$article_authors_string = "";
+    	if($articleAuthors_array != null && count($articleAuthors_array)>0){
+    		$article_authors_ids = ",";
+    		$article_authors_string = "";    		
     		foreach ($articleAuthors_array as $articleAuthor){
+    			$article_authors_ids .= $articleAuthor->author->id.",";
     			$article_authors_string .= $articleAuthor->author->fullName.", ";
     		}
     		$article_authors_string = trim($article_authors_string, ", ");
     	}
     	
-    	return $article_authors_string;
+    	$article_authors = null;
+    	$article_authors['ids'] = $article_authors_ids;
+    	$article_authors['string'] = $article_authors_string;    	
+    	
+    	return $article_authors;
     }    
 }

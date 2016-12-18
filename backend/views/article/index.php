@@ -14,7 +14,8 @@ $this->title = 'Article List';
     <?= $this->render('_search', [
         'dataProvider' => $dataProvider,
     	'searchModel' => $searchModel,
-    	'post_msg' => $post_msg
+    	'post_msg' => $post_msg,
+    	'title_msg' => $title_msg
     ]) ?>
     
 </div>

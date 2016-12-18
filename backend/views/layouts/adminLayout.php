@@ -180,21 +180,24 @@ AppAsset::register($this);
                             </ul>
                             <!-- /.nav-second-level -->
                         </li>
-                        <?php } ?>
-                        <?php if (Yii::$app->session->get('user.is_admin') == true){ ?>
+                        <?php } ?>                        
                         <li>
                             <a href='#'><i class="fa fa-newspaper-o fa-fw"></i> Articles<span class="fa arrow"></span></a>
                             <ul class="nav nav-second-level">
+                            <?php if (Yii::$app->session->get('user.is_admin') == true){ ?>
                             	<li>
                                     <a href='<?php echo Url::to(['/article/index']); ?>'><i class="fa fa-list fa-fw"></i> List All</a>
                                 </li>
+                            <?php } ?>
+                                <li>
+                                    <a href='<?php echo Url::to(['/article/myarticles']); ?>'><i class="fa fa-list fa-fw"></i> My Articles</a>
+                                </li>                            
                                 <li>
                                     <a href='<?php echo Url::to(['/article/create']); ?>'><i class="fa fa-plus fa-fw"></i> Create New</a>
                                 </li>
                             </ul>
                             <!-- /.nav-second-level -->
-                        </li>
-                        <?php } ?>
+                        </li>                       
 						<!-- 
                         <li>
                             <a href="forms.html"><i class="fa fa-edit fa-fw"></i> Forms</a>

@@ -39,11 +39,14 @@ class ArticleSearch extends Article
      * 
      * @return ActiveDataProvider 
      */ 
-    public function search($params) 
+    public function search($params, $author_id = null) 
     { 
-        $query = Article::find(); 
-
+        $query = Article::find();
         // add conditions that should always apply here 
+        if($author_id != null) {
+        	$query = $query->joinWith('articleAuthors')
+        	->where(['article_author.author_id' => $author_id]);        	 
+        }
 
         $dataProvider = new ActiveDataProvider([ 
             'query' => $query, 

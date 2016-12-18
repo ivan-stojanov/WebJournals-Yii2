@@ -63,7 +63,7 @@ class AdminController extends \yii\web\Controller
     public function actionHome()
     {
     	if (Yii::$app->user->isGuest || Yii::$app->session->get('user.is_admin') != true){
-    		return $this->redirect(['error']);
+    		return $this->redirect(['site/error']);
     	}
     	
     	$common_vars = new CommonVariables();

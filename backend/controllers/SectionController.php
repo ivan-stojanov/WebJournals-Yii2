@@ -54,7 +54,7 @@ class SectionController extends Controller
     public function actionIndex()
     {
     	if (Yii::$app->user->isGuest || Yii::$app->session->get('user.is_admin') != true){
-    		return $this->redirect(['error']);
+    		return $this->redirect(['site/error']);
     	}
     	
     	$queryParams = Yii::$app->request->queryParams;
@@ -79,7 +79,7 @@ class SectionController extends Controller
     public function actionView($id)
     {
     	if (Yii::$app->user->isGuest || Yii::$app->session->get('user.is_admin') != true){
-    		return $this->redirect(['error']);
+    		return $this->redirect(['site/error']);
     	}
     	
         return $this->render('view', [
@@ -95,7 +95,7 @@ class SectionController extends Controller
     public function actionCreate()
     {    	 
     	if (Yii::$app->user->isGuest || Yii::$app->session->get('user.is_admin') != true){
-    		return $this->redirect(['error']);
+    		return $this->redirect(['site/error']);
     	}
     	
         $modelSection = new Section();
@@ -181,7 +181,7 @@ var_dump(DynamicForms::validateMultiple($modelsArticle));
     public function actionUpdate($id)
     {
     	if (Yii::$app->user->isGuest || Yii::$app->session->get('user.is_admin') != true){
-    		return $this->redirect(['error']);
+    		return $this->redirect(['site/error']);
     	}
     	
         $modelSection = $this->findModel($id);
@@ -323,7 +323,7 @@ var_dump(DynamicForms::validateMultiple($modelsArticle));
     public function actionDelete($id)
     {
     	if (Yii::$app->user->isGuest || Yii::$app->session->get('user.is_admin') != true){
-    		return $this->redirect(['error']);
+    		return $this->redirect(['site/error']);
     	}    	
      
         $section_to_delete = $this->findModel($id);

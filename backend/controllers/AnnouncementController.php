@@ -67,7 +67,7 @@ class AnnouncementController extends Controller
     public function actionIndex()
     {
     	if (Yii::$app->user->isGuest || Yii::$app->session->get('user.is_admin') != true){
-    		return $this->redirect(['error']);
+    		return $this->redirect(['site/error']);
     	}
     	
         $announcements = Announcement::find()        
@@ -91,7 +91,7 @@ class AnnouncementController extends Controller
     public function actionView($id)
     {
     	if (Yii::$app->user->isGuest || Yii::$app->session->get('user.is_admin') != true){
-    		return $this->redirect(['error']);
+    		return $this->redirect(['site/error']);
     	}
     	
         return $this->render('view', [
@@ -107,7 +107,7 @@ class AnnouncementController extends Controller
     public function actionCreate()
     {
     	if (Yii::$app->user->isGuest || Yii::$app->session->get('user.is_admin') != true){
-    		return $this->redirect(['error']);
+    		return $this->redirect(['site/error']);
     	}
     	
         $model = new Announcement();
@@ -133,7 +133,7 @@ class AnnouncementController extends Controller
     public function actionUpdate($id)
     {
     	if (Yii::$app->user->isGuest || Yii::$app->session->get('user.is_admin') != true){
-    		return $this->redirect(['error']);
+    		return $this->redirect(['site/error']);
     	}
     	
         $model = $this->findModel($id);
@@ -157,7 +157,7 @@ class AnnouncementController extends Controller
     public function actionDelete($id)
     {
     	if (Yii::$app->user->isGuest || Yii::$app->session->get('user.is_admin') != true){
-    		return $this->redirect(['error']);
+    		return $this->redirect(['site/error']);
     	}
     	
         $model = $this->findModel($id);

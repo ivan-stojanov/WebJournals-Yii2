@@ -54,13 +54,13 @@ class Article extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['section_id', 'title', 'abstract', 'content'], 'required'],
+            [['section_id', 'title', 'abstract', 'content'/*, 'file_attach'*/], 'required'],
             [['section_id', 'sort_in_section', 'is_archived', 'is_deleted'], 'integer'],
             [['title', 'abstract', 'content', 'pdf_content'], 'string'],       		
             [['created_on', 'updated_on'], 'safe'],
             [['page_from', 'page_to'], 'string', 'max' => 6],
         	[['file_id'], 'exist', 'skipOnError' => true, 'targetClass' => ArticleFile::className(), 'targetAttribute' => ['file_id' => 'file_id']],
-        	[['file_attach'], 'file', 'skipOnEmpty' => true],
+        	[['file_attach'], 'file', 'skipOnEmpty' => true, 'extensions' => 'doc, docx'],
         	[['section_id'], 'exist', 'skipOnError' => true, 'targetClass' => Section::className(), 'targetAttribute' => ['section_id' => 'section_id']],
         	[['post_reviewers', 'post_authors', 'post_keywords'], 'each', 'rule' => ['integer']],        		
         ];

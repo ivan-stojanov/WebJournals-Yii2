@@ -71,6 +71,9 @@ class UserProfileForm extends Model
         		
         	['initials', 'match', 'pattern' => '/^[A-Z]{0,10}$/', 'message' => 'The initials must contain only uppercase letters.'],
 
+        	['gender', 'required'],
+        		
+        	['affiliation', 'required'],
         	['affiliation', 'string', 'max' => 255],        		
         		
         	['signature', 'string', 'max' => 255],         		
@@ -97,7 +100,10 @@ class UserProfileForm extends Model
         		
         	['fax', 'match', 'pattern' => '/^[0-9]{0,30}$/', 'message' => 'The fax must contain only numbers.'],
         		
+        	['mailing_address', 'required'],
         	['mailing_address', 'string', 'max' => 255],
+        		
+        	['country', 'required'],
         		
         	['reviewer_interests', 'string', 'max' => 255],
         		
@@ -354,6 +360,7 @@ class UserProfileForm extends Model
     		'is_editor' => 'Editor: Able to edit items to the journal',
     		'is_admin' => 'Admin: Able to manage the system',
     		'reviewer_interests' => 'Reviewer Interests',
+    		'mailing_address' => 'Mailing Address, City, Province',
     	);
     }
 }

@@ -113,32 +113,43 @@ AppAsset::register($this);
                             <!-- /.nav-second-level -->                            
                         </li>
                         <?php } ?>
-                        <?php if (Yii::$app->session->get('user.is_admin') == true){ ?>
                         <li>
                             <a href='#'><i class="fa fa-users fa-fw"></i> Users<span class="fa arrow"></span></a>
                             <ul class="nav nav-second-level">
+                       <?php if (Yii::$app->session->get('user.is_admin') == true){ ?>
+                            
                             	<li>
                                     <a href='<?php echo Url::to(['/user/index']); ?>'><i class="fa fa-list fa-fw"></i> List All</a>
                                 </li>
                                 <li>
                                     <a href='<?php echo Url::to(['/user/index?type=admin']); ?>'><i class="fa fa-user fa-fw"></i> Admins</a>
                                 </li>
+                        <?php } ?>
                                 <li>
                                     <a href='<?php echo Url::to(['/user/index?type=author']); ?>'><i class="fa fa-user fa-fw"></i> Authors</a>
                                 </li>
+                       <?php if (Yii::$app->session->get('user.is_admin') == true){ ?>
                                 <li>
                                     <a href='<?php echo Url::to(['/user/index?type=editor']); ?>'><i class="fa fa-user fa-fw"></i> Editors</a>
                                 </li>
+                       <?php } ?>       
                                 <li>
                                     <a href='<?php echo Url::to(['/user/index?type=reviewer']); ?>'><i class="fa fa-user fa-fw"></i> Reviewers</a>
                                 </li>
+                       <?php if (Yii::$app->session->get('user.is_admin') == true){ ?>       
                                 <li>
                                     <a href='<?php echo Url::to(['/user/create']); ?>'><i class="fa fa-plus fa-fw"></i> Create New User</a>
                                 </li>
+						<?php } ?>
+								<li>
+                                    <a href='<?php echo Url::to(['/unregistered-user/index']); ?>'><i class="fa fa-user fa-fw"></i> Unregistered Authors</a>
+                                </li>
+                                <li>
+                                    <a href='<?php echo Url::to(['/unregistered-user/create']); ?>'><i class="fa fa-plus fa-fw"></i> Create Unregistered Author</a>
+                                </li>                        
                             </ul>
                             <!-- /.nav-second-level -->
                         </li>
-                        <?php } ?>
                         <?php if (Yii::$app->session->get('user.is_admin') == true){ ?>
                         <li>
                             <a href='#'><i class="fa fa-book fa-fw"></i> Volumes / Issues<span class="fa arrow"></span></a>

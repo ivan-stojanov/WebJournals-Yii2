@@ -208,7 +208,7 @@ class User extends ActiveRecord implements IdentityInterface
     	 
     	if($userModel_array != null && count($userModel_array)>0){
     		foreach ($userModel_array as $userModel){
-    			$dataUsers[$userModel->id] = $userModel->fullName;
+    			$dataUsers[$userModel->id] = $userModel->fullName." <".$userModel->email.">";
     		}
     	}
     	return $dataUsers;
@@ -236,5 +236,13 @@ class User extends ActiveRecord implements IdentityInterface
     public function getArticleReviewers()
     {
     	return $this->hasMany(ArticleReviewer::className(), ['reviewer_id' => 'id']);
+    }
+    
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getUnregisteredUsers()
+    {
+    	return $this->hasMany(UnregisteredUser::className(), ['user_creator_id' => 'id']);
     }
 }

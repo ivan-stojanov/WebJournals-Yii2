@@ -2,13 +2,12 @@
 
 use yii\helpers\Html;
 
-
 /* @var $this yii\web\View */
-/* @var $model common\models\User */
+/* @var $model common\models\UnregisteredUser */
 
-$this->title = 'Create User';
+$this->title = 'Update Unregistered User';
 ?>
-<div class="user-create">
+<div class="unregistered-user-update">
 
     <?= $this->render('_form', [
         'model' => $model,

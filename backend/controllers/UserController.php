@@ -68,12 +68,16 @@ class UserController extends Controller
      * @return mixed
      */
     public function actionIndex()
-    {
-    	if (Yii::$app->user->isGuest || Yii::$app->session->get('user.is_admin') != true){
-    		return $this->redirect(['site/error']);
-    	}
+    {   	
+    	$queryParams = Yii::$app->request->queryParams;
     	
-    	$queryParams = Yii::$app->request->queryParams; 	
+    	if (Yii::$app->user->isGuest || Yii::$app->session->get('user.is_admin') != true){
+    		if(!($queryParams != null && $queryParams['type'] != null && 
+    		  ($queryParams['type'] == "author" || $queryParams['type'] == "reviewer"))){
+    			return $this->redirect(['site/error']);
+    		}    			
+    	}    	
+   	 	
         $searchModel = new UserSearch();
         $dataProvider = $searchModel->search($queryParams);
         
@@ -93,12 +97,18 @@ class UserController extends Controller
      */
     public function actionView($id)
     {
-    	if (Yii::$app->user->isGuest || Yii::$app->session->get('user.is_admin') != true){
+    	if (Yii::$app->user->isGuest /*|| Yii::$app->session->get('user.is_admin') != true*/){
     		return $this->redirect(['site/error']);
     	}
     	
+    	$user_can_modify = (Yii::$app->session->get('user.is_admin'));    	 
+    	
+    	$common_vars = new CommonVariables();
+    	
         return $this->render('view', [
             'model' => $this->findModel($id),
+        	'common_vars' => $common_vars,
+        	'user_can_modify' => $user_can_modify,
         ]);
     }
 

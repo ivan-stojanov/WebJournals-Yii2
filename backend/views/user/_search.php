@@ -44,13 +44,9 @@ use yii\grid\DataColumn;
 	    <p>
 	        <?= Html::a('Create User', ['create'], ['class' => 'btn btn-success']) ?>
 	    </p>
-	<?php */    
-	?>
-
-	 <?= GridView::widget([
-        'dataProvider' => $dataProvider,
-        'filterModel' => $searchModel,
-        'columns' => [
+	<?php */
+	
+	$columns = [
             ['class' => 'yii\grid\SerialColumn'],            
             'username',
             'email:email',
@@ -99,8 +95,20 @@ use yii\grid\DataColumn;
             // 'last_login',
             // 'country',
 
-            ['class' => 'yii\grid\ActionColumn'],
-        ],
+            // ['class' => 'yii\grid\ActionColumn'],
+        ];
+	
+		 if(Yii::$app->session->get('user.is_admin') == true) {
+		 	$columns[] = ['class' => 'yii\grid\ActionColumn'];
+		 } else {
+		 	$columns[] = ['class' => 'yii\grid\ActionColumn', 'template' => '{view}'];
+		 }
+	?>
+
+	 <?= GridView::widget([
+        'dataProvider' => $dataProvider,
+        'filterModel' => $searchModel,
+        'columns' => $columns,
     ]); 
 	 ?>
 </div>

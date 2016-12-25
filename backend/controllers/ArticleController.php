@@ -90,7 +90,7 @@ class ArticleController extends Controller
     public function actionMyarticles()
     {
     	if (Yii::$app->user->isGuest){
-    		return $this->redirect(['site/error']);
+    		return $this->redirect(['site/error'] /*|| Yii::$app->session->get('user.is_admin') != true*/);
     	}
     	 
     	$queryParams = Yii::$app->request->queryParams;

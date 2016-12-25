@@ -102,5 +102,5 @@ use yii\captcha\Captcha;
 
     <?php ActiveForm::end(); ?>
     
-    <hr>       
+    <hr>
 </div>

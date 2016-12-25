@@ -10,9 +10,9 @@ return [
     			'showScriptName' => false,
     			'enableStrictParsing' => false,
     			'rules' => [
-    					'<controller:\w+>/<id:\d+>'=>'<controller>/view',
-    					'<controller:\w+>/<action:\w+>/<id:\d+>'=>'<controller>/<action>',
-    					'<controller:\w+>/<action:\w+>'=>'<controller>/<action>',
+    					'<controller:\w+(-\w+)*>/<id:\d+>'=>'<controller>/view',
+    					'<controller:\w+(-\w+)*>/<action:\w+>/<id:\d+>'=>'<controller>/<action>',
+    					'<controller:\w+(-\w+)*>/<action:\w+>'=>'<controller>/<action>',
     			]
     	],
     	'urlManagerFrontEnd' => [
@@ -22,9 +22,9 @@ return [
     			'showScriptName' => false,
     			'enableStrictParsing' => false,
     			'rules' => [
-    					'<controller:\w+>/<id:\d+>'=>'<controller>/view',
-    					'<controller:\w+>/<action:\w+>/<id:\d+>'=>'<controller>/<action>',
-    					'<controller:\w+>/<action:\w+>'=>'<controller>/<action>',
+    					'<controller:\w+(-\w+)*>/<id:\d+>'=>'<controller>/view',
+    					'<controller:\w+(-\w+)*>/<action:\w+>/<id:\d+>'=>'<controller>/<action>',
+    					'<controller:\w+(-\w+)*>/<action:\w+>'=>'<controller>/<action>',
     			]
     	],
     	'urlManagerBackEnd' => [
@@ -34,9 +34,9 @@ return [
     			'showScriptName' => false,
     			'enableStrictParsing' => false,
     			'rules' => [
-    					'<controller:\w+>/<id:\d+>'=>'<controller>/view',
-    					'<controller:\w+>/<action:\w+>/<id:\d+>'=>'<controller>/<action>',
-    					'<controller:\w+>/<action:\w+>'=>'<controller>/<action>',
+    					'<controller:\w+(-\w+)*>/<id:\d+>'=>'<controller>/view',
+    					'<controller:\w+(-\w+)*>/<action:\w+>/<id:\d+>'=>'<controller>/<action>',
+    					'<controller:\w+(-\w+)*>/<action:\w+>'=>'<controller>/<action>',
     			]
     	],
     	'urlManagerCommon' => [
@@ -46,9 +46,9 @@ return [
     			'showScriptName' => false,
     			'enableStrictParsing' => false,
     			'rules' => [
-    					'<controller:\w+>/<id:\d+>'=>'<controller>/view',
-    					'<controller:\w+>/<action:\w+>/<id:\d+>'=>'<controller>/<action>',
-    					'<controller:\w+>/<action:\w+>'=>'<controller>/<action>',
+    					'<controller:\w+(-\w+)*>/<id:\d+>'=>'<controller>/view',
+    					'<controller:\w+(-\w+)*>/<action:\w+>/<id:\d+>'=>'<controller>/<action>',
+    					'<controller:\w+(-\w+)*>/<action:\w+>'=>'<controller>/<action>',
     			]
     	],
     	'mailer' => [

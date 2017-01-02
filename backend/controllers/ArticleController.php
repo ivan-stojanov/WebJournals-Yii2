@@ -184,7 +184,7 @@ class ArticleController extends Controller
     			{
     				$modelArticle->post_authors = Yii::$app->request->post()['Article']['post_authors'];
     				$addAuthors = true;
-    			}
+    			}  			
     			if(Yii::$app->request->post()['Article']['post_reviewers'] != null)
     			{
     				$modelArticle->post_reviewers = Yii::$app->request->post()['Article']['post_reviewers'];

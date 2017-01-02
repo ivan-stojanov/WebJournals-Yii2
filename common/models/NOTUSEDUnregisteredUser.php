@@ -25,7 +25,7 @@ use Yii;
  *
  * @property User $userCreator
  */
-class UnregisteredUser extends \yii\db\ActiveRecord
+class NOTUSEDUnregisteredUser extends \yii\db\ActiveRecord
 {
     /**
      * @inheritdoc

@@ -7,20 +7,54 @@ use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveRecord;
 use yii\web\IdentityInterface;
 
-/**
- * User model
- *
+/** 
+ * This is the model class for table "user". 
+ * 
  * @property integer $id
  * @property string $username
+ * @property string $auth_key
  * @property string $password_hash
  * @property string $password_reset_token
  * @property string $email
- * @property string $auth_key
  * @property integer $status
  * @property integer $created_at
  * @property integer $updated_at
- * @property string $password write-only password
- */
+ * @property string $first_name
+ * @property string $last_name
+ * @property string $gender
+ * @property string $salutation
+ * @property string $middle_name
+ * @property string $initials
+ * @property string $affiliation
+ * @property string $signature
+ * @property string $orcid_id
+ * @property string $url
+ * @property string $phone
+ * @property string $fax
+ * @property string $mailing_address
+ * @property string $bio_statement
+ * @property integer $send_confirmation
+ * @property integer $is_admin
+ * @property integer $is_editor
+ * @property integer $is_reader
+ * @property integer $is_author
+ * @property integer $is_reviewer
+ * @property integer $is_unregistered_author
+ * @property integer $creator_user_id
+ * @property string $reviewer_interests
+ * @property string $user_image
+ * @property integer $last_login
+ * @property string $country
+ * 
+ * @property ArticleAuthor[] $articleAuthors
+ * @property Article[] $articles
+ * @property ArticleFile[] $articleFiles
+ * @property ArticleReviewer[] $articleReviewers
+ * @property Article[] $articles0
+ * @property Issue[] $issues
+ * @property User $creatorUser
+ * @property User[] $users
+ */ 
 class User extends ActiveRecord implements IdentityInterface
 {
     const STATUS_DELETED = 0;
@@ -55,6 +89,16 @@ class User extends ActiveRecord implements IdentityInterface
         ];
     }
 
+    /**
+     * @inheritdoc
+     */
+    public function attributeLabels()
+    {
+    	return [
+    			'creator_user_id' => 'User Creator',
+    	];
+    }
+    
     /**
      * @inheritdoc
      */
@@ -238,11 +282,19 @@ class User extends ActiveRecord implements IdentityInterface
     	return $this->hasMany(ArticleReviewer::className(), ['reviewer_id' => 'id']);
     }
     
-    /**
-     * @return \yii\db\ActiveQuery
-     */
-    public function getUnregisteredUsers()
-    {
-    	return $this->hasMany(UnregisteredUser::className(), ['user_creator_id' => 'id']);
+    /** 
+     * @return \yii\db\ActiveQuery 
+     */ 
+    public function getCreatorUser() 
+    { 
+        return $this->hasOne(User::className(), ['id' => 'creator_user_id']);
+    } 
+
+    /** 
+     * @return \yii\db\ActiveQuery 
+     */ 
+    public function getUsers() 
+    { 
+        return $this->hasMany(User::className(), ['creator_user_id' => 'id']);
     }
 }

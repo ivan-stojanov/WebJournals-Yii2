@@ -10,7 +10,7 @@ use common\models\UnregisteredUser;
 /**
  * UnregisteredUserSearch represents the model behind the search form about `common\models\UnregisteredUser`.
  */
-class UnregisteredUserSearch extends UnregisteredUser
+class NOTUSEDUnregisteredUserSearch extends UnregisteredUser
 {
     /**
      * @inheritdoc

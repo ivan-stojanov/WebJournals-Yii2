@@ -18,7 +18,7 @@ class UserSearch extends User
     public function rules()
     {
         return [
-            [['id', 'status', 'created_at', 'updated_at', 'send_confirmation', 'is_admin', 'is_editor', 'is_reader', 'is_author', 'is_reviewer'], 'integer'],
+            [['id', 'status', 'created_at', 'updated_at', 'send_confirmation', 'is_admin', 'is_editor', 'is_reader', 'is_author', 'is_reviewer', 'is_unregistered_author', 'creator_user_id', 'last_login'], 'integer'],
             [['username', 'auth_key', 'password_hash', 'password_reset_token', 'email', 'first_name', 'last_name', 'gender', 'salutation', 'middle_name', 'initials', 'affiliation', 'signature', 'orcid_id', 'url', 'phone', 'fax', 'mailing_address', 'bio_statement', 'reviewer_interests', 'user_image', 'last_login', 'country'], 'safe'],
         ];
     }
@@ -65,10 +65,14 @@ class UserSearch extends User
         		$this->is_admin = true;
         	} else if($params['type'] == 'author'){
         		$this->is_author = true;
+        		$this->is_unregistered_author = false;
         	} else if($params['type'] == 'editor'){
         		$this->is_editor = true;
         	} else if($params['type'] == 'reviewer'){
         		$this->is_reviewer = true;
+        	} else if($params['type'] == 'unregisteredauthor'){
+        		$this->is_author = true;
+        		$this->is_unregistered_author = true;
         	}
         }
 
@@ -84,6 +88,8 @@ class UserSearch extends User
             'is_reader' => $this->is_reader,
             'is_author' => $this->is_author,
             'is_reviewer' => $this->is_reviewer,
+        	'is_unregistered_author' => $this->is_unregistered_author,
+        	'creator_user_id' => $this->creator_user_id,
             'last_login' => $this->last_login,
         ]);
 

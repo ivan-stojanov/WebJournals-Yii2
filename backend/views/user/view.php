@@ -17,15 +17,24 @@ $this->title = 'User Details';
 
     <p>
 	    <?php if($user_can_modify) { ?>
-	        <?= Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
-	        <?= Html::a('Delete', ['delete', 'id' => $model->id], [
+	    	<?php if($model->is_unregistered_author) {
+	        	echo Html::a('Update', ['updateunregisteredauthor', 'id' => $model->id], ['class' => 'btn btn-primary']);
+	        	if(Yii::$app->session->get('user.is_admin') == true){
+	        		echo "&nbsp;&nbsp;";
+	        		echo Html::a('Register User', ['update', 'id' => $model->id], ['class' => 'btn btn-success']);
+	    		}
+	    	} else {
+	        	echo Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']);
+	        }
+	        echo "&nbsp;&nbsp;";
+	        echo Html::a('Delete', ['delete', 'id' => $model->id], [
 	            'class' => 'btn btn-danger',
 	            'data' => [
 	                'confirm' => 'Are you sure you want to delete this item?',
 	                'method' => 'post',
 	            ],
-	        ]) ?>
-        <?php } ?>
+	        ]);
+        } ?>
     </p>
     
     <?php 
@@ -51,12 +60,12 @@ $this->title = 'User Details';
 	    	]);
     	}
     		$attributes = ArrayHelper::merge($attributes, [
-	    		array(
-	    				'class' => DataColumn::className(), // this line is optional
-	    				'attribute' => 'country',
-	    				'value' => $common_vars->country_values[$model->country],
-	    				'format' => 'HTML',
-	    		),
+    			array(
+    					'class' => DataColumn::className(), // this line is optional
+    					'attribute' => 'country',
+    					'value' => ($model->country != null) ? $common_vars->country_values[$model->country] : null,
+    					'format' => 'HTML',
+    			),    				
 	            'bio_statement:ntext',
 	        	'url:url',
 	        	'salutation',
@@ -89,7 +98,7 @@ $this->title = 'User Details';
 	        			'attribute' => 'is_reader',
 	        			'value' => ($model->is_reader == 0) ? "<div class='glyphicon glyphicon-remove'></div>" : "<div class='glyphicon glyphicon-ok'></div>",
 	        			'format' => 'HTML'
-	        	 ),
+	        	 ), 				
     		]);
     	}
     		$attributes = ArrayHelper::merge($attributes, [
@@ -105,9 +114,22 @@ $this->title = 'User Details';
 	        			'value' => ($model->is_reviewer == 0) ? "<div class='glyphicon glyphicon-remove'></div>" : "<div class='glyphicon glyphicon-ok'></div>",
 	        			'format' => 'HTML'
 	        	 ),
+    			array(
+    					'class' => DataColumn::className(), // this line is optional
+    					'attribute' => 'is_unregistered_author',
+    					'value' => ($model->is_unregistered_author == 1) ? "<div class='glyphicon glyphicon-remove'></div>" : "<div class='glyphicon glyphicon-ok'></div>",
+    					'format' => 'HTML',
+    					'label' => 'Is Registered Author'
+    			),    				
     		]);
     	if($user_can_modify) {
-    		$attributes = ArrayHelper::merge($attributes, [    		
+    		$attributes = ArrayHelper::merge($attributes, [
+    			array(
+    					'class' => DataColumn::className(), // this line is optional
+    					'attribute' => 'creator_user_id',
+    					'value' => ($model->creator_user_id != null) ? $model->creatorUser->fullName : null,
+    					'format' => 'HTML'
+    			),
 	            'reviewer_interests:ntext',
 	        	 /*array(
 	        			'class' => DataColumn::className(), // this line is optional

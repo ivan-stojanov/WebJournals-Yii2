@@ -142,10 +142,10 @@ AppAsset::register($this);
                                 </li>
 						<?php } ?>
 								<li>
-                                    <a href='<?php echo Url::to(['/unregistered-user/index']); ?>'><i class="fa fa-user fa-fw"></i> Unregistered Authors</a>
+                                    <a href='<?php echo Url::to(['/user/index?type=unregisteredauthor']); ?>'><i class="fa fa-user fa-fw"></i> Unregistered Authors</a>
                                 </li>
                                 <li>
-                                    <a href='<?php echo Url::to(['/unregistered-user/create']); ?>'><i class="fa fa-plus fa-fw"></i> Create Unregistered Author</a>
+                                    <a href='<?php echo Url::to(['/user/createunregisteredauthor']); ?>'><i class="fa fa-plus fa-fw"></i> Create Unregistered Author</a>
                                 </li>                        
                             </ul>
                             <!-- /.nav-second-level -->

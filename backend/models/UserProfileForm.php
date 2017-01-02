@@ -48,6 +48,8 @@ class UserProfileForm extends Model
     public function rules()
     {
         return [
+        	//['is_unregistered_author', 'boolean', 'trueValue' => true, 'falseValue' => false],
+        		
             ['username', 'filter', 'filter' => 'trim'],
             ['username', 'required'],
             //['username', 'unique', 'targetClass' => '\common\models\User', 'message' => 'This username has already been taken.'],
@@ -137,15 +139,25 @@ class UserProfileForm extends Model
     					'username' => $this->username
     			]);    			
     			if(isset($tmpUserEmail) && count($tmpUserEmail) > 0 && isset($tmpUserUsername) && count($tmpUserUsername) > 0
-    					&& ($user->email != $this->email) && ($user->username != $this->username)){
-    				return "existing email and username error";
+    					&& ($user->email != $this->email) && ($user->username != $this->username))
+    			{
+    				$result["duplicate_message"] = "existing email and username error";
+    				$result["duplicate_username_user"] = $tmpUserUsername;
+    				$result["duplicate_email_user"] = $tmpUserEmail;
+    				return $result;
     			} else if(isset($tmpUserEmail) && count($tmpUserEmail) > 0 && ($user->email != $this->email)){
-    				return "existing email error";
+    				$result["duplicate_message"] = "existing email error";
+    				$result["duplicate_username_user"] = null;
+    				$result["duplicate_email_user"] = $tmpUserEmail;
+    				return $result;
     			} else if(isset($tmpUserUsername) && count($tmpUserUsername) > 0 && ($user->username != $this->username)){
-    				return "existing username error";
+    				$result["duplicate_message"] = "existing username error";
+    				$result["duplicate_username_user"] = $tmpUserUsername;
+    				$result["duplicate_email_user"] = null;
+    				return $result;
     			}
     			
-    			$tmpUnregisteredUserEmail = UnregisteredUser::findOne([
+    			/*$tmpUnregisteredUserEmail = UnregisteredUser::findOne([
     					'email' => $this->email
     			]);
     			$tmpUnregisteredUserUsername = UnregisteredUser::findOne([
@@ -158,7 +170,7 @@ class UserProfileForm extends Model
     				return "existing email error";
     			} else if(isset($tmpUnregisteredUserUsername) && count($tmpUnregisteredUserUsername) > 0 && ($user->username != $this->username)){
     				return "existing username error";
-    			}
+    			}*/
     		}
 		
     		$user->username = $this->username;
@@ -177,7 +189,8 @@ class UserProfileForm extends Model
     		$user->fax = $this->fax;
     		$user->mailing_address = $this->mailing_address;
     		$user->bio_statement = $this->bio_statement;
-    		$user->reviewer_interests = $this->reviewer_interests; 		 
+    		$user->reviewer_interests = $this->reviewer_interests;
+    		$user->is_unregistered_author = false;
     
     		if(isset($_POST[$this->formName()]['gender'])){
     			$user->gender = $_POST[$this->formName()]['gender'];
@@ -271,15 +284,25 @@ class UserProfileForm extends Model
     					'username' => $this->username
     			]);    			 
     			if(isset($tmpUserEmail) && count($tmpUserEmail) > 0 && isset($tmpUserUsername) && count($tmpUserUsername) > 0
-    					&& (isset($this->email)) && (isset($this->username))){
-    				return "existing email and username error";
+    					&& (isset($this->email)) && (isset($this->username)))
+    			{
+    				$result["duplicate_message"] = "existing email and username error";
+    				$result["duplicate_username_user"] = $tmpUserUsername;
+    				$result["duplicate_email_user"] = $tmpUserEmail;
+    				return $result;
     			} else if(isset($tmpUserEmail) && count($tmpUserEmail) > 0 && (isset($this->email))){
-    				return "existing email error";
+    				$result["duplicate_message"] = "existing email error";
+    				$result["duplicate_username_user"] = null;
+    				$result["duplicate_email_user"] = $tmpUserEmail;
+    				return $result;
     			} else if(isset($tmpUserUsername) && count($tmpUserUsername) > 0 && (isset($this->username))){
-    				return "existing username error";
+    				$result["duplicate_message"] = "existing username error";
+    				$result["duplicate_username_user"] = $tmpUserUsername;
+    				$result["duplicate_email_user"] = null;
+    				return $result;
     			}
     			
-    			$tmpUnregisteredUserEmail = UnregisteredUser::findOne([
+    			/*$tmpUnregisteredUserEmail = UnregisteredUser::findOne([
     					'email' => $this->email
     			]);
     			$tmpUnregisteredUserUsername = UnregisteredUser::findOne([
@@ -292,7 +315,7 @@ class UserProfileForm extends Model
     				return "existing email error";
     			} else if(isset($tmpUnregisteredUserUsername) && count($tmpUnregisteredUserUsername) > 0 && (isset($this->username))){
     				return "existing username error";
-    			}
+    			}*/
     		}
     
     		$user->username = $this->username;
@@ -312,6 +335,7 @@ class UserProfileForm extends Model
     		$user->mailing_address = $this->mailing_address;
     		$user->bio_statement = $this->bio_statement;
     		$user->reviewer_interests = $this->reviewer_interests;
+    		$user->is_unregistered_author = false;
     
     		if(isset($_POST[$this->formName()]['gender'])){
     			$user->gender = $_POST[$this->formName()]['gender'];

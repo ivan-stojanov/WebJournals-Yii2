@@ -14,7 +14,7 @@ use backend\models\UnregisteredUserProfileForm;
 /**
  * UnregisteredUserController implements the CRUD actions for UnregisteredUser model.
  */
-class UnregisteredUserController extends Controller
+class NOTUSEDUnregisteredUserController extends Controller
 {
     /**
      * @inheritdoc

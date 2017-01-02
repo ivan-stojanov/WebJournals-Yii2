@@ -6,6 +6,8 @@ use yii\captcha\Captcha;
 /* @var $this yii\web\View */
 /* @var $model common\models\User */
 /* @var $form yii\widgets\ActiveForm */
+\backend\assets\AppAsset::register($this);
+$this->registerJsFile("@web/js/userScript.js", [ 'depends' => ['\yii\web\JqueryAsset'], 'position' => \yii\web\View::POS_END]);
 ?>
     
 <?php if(isset($post_msg)){ ?>

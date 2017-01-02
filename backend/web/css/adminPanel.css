@@ -180,3 +180,9 @@
 	width: 15%;
 }
 /* Admin: Articles CRUD - END */
+
+/* Admin: Users CRUD - START */
+#duplicatetrigger {
+	cursor: pointer;
+}
+/* Admin: Users CRUD - END */

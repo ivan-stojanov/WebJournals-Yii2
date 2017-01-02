@@ -12,7 +12,11 @@ if(isset(Yii::$app->user->identity) && isset(Yii::$app->user->identity->attribut
 {
 	$this->title = 'My Profile ';
 } else {
-	$this->title = 'Update User';
+	if($is_unregistered_author != null && $is_unregistered_author == true){
+		$this->title = 'Register User';
+	} else {
+		$this->title = 'Update User';
+	}	
 }
 ?>
 <div class="user-update">

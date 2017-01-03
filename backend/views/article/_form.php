@@ -20,7 +20,7 @@ $this->registerJsFile("@web/js/articleScript.js", [ 'depends' => ['backend\asset
 <?php if(isset($post_msg)){ ?>
     <div class="alert alert-dismissable <?php echo "alert-".$post_msg["type"];?>" id="homepage-section-alert"> <?php /*alert-danger alert-success alert-warning */ ?>
 	    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
-	    <strong><span id="homepage-section-alert-msg"></span><?php echo $post_msg["text"]; ?></strong>
+	    <strong><span id="homepage-section-alert-msg"><?php echo $post_msg["text"]; ?></span></strong>
 	</div>
 <?php } ?>
 

@@ -32,18 +32,22 @@ class UserController extends Controller
         			],*/
         			//only logged users have access to actions
         			[
-        				'actions' => [	'index', 'view', 'create', 'update', 'delete', 'profile', 'createunregisteredauthor', 'updateunregisteredauthor', 'captcha',
-        				],
+        				'actions' => 	[	
+        									'index', 'view', 'create', 'update', 'delete', 'profile', 
+        									'createunregisteredauthor', 'updateunregisteredauthor', 
+        									'asynch-alert-duplicate-user', 'captcha',
+        								],
         				'allow' => true,
         				'roles' => ['@'],
         			],
         		],
         	],
             'verbs' => [
-                'class' => VerbFilter::className(),
-                'actions' => [
-                    'delete' => ['POST'],
-                ],
+                	'class' => VerbFilter::className(),
+                	'actions' => [
+                   			'delete' => ['POST'],
+                			'asynch-alert-duplicate-user' => ['post'],
+                	],
             ],
         ];
     }
@@ -200,15 +204,15 @@ class UserController extends Controller
 	    			if($user["duplicate_message"] === "existing email and username error"){
 	    				$post_msg["type"] = "warning";
 	    				$post_msg["text"] = "The username and the email address have already been taken. Try with anothers.<br><br>";
-	    				$post_msg["text"] .= "If this was not you, click <a onclick='userScript_clickDuplicateUser(\"".$user["duplicate_username_user"]->id."\",\"".$user["duplicate_email_user"]->id."\")'><b>here</b></a> to send an instructions via email!";
+	    				$post_msg["text"] .= "If this was not you, click <a id='duplicatetrigger' onclick='userScript_clickDuplicateUser(\"".$user["duplicate_username_user"]->id."\",\"".$user["duplicate_email_user"]->id."\")'><b>here</b></a> to send an instructions via email!";
 	    			} else if($user["duplicate_message"] === "existing email error"){
 	    				$post_msg["type"] = "warning";
 	    				$post_msg["text"] = "This email address has already been taken. Try with another one.<br><br>";
-	    				$post_msg["text"] .= "If this was not you, click <a onclick='userScript_clickDuplicateUser(\"".intval(0)."\",\"".$user["duplicate_email_user"]->id."\")'><b>here</b></a> to send an instructions via email!";
+	    				$post_msg["text"] .= "If this was not you, click <a id='duplicatetrigger' onclick='userScript_clickDuplicateUser(\"".intval(0)."\",\"".$user["duplicate_email_user"]->id."\")'><b>here</b></a> to send an instructions via email!";
 	    			} else if($user["duplicate_message"] === "existing username error"){
 	    				$post_msg["type"] = "warning";
-	    				$post_msg["text"] = "This username has already been taken. Try with another one.<br><br>";
-	    				$post_msg["text"] .= "If this was not you, click <a onclick='userScript_clickDuplicateUser(\"".$user["duplicate_username_user"]->id."\",\"".intval(0)."\")'><b>here</b></a> to send an instructions via email!";
+	    				$post_msg["text"] = "This username has already been taken. Try with another one.";
+	    				//$post_msg["text"] .= "If this was not you, click <a id='duplicatetrigger' onclick='userScript_clickDuplicateUser(\"".$user["duplicate_username_user"]->id."\",\"".intval(0)."\")'><b>here</b></a> to send an instructions via email!";
 	    			} else {
 	    				$searchModel = new UserSearch();
 	    				$queryParams = Yii::$app->request->queryParams;
@@ -375,15 +379,15 @@ class UserController extends Controller
 	    			if($user["duplicate_message"] === "existing email and username error"){
 	    				$post_msg["type"] = "warning";
 	    				$post_msg["text"] = "The username and the email address have already been taken. Try with anothers.<br><br>";
-	    				$post_msg["text"] .= "If this was not you, click <a onclick='userScript_clickDuplicateUser(\"".$user["duplicate_username_user"]->id."\",\"".$user["duplicate_email_user"]->id."\")'><b>here</b></a> to send an instructions via email!";
+	    				$post_msg["text"] .= "If this was not you, click <a id='duplicatetrigger' onclick='userScript_clickDuplicateUser(\"".$user["duplicate_username_user"]->id."\",\"".$user["duplicate_email_user"]->id."\")'><b>here</b></a> to send an instructions via email!";
 	    			} else if($user["duplicate_message"] === "existing email error"){
 	    				$post_msg["type"] = "warning";
 	    				$post_msg["text"] = "This email address has already been taken. Try with another one.<br><br>";
-	    				$post_msg["text"] .= "If this was not you, click <a onclick='userScript_clickDuplicateUser(\"".intval(0)."\",\"".$user["duplicate_email_user"]->id."\")'><b>here</b></a> to send an instructions via email!";
+	    				$post_msg["text"] .= "If this was not you, click <a id='duplicatetrigger' onclick='userScript_clickDuplicateUser(\"".intval(0)."\",\"".$user["duplicate_email_user"]->id."\")'><b>here</b></a> to send an instructions via email!";
 	    			} else if($user["duplicate_message"] === "existing username error"){
 	    				$post_msg["type"] = "warning";
-	    				$post_msg["text"] = "This username has already been taken. Try with another one.<br><br>";
-	    				$post_msg["text"] .= "If this was not you, click <a onclick='userScript_clickDuplicateUser(\"".$user["duplicate_username_user"]->id."\",\"".intval(0)."\")'><b>here</b></a> to send an instructions via email!";
+	    				$post_msg["text"] = "This username has already been taken. Try with another one.";
+	    				//$post_msg["text"] .= "If this was not you, click <a id='duplicatetrigger' onclick='userScript_clickDuplicateUser(\"".$user["duplicate_username_user"]->id."\",\"".intval(0)."\")'><b>here</b></a> to send an instructions via email!";
 	    			} else {
 	    				$searchModel = new UserSearch();
 	    				$queryParams = Yii::$app->request->queryParams;
@@ -645,15 +649,15 @@ class UserController extends Controller
 	    			if($user["duplicate_message"] === "existing email and username error"){
 	    				$post_msg["type"] = "warning";
 	    				$post_msg["text"] = "The username and the email address have already been taken. Try with anothers.<br><br>";
-	    				$post_msg["text"] .= "If this was not you, click <a onclick='userScript_clickDuplicateUser(\"".$user["duplicate_username_user"]->id."\",\"".$user["duplicate_email_user"]->id."\")'><b>here</b></a> to send an instructions via email!";
+	    				$post_msg["text"] .= "If this was not you, click <a id='duplicatetrigger' onclick='userScript_clickDuplicateUser(\"".$user["duplicate_username_user"]->id."\",\"".$user["duplicate_email_user"]->id."\")'><b>here</b></a> to send an instructions via email!";
 	    			} else if($user["duplicate_message"] === "existing email error"){
 	    				$post_msg["type"] = "warning";
 	    				$post_msg["text"] = "This email address has already been taken. Try with another one.<br><br>";
-	    				$post_msg["text"] .= "If this was not you, click <a onclick='userScript_clickDuplicateUser(\"".intval(0)."\",\"".$user["duplicate_email_user"]->id."\")'><b>here</b></a> to send an instructions via email!";
+	    				$post_msg["text"] .= "If this was not you, click <a id='duplicatetrigger' onclick='userScript_clickDuplicateUser(\"".intval(0)."\",\"".$user["duplicate_email_user"]->id."\")'><b>here</b></a> to send an instructions via email!";
 	    			} else if($user["duplicate_message"] === "existing username error"){
 	    				$post_msg["type"] = "warning";
-	    				$post_msg["text"] = "This username has already been taken. Try with another one.<br><br>";
-	    				$post_msg["text"] .= "If this was not you, click <a onclick='userScript_clickDuplicateUser(\"".$user["duplicate_username_user"]->id."\",\"".intval(0)."\")'><b>here</b></a> to send an instructions via email!";
+	    				$post_msg["text"] = "This username has already been taken. Try with another one.";
+	    				//$post_msg["text"] .= "If this was not you, click <a id='duplicatetrigger' onclick='userScript_clickDuplicateUser(\"".$user["duplicate_username_user"]->id."\",\"".intval(0)."\")'><b>here</b></a> to send an instructions via email!";
 	    			} else {
 	    				$searchModel = new UserSearch();
 	    				$queryParams = Yii::$app->request->queryParams;
@@ -744,15 +748,15 @@ class UserController extends Controller
 	    			if($user["duplicate_message"] === "existing email and username error"){
 	    				$post_msg["type"] = "warning";
 	    				$post_msg["text"] = "The username and the email address have already been taken. Try with anothers.<br><br>";
-	    				$post_msg["text"] .= "If this was not you, click <a onclick='userScript_clickDuplicateUser(\"".$user["duplicate_username_user"]->id."\",\"".$user["duplicate_email_user"]->id."\")'><b>here</b></a> to send an instructions via email!";
+	    				$post_msg["text"] .= "If this was not you, click <a id='duplicatetrigger' onclick='userScript_clickDuplicateUser(\"".$user["duplicate_username_user"]->id."\",\"".$user["duplicate_email_user"]->id."\")'><b>here</b></a> to send an instructions via email!";
 	    			} else if($user["duplicate_message"] === "existing email error"){
 	    				$post_msg["type"] = "warning";
 	    				$post_msg["text"] = "This email address has already been taken. Try with another one.<br><br>";
-	    				$post_msg["text"] .= "If this was not you, click <a onclick='userScript_clickDuplicateUser(\"".intval(0)."\",\"".$user["duplicate_email_user"]->id."\")'><b>here</b></a> to send an instructions via email!";
+	    				$post_msg["text"] .= "If this was not you, click <a id='duplicatetrigger' onclick='userScript_clickDuplicateUser(\"".intval(0)."\",\"".$user["duplicate_email_user"]->id."\")'><b>here</b></a> to send an instructions via email!";
 	    			} else if($user["duplicate_message"] === "existing username error"){
 	    				$post_msg["type"] = "warning";
-	    				$post_msg["text"] = "This username has already been taken. Try with another one.<br><br>";
-	    				$post_msg["text"] .= "If this was not you, click <a onclick='userScript_clickDuplicateUser(\"".$user["duplicate_username_user"]->id."\",\"".intval(0)."\")'><b>here</b></a> to send an instructions via email!";
+	    				$post_msg["text"] = "This username has already been taken. Try with another one.";
+	    				//$post_msg["text"] .= "If this was not you, click <a id='duplicatetrigger' onclick='userScript_clickDuplicateUser(\"".$user["duplicate_username_user"]->id."\",\"".intval(0)."\")'><b>here</b></a> to send an instructions via email!";
 	    			} else {
 	    				$searchModel = new UserSearch();
 	    				$queryParams = Yii::$app->request->queryParams;
@@ -856,7 +860,42 @@ class UserController extends Controller
     			'post_msg' => $post_msg,
     			'current_id' => $currentId,
     	]);
-    }     
+    }
+    
+    /*
+     * Asynch functions called with Ajax - User (click on link for notifying users about duplicate email)
+     */
+    public function actionAsynchAlertDuplicateUser()
+    {
+    	$usernameUserID = Yii::$app->getRequest()->post('usernameUserID');
+    	$emailUserID = Yii::$app->getRequest()->post('emailUserID');
+    	
+    	if($emailUserID != 0) {
+    		$type = "email";
+    		if($emailUserID == $usernameUserID){
+    			$type = "username (".$usernameUser->username.") and email";
+    		}
+    		$emailUser = User::findOne([
+    				'id' => $emailUserID
+    		]);  
+    		if(isset($emailUser)){
+    			$emailUser->helper_token = Yii::$app->security->generateRandomString() . '_' . time();
+    			$emailUser->updated_at = date("Y-m-d H:i:s");
+    			if ($emailUser->save()) {
+    				return \Yii::$app->mailer->compose(['html' => 'duplicateUserReportToken-html', 'text' => 'duplicateUserReportToken-text'], ['user' => $emailUser, 'type' => $type])
+						    				 ->setFrom([\Yii::$app->params['supportEmail'] => \Yii::$app->name . ' robot'])
+						    				 ->setTo($emailUser->email)
+						    				 ->setSubject('Report for duplicate user!')
+						    				 ->send();
+    			} else {
+    				Yii::error("UserController->actionAsynchAlertDuplicateUser(1): ".json_encode($emailUser->getErrors()), "custom_errors_users");
+    				return "Failure! Report for duplicate user has not been sent.";
+    			}
+       		}
+    	}
+
+    	return "Report for duplicate user has been successfully sent.";
+    }
     
     /**
      * Finds the User model based on its primary key value.

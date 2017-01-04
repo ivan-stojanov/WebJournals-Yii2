@@ -48,12 +48,11 @@ class ContactForm extends Model
      * @return boolean whether the email was sent
      */
     public function sendEmail($email)
-    {
-        return Yii::$app->mailer->compose()
+    {   	
+        return Yii::$app->mailer->compose(['html' => 'contactForm-html', 'text' => 'contactForm-text'], ['contactForm' => $this])
             ->setTo($email)
             ->setFrom([$this->email => $this->name])
             ->setSubject($this->subject)
-            ->setTextBody($this->body)
             ->send();
     }
 }

@@ -82,7 +82,7 @@ class SignupForm extends Model
         	['email', 'required'],
         	['email', 'email'],
         	['email', 'string', 'max' => 255],
-        	['email', 'unique', 'targetClass' => '\common\models\User', 'message' => 'This email address has already been taken.'],
+        	//['email', 'unique', 'targetClass' => '\common\models\User', 'message' => 'This email address has already been taken.'],
         		
        		['repeat_email', 'filter', 'filter' => 'trim'],
        		['repeat_email', 'required'],
@@ -117,6 +117,35 @@ class SignupForm extends Model
     public function signup()
     {
         if ($this->validate()) {
+        	
+        	if(isset($this->email) && isset($this->username)){
+        	
+        		$tmpUserEmail = User::findOne([
+        				'email' => $this->email
+        		]);
+        		$tmpUserUsername = User::findOne([
+        				'username' => $this->username
+        		]);
+        		if(isset($tmpUserEmail) && count($tmpUserEmail) > 0 && isset($tmpUserUsername) && count($tmpUserUsername) > 0
+        				&& (isset($this->email)) && (isset($this->username)))
+        		{
+        			$result["duplicate_message"] = "existing email and username error";
+        			$result["duplicate_username_user"] = $tmpUserUsername;
+        			$result["duplicate_email_user"] = $tmpUserEmail;
+        			return $result;
+        		} else if(isset($tmpUserEmail) && count($tmpUserEmail) > 0 && (isset($this->email))){
+        			$result["duplicate_message"] = "existing email error";
+        			$result["duplicate_username_user"] = null;
+        			$result["duplicate_email_user"] = $tmpUserEmail;
+        			return $result;
+        		} else if(isset($tmpUserUsername) && count($tmpUserUsername) > 0 && (isset($this->username))){
+        			$result["duplicate_message"] = "existing username error";
+        			$result["duplicate_username_user"] = $tmpUserUsername;
+        			$result["duplicate_email_user"] = null;
+        			return $result;
+        		}
+        	}
+        	
             $user = new User();
             $user->username = $this->username;
             $user->email = $this->email;
@@ -134,7 +163,8 @@ class SignupForm extends Model
             $user->fax = $this->fax;
             $user->mailing_address = $this->mailing_address;
             $user->bio_statement = $this->bio_statement;
-            $user->reviewer_interests = $this->reviewer_interests;            
+            $user->reviewer_interests = $this->reviewer_interests;
+            $user->status = User::STATUS_PENDING;
         	
            	if(isset($_POST[$this->formName()]['gender'])){
            		$user->gender = $_POST['SignupForm']['gender'];
@@ -169,14 +199,7 @@ class SignupForm extends Model
            	}
            	
             $user->generateAuthKey();
-            if ($user->save()) {
-            	
-            	Yii::$app->session->set('user.is_admin', false /*$user->is_admin*/);
-            	Yii::$app->session->set('user.is_editor', false /*$user->is_editor*/);
-            	Yii::$app->session->set('user.is_reader', $user->is_reader);
-            	Yii::$app->session->set('user.is_author', $user->is_author);
-            	Yii::$app->session->set('user.is_reviewer', $user->is_reviewer);
-            	
+            if ($user->save()) {            	
                 return $user;
             }    		
         }

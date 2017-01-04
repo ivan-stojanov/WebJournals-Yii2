@@ -645,7 +645,7 @@ class UserController extends Controller
     
     	if ($model->load(Yii::$app->request->post())) {
     		if ($user = $model->createUnregisteredUserProfile()) {
-    			if(isset($user) && isset($user["duplicate_message"])){    			 
+    			if(isset($user) && isset($user["duplicate_message"])){
 	    			if($user["duplicate_message"] === "existing email and username error"){
 	    				$post_msg["type"] = "warning";
 	    				$post_msg["text"] = "The username and the email address have already been taken. Try with anothers.<br><br>";

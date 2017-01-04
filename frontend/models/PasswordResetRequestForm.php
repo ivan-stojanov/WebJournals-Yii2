@@ -45,7 +45,7 @@ class PasswordResetRequestForm extends Model
         //var_dump(\Yii::$app->params['testParameter']);        
 
         if ($user) {
-            if (!User::isPasswordResetTokenValid($user->password_reset_token)) {
+            if (!User::isTokenValid($user->password_reset_token, "PasswordReset")) {
                 $user->generatePasswordResetToken();
             }            
             

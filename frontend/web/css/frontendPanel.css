@@ -26,3 +26,9 @@
 	font-weight: 600;
 }
 /* Admin: Announcements CRUD - END */
+
+/* Admin: Users CRUD - START */
+#duplicatetrigger {
+	cursor: pointer;
+}
+/* Admin: Users CRUD - END */

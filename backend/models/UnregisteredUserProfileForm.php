@@ -36,7 +36,7 @@ class UnregisteredUserProfileForm extends Model
         		
             ['username', 'filter', 'filter' => 'trim'],
             ['username', 'required'],
-            //['username', 'unique', 'targetClass' => '\common\models\User', 'message' => 'This username has already been taken.'],
+            ['username', 'unique', 'targetClass' => '\common\models\User', 'message' => 'This username has already been taken.'],
             ['username', 'match', 'pattern' => '/^[a-z0-9_\-\.]{6,20}$/', 'message' => 'The username must contain only lowercase letters, numbers and hyphens/underscores, between 6 and 20 characters.'],
 
         	['first_name', 'required'],
@@ -156,7 +156,7 @@ class UnregisteredUserProfileForm extends Model
 
     	if ($this->validate()) {
 
-    		if(isset($this->email) || isset($this->username)){
+    		if(isset($this->email) && isset($this->username)){
     			 
     			$tmpUserEmail = User::findOne([
     					'email' => $this->email

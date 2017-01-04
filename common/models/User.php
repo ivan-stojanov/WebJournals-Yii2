@@ -58,6 +58,7 @@ use yii\web\IdentityInterface;
 class User extends ActiveRecord implements IdentityInterface
 {
     const STATUS_DELETED = 0;
+    const STATUS_PENDING = 01;
     const STATUS_ACTIVE = 10;
 
     /**
@@ -85,7 +86,7 @@ class User extends ActiveRecord implements IdentityInterface
     {
         return [
             ['status', 'default', 'value' => self::STATUS_ACTIVE],
-            ['status', 'in', 'range' => [self::STATUS_ACTIVE, self::STATUS_DELETED]],
+            ['status', 'in', 'range' => [self::STATUS_ACTIVE, self::STATUS_PENDING, self::STATUS_DELETED]],
         ];
     }
 
@@ -134,7 +135,7 @@ class User extends ActiveRecord implements IdentityInterface
      */
     public static function findByPasswordResetToken($token)
     {
-        if (!static::isPasswordResetTokenValid($token)) {
+        if (!static::isTokenValid($token, "PasswordReset")) {
             return null;
         }
 
@@ -143,21 +144,44 @@ class User extends ActiveRecord implements IdentityInterface
             'status' => self::STATUS_ACTIVE,
         ]);
     }
+    
+    /**
+     * Finds user by helper token
+     *
+     * @param string $token password reset token
+     * @return static|null
+     */
+    public static function findByHelperToken($token)
+    {
+    	if (!static::isTokenValid($token, "Helper")) {
+    		return null;
+    	}
+    
+    	return static::findOne([
+    			'helper_token' => $token,
+    			'status' => self::STATUS_ACTIVE,
+    	]);
+    }    
 
     /**
-     * Finds out if password reset token is valid
+     * Finds out if token is valid
      *
      * @param string $token password reset token
      * @return boolean
      */
-    public static function isPasswordResetTokenValid($token)
+    public static function isTokenValid($token, $type)
     {
         if (empty($token)) {
             return false;
         }
 
         $timestamp = (int) substr($token, strrpos($token, '_') + 1);
-        $expire = Yii::$app->params['user.passwordResetTokenExpire'];
+        $expire = 0;
+        if($type === "PasswordReset") {
+        	$expire = Yii::$app->params['user.passwordResetTokenExpire'];
+        } else if($type === "Helper") {
+        	$expire = Yii::$app->params['user.helperTokenExpire'];
+        }
         return $timestamp + $expire >= time();
     }
 

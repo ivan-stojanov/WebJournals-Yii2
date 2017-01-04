@@ -15,6 +15,7 @@ use yii\filters\AccessControl;
 use common\models\CommonVariables;
 use common\models\HomepageSection;
 use common\models\Announcement;
+use common\models\User;
 
 /**
  * Site controller
@@ -37,21 +38,20 @@ class SiteController extends Controller
                         'roles' => ['?'],
                     ],
                     [
-                        'actions' => ['logout'],
+                        'actions' => [	
+                        				'logout', 'userpanel', 
+                        				'asynch-alert-duplicate-user'
+                        			],
                         'allow' => true,
                         'roles' => ['@'],
                     ],
-                	[
-                		'actions' => ['userpanel'],
-                		'allow' => true,
-                		'roles' => ['@'],
-                	],
                 ],
             ],
             'verbs' => [
                 'class' => VerbFilter::className(),
                 'actions' => [
                     'logout' => ['post'],
+                	'asynch-alert-duplicate-user' => ['post'],
                 ],
             ],
         ];
@@ -168,9 +168,31 @@ class SiteController extends Controller
     public function actionSignup()
     {
         $model = new SignupForm();
+        $post_msg = null;
+        
         if ($model->load(Yii::$app->request->post())) {
             if ($user = $model->signup()) {
-                if (Yii::$app->getUser()->login($user)) {
+            	if(isset($user) && isset($user["duplicate_message"])){
+            		if($user["duplicate_message"] === "existing email and username error"){
+            			$post_msg["type"] = "warning";
+            			$post_msg["text"] = "The username and the email address have already been taken. Try with anothers.<br><br>";
+            			$post_msg["text"] .= "If this was not you, click <a id='duplicatetrigger' onclick='userScript_clickDuplicateUser(\"".$user["duplicate_username_user"]->id."\",\"".$user["duplicate_email_user"]->id."\")'><b>here</b></a> to send an instructions via email!";
+            		} else if($user["duplicate_message"] === "existing email error"){
+            			$post_msg["type"] = "warning";
+            			$post_msg["text"] = "This email address has already been taken. Try with another one.<br><br>";
+            			$post_msg["text"] .= "If this was not you, click <a id='duplicatetrigger' onclick='userScript_clickDuplicateUser(\"".intval(0)."\",\"".$user["duplicate_email_user"]->id."\")'><b>here</b></a> to send an instructions via email!";
+            		} else if($user["duplicate_message"] === "existing username error"){
+            			$post_msg["type"] = "warning";
+            			$post_msg["text"] = "This username has already been taken. Try with another one.";
+            			//$post_msg["text"] .= "If this was not you, click <a id='duplicatetrigger' onclick='userScript_clickDuplicateUser(\"".$user["duplicate_username_user"]->id."\",\"".intval(0)."\")'><b>here</b></a> to send an instructions via email!";
+            		}
+            	} else if (Yii::$app->getUser()->login($user)) {
+            		Yii::$app->session->set('user.is_admin', false /*$user->is_admin*/);
+            		Yii::$app->session->set('user.is_editor', false /*$user->is_editor*/);
+            		Yii::$app->session->set('user.is_reader', $user->is_reader);
+            		Yii::$app->session->set('user.is_author', $user->is_author);
+            		Yii::$app->session->set('user.is_reviewer', $user->is_reviewer);
+            		            		
                     return $this->goHome();
                 }                
             }        	
@@ -210,12 +232,12 @@ class SiteController extends Controller
         
         if(isset($_POST['SignupForm']['is_reviewer'])){
         	$model->is_reviewer = $_POST['SignupForm']['is_reviewer'];
-        }
-        
+        }        
 
         return $this->render('signup', [
             'model' => $model,
-        	'common_vars' => $common_vars
+        	'common_vars' => $common_vars,
+        	'post_msg' => $post_msg
         ]);
     }
     
@@ -276,6 +298,54 @@ class SiteController extends Controller
         return $this->render('resetPassword', [
             'model' => $model,
         ]);
+    }
+    
+    /**
+     * Report duplicate email to admin.
+     *
+     * @param string $token
+     * @return mixed
+     * @throws BadRequestHttpException
+     */
+    public function actionReportDuplicateEmail($token)
+    {
+    	$post_msg = null;
+	    try {
+	    	if (empty($token) || !is_string($token)) {
+	    		$post_msg["type"] = "warning";
+	    		$post_msg["text"] = "Helper token cannot be blank.";	    		 
+	    	}
+	        $user = User::findByHelperToken($token);
+	        if (!$user) {
+	        	$post_msg["type"] = "danger";
+	        	$post_msg["text"] = "Wrong helper token. It may be already used or expired.";
+	        } else {
+	        	$user->helper_token = null;
+	        	$user->updated_at = date("Y-m-d H:i:s");
+	        	if ($user->save()) {
+	        		$email_sent = Yii::$app->mailer->compose(['html' => 'duplicateUserAdmin-html', 'text' => 'duplicateUserAdmin-text'], ['user' => $user])
+		        		->setTo(Yii::$app->params['adminEmail'])
+		        		->setFrom([$user->email => $user->fullName])
+		        		->setSubject("User Email Violation Report!")
+		        		->send();
+	        		if($email_sent) {
+	        			$post_msg["type"] = "success";
+	        			$post_msg["text"] = "Report for violation of the user email has been successfully sent";
+	        		}
+	        	} else {
+	        		Yii::error("SiteController->actionReportDuplicateEmail(1): ".json_encode($user->getErrors()), "custom_errors_users");
+	        		$post_msg["type"] = "danger";
+	        		$post_msg["text"] = "Failure! Report for violation of the user email has not been sent";
+	        	}
+	        }	        	        
+    	} catch (Exception $e) {
+    		Yii::error("SiteController->actionReportDuplicateEmail(2): ".json_encode($e->getMessage()), "custom_errors_users");
+    		throw new BadRequestHttpException($e->getMessage());
+    	}    
+
+    	return $this->render('reportDuplicateEmail', [
+    			'post_msg' => $post_msg,
+    	]);
     }
     
     /**
@@ -365,5 +435,40 @@ class SiteController extends Controller
     	return $this->render('announcementDetails', [
     			'model' => $announcement,
     	]);
+    }
+    
+    /*
+     * Asynch functions called with Ajax - User (click on link for notifying users about duplicate email)
+     */
+    public function actionAsynchAlertDuplicateUser()
+    {
+    	$usernameUserID = Yii::$app->getRequest()->post('usernameUserID');
+    	$emailUserID = Yii::$app->getRequest()->post('emailUserID');
+    	 
+    	if($emailUserID != 0) {
+    		$type = "email";
+    		if($emailUserID == $usernameUserID){
+    			$type = "username (".$usernameUser->username.") and email";
+    		}
+    		$emailUser = User::findOne([
+    				'id' => $emailUserID
+    		]);
+    		if(isset($emailUser)){
+    			$emailUser->helper_token = Yii::$app->security->generateRandomString() . '_' . time();
+    			$emailUser->updated_at = date("Y-m-d H:i:s");
+    			if ($emailUser->save()) {
+    				return \Yii::$app->mailer->compose(['html' => 'duplicateUserReportToken-html', 'text' => 'duplicateUserReportToken-text'], ['user' => $emailUser, 'type' => $type])
+    				->setFrom([\Yii::$app->params['supportEmail'] => \Yii::$app->name . ' robot'])
+    				->setTo($emailUser->email)
+    				->setSubject('Report for duplicate user!')
+    				->send();
+    			} else {
+    				Yii::error("SiteController->actionAsynchAlertDuplicateUser(1): ".json_encode($emailUser->getErrors()), "custom_errors_users");
+    				return "Failure! Report for duplicate user has not been sent.";
+    			}
+    		}
+    	}
+    
+    	return "Report for duplicate user has been successfully sent.";
     }
 }

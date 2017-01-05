@@ -15,6 +15,6 @@ use yii\helpers\Html;
     	Sender name: <?= $contactForm->name ?><br>
     	Sender email: <?= $contactForm->email ?><br>
     	Message subject: <?= $contactForm->subject ?><br><br>
-    	Message body: <?= $contactForm->body ?><br>
+    	Message body: <?= $contactForm->body ?>
     </p>
 </div>

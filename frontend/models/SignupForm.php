@@ -165,6 +165,7 @@ class SignupForm extends Model
             $user->bio_statement = $this->bio_statement;
             $user->reviewer_interests = $this->reviewer_interests;
             $user->status = User::STATUS_PENDING;
+            $user->registration_token = Yii::$app->security->generateRandomString() . '_' . time();
         	
            	if(isset($_POST[$this->formName()]['gender'])){
            		$user->gender = $_POST['SignupForm']['gender'];

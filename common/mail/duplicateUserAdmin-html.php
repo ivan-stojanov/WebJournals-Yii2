@@ -15,6 +15,6 @@ use yii\helpers\Html;
     	User ID: <?= $user->id ?><br>
     	Username: <?= $user->username ?><br>
     	Email: <?= $user->email ?><br>
-    	Full Name: <?= $user->fullName ?><br>
+    	Full Name: <?= $user->fullName ?>
     </p>
 </div>

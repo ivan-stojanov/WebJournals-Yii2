@@ -5,6 +5,7 @@ use Yii;
 use common\models\LoginForm;
 use frontend\models\PasswordResetRequestForm;
 use frontend\models\ResetPasswordForm;
+use frontend\models\UpgradeUnregisteredUserForm;
 use frontend\models\SignupForm;
 use frontend\models\ContactForm;
 use yii\base\InvalidParamException;
@@ -167,7 +168,8 @@ class SiteController extends Controller
      */
     public function actionSignup()
     {
-        $model = new SignupForm();
+        $model = new SignupForm();        
+        $common_vars = new CommonVariables();
         $post_msg = null;
         
         if ($model->load(Yii::$app->request->post())) {
@@ -186,19 +188,26 @@ class SiteController extends Controller
             			$post_msg["text"] = "This username has already been taken. Try with another one.";
             			//$post_msg["text"] .= "If this was not you, click <a id='duplicatetrigger' onclick='userScript_clickDuplicateUser(\"".$user["duplicate_username_user"]->id."\",\"".intval(0)."\")'><b>here</b></a> to send an instructions via email!";
             		}
-            	} else if (Yii::$app->getUser()->login($user)) {
-            		Yii::$app->session->set('user.is_admin', false /*$user->is_admin*/);
-            		Yii::$app->session->set('user.is_editor', false /*$user->is_editor*/);
-            		Yii::$app->session->set('user.is_reader', $user->is_reader);
-            		Yii::$app->session->set('user.is_author', $user->is_author);
-            		Yii::$app->session->set('user.is_reviewer', $user->is_reviewer);
-            		            		
-                    return $this->goHome();
+            	} else {
+            		$email_sent = Yii::$app->mailer->compose(['html' => 'registerUser-html', 'text' => 'registerUser-text'], ['user' => $user])
+				            		->setTo($user->email)
+				            		->setFrom([$user->email => $user->fullName])
+				            		->setSubject("User Registration!")
+				            		->send();
+            		
+            		if($email_sent) {
+            			Yii::$app->session->setFlash('success', 'Further instructions has been sent to your email address!');
+            			return $this->redirect(Yii::$app->urlManagerFrontEnd->createUrl('site/login'));
+	            		//$post_msg["type"] = "success";
+	            		//$post_msg["text"] = "Further instructions has been sent to your email address!";
+            		} else {
+            			Yii::error("SiteController->actionSignup(1): Failure! Further instructions has not been sent to your email address!", "custom_errors_users");
+            			$post_msg["type"] = "danger";
+            			$post_msg["text"] = "Failure! Further instructions has not been sent to your email address! Contact our admins!";
+            		}
                 }                
             }        	
         }
-        
-        $common_vars = new CommonVariables();      
        
         if(isset($_POST['SignupForm']['gender'])){
         	$model->gender_opt = ['prompt' => '--- Select ---', 'options' => [$_POST['SignupForm']['gender'] => ['Selected' => 'selected']]];
@@ -298,6 +307,31 @@ class SiteController extends Controller
         return $this->render('resetPassword', [
             'model' => $model,
         ]);
+    }    
+    
+    /**
+     * Report upgrade unregistered user.
+     *
+     * @param string $token
+     * @return mixed
+     * @throws BadRequestHttpException
+     */
+    public function actionUpgradeUnregisteredUser($token)
+    {
+    	try {
+    		$model = new UpgradeUnregisteredUserForm($token);
+    	} catch (InvalidParamException $e) {
+    		throw new BadRequestHttpException($e->getMessage());
+    	}
+    	
+    	if ($model->load(Yii::$app->request->post()) && $model->validate() && $model->upgradeUnregisteredUser()) {
+    		Yii::$app->session->setFlash('success', 'Password was created.');
+    		return $this->redirect(Yii::$app->urlManagerFrontEnd->createUrl('site/login'));
+    	}
+    	
+    	return $this->render('upgradeUnregisteredUser', [
+    			'model' => $model,
+    	]);    	
     }
     
     /**
@@ -315,7 +349,7 @@ class SiteController extends Controller
 	    		$post_msg["type"] = "warning";
 	    		$post_msg["text"] = "Helper token cannot be blank.";	    		 
 	    	}
-	        $user = User::findByHelperToken($token);
+	        $user = User::findByHelperTokenForViolationReport($token);
 	        if (!$user) {
 	        	$post_msg["type"] = "danger";
 	        	$post_msg["text"] = "Wrong helper token. It may be already used or expired.";
@@ -331,22 +365,103 @@ class SiteController extends Controller
 	        		if($email_sent) {
 	        			$post_msg["type"] = "success";
 	        			$post_msg["text"] = "Report for violation of the user email has been successfully sent";
+	        		} else {
+		        		Yii::error("SiteController->actionReportDuplicateEmail(1): Failure! Report for violation of the user email has not been sent", "custom_errors_users");
+		        		$post_msg["type"] = "danger";
+		        		$post_msg["text"] = "Failure! Report for violation of the user email has not been sent";
 	        		}
 	        	} else {
-	        		Yii::error("SiteController->actionReportDuplicateEmail(1): ".json_encode($user->getErrors()), "custom_errors_users");
+	        		Yii::error("SiteController->actionReportDuplicateEmail(2): ".json_encode($user->getErrors()), "custom_errors_users");
 	        		$post_msg["type"] = "danger";
 	        		$post_msg["text"] = "Failure! Report for violation of the user email has not been sent";
 	        	}
 	        }	        	        
     	} catch (Exception $e) {
-    		Yii::error("SiteController->actionReportDuplicateEmail(2): ".json_encode($e->getMessage()), "custom_errors_users");
+    		Yii::error("SiteController->actionReportDuplicateEmail(3): ".json_encode($e->getMessage()), "custom_errors_users");
     		throw new BadRequestHttpException($e->getMessage());
     	}    
 
     	return $this->render('reportDuplicateEmail', [
     			'post_msg' => $post_msg,
     	]);
-    }
+    }    
+
+    /**
+     * Verify user account.
+     *
+     * @param string $token
+     * @return mixed
+     * @throws BadRequestHttpException
+     */
+    public function actionVerifyUser($token)
+    {
+    	$post_msg = null;
+    	try {
+    		if (empty($token) || !is_string($token)) {
+    			$post_msg["type"] = "warning";
+    			$post_msg["text"] = "Registration token cannot be blank.";
+    		}
+    		$user = User::findByRegistrationToken($token);
+    		if (!$user) {
+    			$post_msg["type"] = "danger";
+    			$post_msg["text"] = "Wrong registration token. It may be already used.";
+    		} else {
+    			$user->registration_token = null;
+    			$user->status = USER::STATUS_ACTIVE;
+    			$user->updated_at = date("Y-m-d H:i:s");
+    			if ($user->save()) {
+			    	Yii::$app->session->setFlash('success', 'User account has been successfully verified! You can use your credentials to log in!');
+			        return $this->redirect(Yii::$app->urlManagerFrontEnd->createUrl('site/login'));
+    			} else {
+    				Yii::error("SiteController->actionVerifyUser(1): ".json_encode($user->getErrors()), "custom_errors_users");
+			    	Yii::$app->session->setFlash('error', 'Some error occured! User account has not been verified!');
+			        return $this->redirect(Yii::$app->urlManagerFrontEnd->createUrl('site/signup'));
+    			}
+    		}
+    	} catch (Exception $e) {
+    		Yii::error("SiteController->actionVerifyUser(2): ".json_encode($e->getMessage()), "custom_errors_users");
+    		throw new BadRequestHttpException($e->getMessage());
+    	}
+    
+        return $this->redirect(Yii::$app->urlManagerFrontEnd->createUrl('site/signup'));
+    }    
+    
+    /**
+     * Cancel user account.
+     *
+     * @param string $token
+     * @return mixed
+     * @throws BadRequestHttpException
+     */
+    public function actionCancelUser($token)
+    {
+    	$post_msg = null;
+    	try {
+    		if (empty($token) || !is_string($token)) {
+    			$post_msg["type"] = "warning";
+    			$post_msg["text"] = "Registration token cannot be blank.";
+    		}
+    		$user = User::findByRegistrationToken($token);
+    		if (!$user) {
+    			$post_msg["type"] = "danger";
+    			$post_msg["text"] = "Wrong registration token. It may be already used.";
+    		} else {
+    			if ($user->delete()) {
+    				Yii::$app->session->setFlash('success', 'User account has been successfully canceled! You can create new account with your email!');
+    				return $this->redirect(Yii::$app->urlManagerFrontEnd->createUrl('site/signup'));
+    			} else {
+    				Yii::error("SiteController->actionCancelUser(1): ".json_encode($user->getErrors()), "custom_errors_users");
+    				Yii::$app->session->setFlash('error', 'Some error occured! User account has not been canceled! It may be already approved.');
+    				return $this->redirect(Yii::$app->urlManagerFrontEnd->createUrl('site/login'));
+    			}
+    		}
+    	} catch (Exception $e) {
+    		Yii::error("SiteController->actionCancelUser(2): ".json_encode($e->getMessage()), "custom_errors_users");
+    		throw new BadRequestHttpException($e->getMessage());
+    	}
+    
+    	return $this->redirect(Yii::$app->urlManagerFrontEnd->createUrl('site/signup'));
+    }    
     
     /**
      * Displays search page.

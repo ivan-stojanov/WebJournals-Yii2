@@ -148,10 +148,10 @@ class User extends ActiveRecord implements IdentityInterface
     /**
      * Finds user by helper token
      *
-     * @param string $token password reset token
+     * @param string $token helper token for report vioalation
      * @return static|null
      */
-    public static function findByHelperToken($token)
+    public static function findByHelperTokenForViolationReport($token)
     {
     	if (!static::isTokenValid($token, "Helper")) {
     		return null;
@@ -159,9 +159,41 @@ class User extends ActiveRecord implements IdentityInterface
     
     	return static::findOne([
     			'helper_token' => $token,
-    			'status' => self::STATUS_ACTIVE,
+    			//'status' => self::STATUS_ACTIVE,
     	]);
-    }    
+    }
+    
+    /**
+     * Finds user by helper token for upgrade limited to regular user
+     *
+     * @param string $token helper token
+     * @return static|null
+     */
+    public static function findByHelperTokenForUpgrade($token)
+    {
+    	if (!static::isTokenValid($token, "Helper")) {
+    		return null;
+    	}
+    
+    	return static::findOne([
+    			'helper_token' => $token,
+    			//'status' => self::STATUS_ACTIVE,
+    	]);
+    }
+    
+    /**
+     * Finds user by registration token
+     *
+     * @param string $token registration token
+     * @return static|null
+     */
+    public static function findByRegistrationToken($token)
+    {   	
+    	return static::findOne([
+    			'registration_token' => $token,
+    			'status' => self::STATUS_PENDING,
+    	]);
+    }
 
     /**
      * Finds out if token is valid

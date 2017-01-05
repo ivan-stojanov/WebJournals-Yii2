@@ -51,7 +51,12 @@ class UserSearch extends User
 		        'pageSize' => 10,
 		    ],
         ]);
-
+        
+        if(!isset($params['UserSearch']['status'])){
+        	$params['UserSearch']['status'] = User::STATUS_ACTIVE;
+        } else if($params['UserSearch']['status'] === 'all'){
+        	$params['UserSearch']['status'] = null;
+        }
         $this->load($params);
 
         if (!$this->validate()) {

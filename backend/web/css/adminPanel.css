@@ -186,3 +186,13 @@
 	cursor: pointer;
 }
 /* Admin: Users CRUD - END */
+
+/* Admin: Keywords CRUD - START */
+table.detail-view.keyword-article-table th {
+    width: 20%;
+}
+
+table.detail-view.keyword-article-table td {
+    width: 80%;
+}
+/* Admin: Keywords CRUD - END */

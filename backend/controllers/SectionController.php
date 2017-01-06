@@ -132,7 +132,6 @@ class SectionController extends Controller
         	// validate all models
         	$valid = $modelSection->validate();
         	$valid = DynamicForms::validateMultiple($modelsArticle) && $valid;
-var_dump(DynamicForms::validateMultiple($modelsArticle));        	
         	if ($valid) {
         		$transaction = \Yii::$app->db->beginTransaction();
         		try {

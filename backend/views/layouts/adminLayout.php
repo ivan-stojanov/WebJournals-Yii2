@@ -208,7 +208,19 @@ AppAsset::register($this);
                                 </li>
                             </ul>
                             <!-- /.nav-second-level -->
-                        </li>                       
+                        </li>
+                        <li>
+                            <a href='#'><i class="fa fa-key fa-fw"></i> Keywords<span class="fa arrow"></span></a>
+                            <ul class="nav nav-second-level">
+                            	<li>
+                                    <a href='<?php echo Url::to(['/keyword/index']); ?>'><i class="fa fa-list fa-fw"></i> List All</a>
+                                </li>
+                                <li>
+                                    <a href='<?php echo Url::to(['/keyword/create']); ?>'><i class="fa fa-plus fa-fw"></i> Create New</a>
+                                </li>
+                            </ul>
+                            <!-- /.nav-second-level -->
+                        </li>
 						<!-- 
                         <li>
                             <a href="forms.html"><i class="fa fa-edit fa-fw"></i> Forms</a>

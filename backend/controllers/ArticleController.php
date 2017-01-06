@@ -119,24 +119,24 @@ class ArticleController extends Controller
     		return $this->redirect(['site/error']);
     	}
     	
-    	$articleAuthorModel = new ArticleAuthor();
-    	$article_authors = $articleAuthorModel->getAuthorsForArticleString($id);
-    	
-    	$articleKeywordModel = new ArticleKeyword();
-    	$article_keywords_string = $articleKeywordModel->getKeywordsForArticleString($id);
-    	 
-    	$articleReviewerModel = new ArticleReviewer();
-    	$article_reviewers_string = $articleReviewerModel->getReviewersForArticleString($id);
+    	$article_authors = ArticleAuthor::getAuthorsForArticleString($id);    	
+    	$article_correspondent_author = null;
+    	if(isset($article_authors['correspondent_author'])){
+    		$article_correspondent_author = User::findOne(intval($article_authors['correspondent_author']));
+    	}    	
+    	$article_keywords_string = ArticleKeyword::getKeywordsForArticleString($id);    	 
+    	$article_reviewers_string = ArticleReviewer::getReviewersForArticleString($id);
     	
     	$current_user_id = ','.Yii::$app->user->id.',';
     	$user_can_modify = (strpos($article_authors['ids'], $current_user_id) !== false);
     	$user_can_modify = ($user_can_modify || Yii::$app->session->get('user.is_admin'));
-    	
+
         return $this->render('view', [
             'model' => $this->findModel($id),
         	'article_authors' => $article_authors,
         	'article_keywords_string' => $article_keywords_string,
         	'article_reviewers_string' => $article_reviewers_string,
+        	'article_correspondent_author' => $article_correspondent_author,
         	'user_can_modify' => $user_can_modify,
         ]);
     }
@@ -158,6 +158,7 @@ class ArticleController extends Controller
     	$modelUser = new User();
     	$arrayArticleAuthor = [];
     	$arrayArticleReviewer = [];
+    	$correspondent_author = null;
     		
     	$post_msg = null;
     	$modelArticle->created_on = date("Y-m-d H:i:s");
@@ -184,11 +185,15 @@ class ArticleController extends Controller
     			{
     				$modelArticle->post_authors = Yii::$app->request->post()['Article']['post_authors'];
     				$addAuthors = true;
-    			}  			
+    			}   			
     			if(Yii::$app->request->post()['Article']['post_reviewers'] != null)
     			{
     				$modelArticle->post_reviewers = Yii::$app->request->post()['Article']['post_reviewers'];
     				$addReviewers = true;
+    			}
+    			if(Yii::$app->request->post()['Article']['post_correspondent_author'] != null)
+    			{
+    				$correspondent_author = Yii::$app->request->post()['Article']['post_correspondent_author'][0];
     			}
     		}
     			 
@@ -228,16 +233,24 @@ class ArticleController extends Controller
     							'article_id' => intval($modelArticle->article_id)
     					]);
     					if($addKeywords && $modelArticle != null && $modelArticle->post_authors != null && count($modelArticle->post_authors)>0) {
+    						$correspondent_author_is_regular_author = false;
     						foreach ($modelArticle->post_authors as $indexAuthorOrder => $authorId) {
     							$articleAuthorItem = new ArticleAuthor();
     							$articleAuthorItem->article_id = $modelArticle->article_id;
     							$articleAuthorItem->author_id = intval($authorId);
     							$articleAuthorItem->sort_order = intval($indexAuthorOrder) + 1;
     							$articleAuthorItem->created_on = date("Y-m-d H:i:s");
+    							if(isset($correspondent_author) && (intval($correspondent_author) == intval($authorId))){
+    								$articleAuthorItem->is_correspondent = true;
+    								$correspondent_author_is_regular_author = true;
+    							}
     							if(!$articleAuthorItem->save()){
     								Yii::error("ArticleController->actionCreate(3): ".json_encode($articleAuthorItem->getErrors()), "custom_errors_articles");
     							}
    							}
+   							if($correspondent_author_is_regular_author == false) {
+   								Yii::$app->session->setFlash('error', 'Authors are not correctly updated! Correspondent author is not in the list for regular authors!');
+   							}   							
    						}
    						ArticleReviewer::deleteAll([
     							'article_id' => intval($modelArticle->article_id)
@@ -286,31 +299,32 @@ class ArticleController extends Controller
     		return $this->redirect(['site/error']);
     	}
     	
-    	$articleAuthorModel = new ArticleAuthor();
-    	$article_authors = $articleAuthorModel->getAuthorsForArticleString($id);
+    	$article_authors = ArticleAuthor::getAuthorsForArticleString($id);
     	$current_user_id = ','.Yii::$app->user->id.',';
     	$user_can_modify = (strpos($article_authors['ids'], $current_user_id) !== false);
     	$user_can_modify = ($user_can_modify || Yii::$app->session->get('user.is_admin'));
     	if ($user_can_modify != true){
     		return $this->redirect(['site/error']);
     	}    	
-    	
+    	$articleCorrespondentAuthor = null;
+    	if(isset($article_authors['correspondent_author'])){
+    		$articleCorrespondentAuthor = $article_authors['correspondent_author'];
+		}
+  	
         $modelArticle = $this->findModel($id);
         $modelArticle->updated_on = date("Y-m-d H:i:s");
         $update_sections_after_save = false; $section_id_old = 0; $section_id_new = 0;
         $modelKeyword = new Keyword();
-        $modelArticleKeyword = new ArticleKeyword();
         $arrayArticleKeyword = [];
-        $articleKeywords_array = $modelArticleKeyword->getKeywordsForArticle($id);
+        $articleKeywords_array = ArticleKeyword::getKeywordsForArticle($id);
         if($articleKeywords_array != null && count($articleKeywords_array)>0){
         	foreach ($articleKeywords_array as $articleKeyword){
         		$arrayArticleKeyword[] = $articleKeyword->keyword->keyword_id;
         	}
         }
         $modelUser = new User();
-        $modelArticleAuthor = new ArticleAuthor();
         $arrayArticleAuthor = [];
-        $articleAuthors_array = $modelArticleAuthor->getAuthorsForArticle($id);
+        $articleAuthors_array = ArticleAuthor::getAuthorsForArticle($id);
         if($articleAuthors_array != null && count($articleAuthors_array)>0){
         	foreach ($articleAuthors_array as $articleAuthor){
         		$arrayArticleAuthor[] = $articleAuthor->author->id;
@@ -383,8 +397,13 @@ class ArticleController extends Controller
         			}
         			$reviewers_are_changed = !($modelArticle->post_reviewers == $current_reviewer_array);
         		}
+        		if(Yii::$app->request->post()['Article']['post_correspondent_author'] != null)
+        		{
+        			$modelArticle->post_correspondent_author = [intval(Yii::$app->request->post()['Article']['post_correspondent_author'][0])];
+        			$correspondent_author_is_changed = !($modelArticle->post_correspondent_author[0] == $articleCorrespondentAuthor);
+        		}
         	}
-
+        	
         	//if parent volume is changed, manage sorting of issues in both volumes
         	if(isset($modelArticle->attributes) && isset($modelArticle->attributes['section_id']) &&
         	   isset($modelArticle->oldAttributes) && isset($modelArticle->oldAttributes['section_id'])) {
@@ -428,10 +447,11 @@ class ArticleController extends Controller
         						}       						
         					}
         				}
-        				if($authors_are_changed) {
+        				if($authors_are_changed || $correspondent_author_is_changed) {
         					ArticleAuthor::deleteAll([
         							'article_id' => intval($id)
         					]);
+        					$correspondent_author_is_regular_author = false;
         					if($modelArticle != null && $modelArticle->post_authors != null && count($modelArticle->post_authors)>0) {
 	        					foreach ($modelArticle->post_authors as $indexAuthorOrder => $authorId) {
 	        						$articleAuthorItem = new ArticleAuthor();
@@ -440,10 +460,19 @@ class ArticleController extends Controller
 	        						$articleAuthorItem->sort_order = intval($indexAuthorOrder) + 1;
 	        						$articleAuthorItem->updated_on = date("Y-m-d H:i:s");
 	        						$articleAuthorItem->created_on = date("Y-m-d H:i:s");
+	        						if(isset($modelArticle->post_correspondent_author) && (count($modelArticle->post_correspondent_author) > 0) 
+	        								&& (intval($modelArticle->post_correspondent_author[0]) == intval($authorId)))
+	        						{
+	        							$articleAuthorItem->is_correspondent = true;
+	        							$correspondent_author_is_regular_author = true;
+	        						}
 	        						if(!$articleAuthorItem->save()){
 	        							Yii::error("ArticleController->actionUpdate(3): ".json_encode($articleAuthorItem->getErrors()), "custom_errors_articles");
 	        						}
 	        					}
+        					}
+        					if($correspondent_author_is_regular_author == false) {
+        						Yii::$app->session->setFlash('error', 'Authors are not correctly updated! Correspondent author is not in the list for regular authors!');
         					}
         				}
         				if($reviewers_are_changed) {
@@ -494,6 +523,7 @@ class ArticleController extends Controller
         $modelArticle->post_keywords = $arrayArticleKeyword;
         $modelArticle->post_authors = $arrayArticleAuthor;
         $modelArticle->post_reviewers = $arrayArticleReviewer;
+        $modelArticle->post_correspondent_author = [$articleCorrespondentAuthor];
         
         return $this->render('update', [
             'modelArticle' => $modelArticle,
@@ -518,8 +548,7 @@ class ArticleController extends Controller
     		return $this->redirect(['site/error']);
     	}
     	
-    	$articleAuthorModel = new ArticleAuthor();
-    	$article_authors = $articleAuthorModel->getAuthorsForArticleString($id);
+    	$article_authors = ArticleAuthor::getAuthorsForArticleString($id);
     	$current_user_id = ','.Yii::$app->user->id.',';
     	$user_can_modify = (strpos($article_authors['ids'], $current_user_id) !== false);
     	$user_can_modify = ($user_can_modify || Yii::$app->session->get('user.is_admin'));
@@ -618,11 +647,9 @@ class ArticleController extends Controller
     {
     	$modelArticle = $this->findModel($id);
     	
-    	$articleKeywordModel = new ArticleKeyword();
-    	$article_keywords_string = $articleKeywordModel->getKeywordsForArticleString($modelArticle->article_id);
+    	$article_keywords_string = ArticleKeyword::getKeywordsForArticleString($modelArticle->article_id);
     	
-    	$articleAuthorModel = new ArticleAuthor();
-    	$article_authors_string = $articleAuthorModel->getAuthorsForArticleString($id)['string'];
+    	$article_authors_string = ArticleAuthor::getAuthorsForArticleString($id)['string'];
     	
     	// get your HTML raw content without any layouts or scripts
     	$content = $modelArticle->abstract."<br>".$modelArticle->content;

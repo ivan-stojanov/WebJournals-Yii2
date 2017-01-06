@@ -37,6 +37,7 @@ class Article extends \yii\db\ActiveRecord
 {
 	public $post_keywords = [];
 	public $post_authors = [];
+	public $post_correspondent_author = [];
 	public $post_reviewers = [];	
 	public $file_attach;
 		
@@ -62,7 +63,8 @@ class Article extends \yii\db\ActiveRecord
         	[['file_id'], 'exist', 'skipOnError' => true, 'targetClass' => ArticleFile::className(), 'targetAttribute' => ['file_id' => 'file_id']],
         	[['file_attach'], 'file', 'skipOnEmpty' => true, 'extensions' => 'doc, docx'],
         	[['section_id'], 'exist', 'skipOnError' => true, 'targetClass' => Section::className(), 'targetAttribute' => ['section_id' => 'section_id']],
-        	[['post_reviewers', 'post_authors', 'post_keywords'], 'each', 'rule' => ['integer']],        		
+        	[['post_reviewers', 'post_authors', 'post_correspondent_author', 'post_keywords'], 'required'],
+        	[['post_reviewers', 'post_authors', 'post_correspondent_author', 'post_keywords'], 'each', 'rule' => ['integer']],        		
         ];
     }
     
@@ -211,6 +213,7 @@ class Article extends \yii\db\ActiveRecord
             	'is_deleted' => 'Is deleted',    			
     			'post_keywords' => 'Keywords',
     			'post_authors' => 'Authors',
+    			'post_correspondent_author' => 'Correspondent Author',
     			'post_reviewers' => 'Reviewers',
     	];
     }

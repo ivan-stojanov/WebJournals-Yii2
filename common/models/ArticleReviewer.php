@@ -78,7 +78,7 @@ class ArticleReviewer extends \yii\db\ActiveRecord
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getReviewersForArticle($articleID)
+    public static function getReviewersForArticle($articleID)
     {
     	return ArticleReviewer::find()->where(['article_id' => $articleID, 'user.status' => User::STATUS_ACTIVE, 'user.is_reviewer' => true])
 							    	  ->innerJoinWith('reviewer')
@@ -89,10 +89,10 @@ class ArticleReviewer extends \yii\db\ActiveRecord
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getReviewersForArticleString($articleID)
+    public static function getReviewersForArticleString($articleID)
     {
     	$article_reviewers_string = null;
-    	$articleReviewers_array = $this->getReviewersForArticle($articleID);
+    	$articleReviewers_array = ArticleReviewer::getReviewersForArticle($articleID);
     	if($articleReviewers_array != null && count($articleReviewers_array)>0 ){
     		$article_reviewers_string = "";
     		foreach ($articleReviewers_array as $article_reviewer){

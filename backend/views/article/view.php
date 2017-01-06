@@ -8,8 +8,6 @@ use yii\grid\DataColumn;
 /* @var $model common\models\Article */
 
 $this->title = $model->title;
-$this->params['breadcrumbs'][] = ['label' => 'Articles', 'url' => ['index']];
-$this->params['breadcrumbs'][] = $this->title;
 
 ?>
 <div class="article-view">
@@ -87,6 +85,12 @@ $this->params['breadcrumbs'][] = $this->title;
         		'value' => $article_authors['string'],
         		'format' => 'HTML'
         	],
+        	[
+        		'class' => DataColumn::className(), // this line is optional
+        		'label' => 'Correspondent Author',
+        		'value' => (isset($article_correspondent_author)) ? ($article_correspondent_author->fullName." <".$article_correspondent_author->email.">") : null,
+        		//'format' => 'HTML'
+        	],        		
         	[
         		'class' => DataColumn::className(), // this line is optional
         		'label' => 'Keywords',

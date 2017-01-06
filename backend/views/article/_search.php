@@ -71,8 +71,7 @@ use common\models\ArticleAuthor;
 	        	'class' => DataColumn::className(), // this line is optional
 	        	'label' => 'Authors',
 	        	'value' =>function ($data) {
-	        		$articleAuthorModel = new ArticleAuthor();
-    				return $articleAuthorModel->getAuthorsForArticleString($data->article_id)['string'];
+    				return ArticleAuthor::getAuthorsForArticleString($data->article_id)['string'];
 	        	},
 	        	"format" => "HTML",
 	        	'headerOptions' => ['style' => 'width:20%'],

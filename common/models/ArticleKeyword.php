@@ -73,7 +73,7 @@ class ArticleKeyword extends \yii\db\ActiveRecord
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getKeywordsForArticle($articleID)
+    public static function getKeywordsForArticle($articleID)
     {
     	return ArticleKeyword::find()->where(['article_id' => $articleID, 'keyword.is_deleted' => false])
 							    	 ->innerJoinWith('keyword')
@@ -84,10 +84,10 @@ class ArticleKeyword extends \yii\db\ActiveRecord
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getKeywordsForArticleString($articleID)
+    public static function getKeywordsForArticleString($articleID)
     {
     	$article_keywords_string = null;
-    	$articleKeywords_array = $this->getKeywordsForArticle($articleID);
+    	$articleKeywords_array = ArticleKeyword::getKeywordsForArticle($articleID);
     	
     	if($articleKeywords_array != null && count($articleKeywords_array)>0 ){
     		$article_keywords_string = "";

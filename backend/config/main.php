@@ -70,6 +70,12 @@ return [
             		'levels' => ['info', 'error', 'warning'],
             		'categories' => ['custom_errors_users'],
             		'logFile' => '@backend/runtime/logs/custom_errors_users.log',
+            	],            	
+            	[
+            		'class' => 'yii\log\FileTarget',
+            		'levels' => ['info', 'error', 'warning'],
+            		'categories' => ['custom_errors_keywords'],
+            		'logFile' => '@backend/runtime/logs/custom_errors_keywords.log',
             	],            		
             ],
         ],

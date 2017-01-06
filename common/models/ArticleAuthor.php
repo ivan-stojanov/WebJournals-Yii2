@@ -75,7 +75,7 @@ class ArticleAuthor extends \yii\db\ActiveRecord
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getAuthorsForArticle($articleID)
+    public static function getAuthorsForArticle($articleID)
     {
     	return ArticleAuthor::find()->where(['article_id' => $articleID, 'user.status' => User::STATUS_ACTIVE, 'user.is_author' => true])
 							    	->innerJoinWith('author')
@@ -86,25 +86,30 @@ class ArticleAuthor extends \yii\db\ActiveRecord
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getAuthorsForArticleString($articleID)
+    public static function getAuthorsForArticleString($articleID)
     {
     	$article_authors_ids = null;
     	$article_authors_string = null;
-    	$articleAuthors_array = $this->getAuthorsForArticle($articleID);
+    	$article_correspondent_author = null;
+    	$articleAuthors_array = ArticleAuthor::getAuthorsForArticle($articleID);
     	if($articleAuthors_array != null && count($articleAuthors_array)>0){
     		$article_authors_ids = ",";
     		$article_authors_string = "";    		
     		foreach ($articleAuthors_array as $articleAuthor){
     			$article_authors_ids .= $articleAuthor->author->id.",";
     			$article_authors_string .= $articleAuthor->author->fullName.", ";
+    			if($articleAuthor->is_correspondent == true){
+    				$article_correspondent_author = $articleAuthor->author->id;
+    			}
     		}
     		$article_authors_string = trim($article_authors_string, ", ");
     	}
     	
     	$article_authors = null;
     	$article_authors['ids'] = $article_authors_ids;
-    	$article_authors['string'] = $article_authors_string;    	
-    	
+    	$article_authors['string'] = $article_authors_string;
+    	$article_authors['correspondent_author'] = $article_correspondent_author;
+
     	return $article_authors;
     }    
 }

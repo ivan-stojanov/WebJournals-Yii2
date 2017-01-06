@@ -132,6 +132,20 @@ $this->registerJsFile("@web/js/articleScript.js", [ 'depends' => ['backend\asset
 	    ],
 	]);?>
 	
+	<?php echo $form->field($modelArticle, 'post_correspondent_author', [
+    	'options' => [
+    		'id' => 'correspondent_author_container'
+    	]])->widget(Select2::classname(), [ //echo Select2::widget([
+		    'name' => 'kv-state-230',    	
+		    'data' => $modelUser->getUsersInAssociativeArray(['is_author' => true]),
+			'showToggleAll' => false,
+		    'options' => ['placeholder' => 'Select an correspondent author ...', 'multiple' => true],
+		    'pluginOptions' => [
+		        'allowClear' => true,
+		    	'maximumSelectionLength' => 1,	    	
+		    ],
+	]);?>
+	
 	<?php echo $form->field($modelArticle, 'post_keywords')->widget(Select2::classname(), [ //echo Select2::widget([
 	    'name' => 'kv-state-230',    	
 	    'data' => $modelKeyword->getKeywordsInAssociativeArray(),

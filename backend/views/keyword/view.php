@@ -73,7 +73,7 @@ $this->title = $modelKeyword->content;
     <?php    		
     		foreach ($modelKeyword->articles as $index => $article){
 
-    			$article_reviewers_string = ArticleReviewer::getReviewersForArticleString($article->article_id);
+    			//$article_reviewers_string = ArticleReviewer::getReviewersForArticleString($article->article_id);
     			$article_authors = ArticleAuthor::getAuthorsForArticleString($article->article_id);
     			$article_keywords_string = ArticleKeyword::getKeywordsForArticleString($article->article_id);
     
@@ -94,12 +94,6 @@ $this->title = $modelKeyword->content;
 				    	'options' => ['class' => 'table table-striped table-bordered detail-view keyword-article-table'],
 				    	'attributes' => [			    			
 				    		'title:ntext',
-				        	[
-				        		'class' => DataColumn::className(), // this line is optional
-				        		'label' => 'Reviewers',
-				        		'value' => $article_reviewers_string,
-				        		'format' => 'HTML'
-				        	],
 				    		[
 				    			'class' => DataColumn::className(), // this line is optional
 				    			'label' => 'Authors',

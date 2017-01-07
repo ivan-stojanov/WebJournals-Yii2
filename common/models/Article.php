@@ -18,16 +18,18 @@ use yii\base\Object;
  * @property string $page_from
  * @property string $page_to
  * @property integer $sort_in_section
- * @property integer $is_archived
+ * @property integer $status
  * @property integer $file_id
  * @property string $created_on
  * @property string $updated_on
  * @property integer $is_deleted
  * 
- * @property ArticleFile $file
  * @property Section $section
+ * @property ArticleFile $file
  * @property ArticleAuthor[] $articleAuthors
  * @property User[] $authors
+ * @property ArticleEditor[] $articleEditors
+ * @property User[] $editors
  * @property ArticleKeyword[] $articleKeywords
  * @property Keyword[] $keywords
  * @property ArticleReviewer[] $articleReviewers
@@ -35,10 +37,18 @@ use yii\base\Object;
  */ 
 class Article extends \yii\db\ActiveRecord
 {
+	const STATUS_SUBMITTED = 0;
+	const STATUS_UNDER_REVIEW = 1;
+	const STATUS_REVIEW_REQUIRED = 2;
+	const STATUS_ACCEPTED_FOR_PUBLICATION = 3;
+	const STATUS_PUBLISHED = 4;
+	const STATUS_REJECTED = 5;
+	
 	public $post_keywords = [];
 	public $post_authors = [];
 	public $post_correspondent_author = [];
-	public $post_reviewers = [];	
+	public $post_reviewers = [];
+	public $post_editors = [];
 	public $file_attach;
 		
     /**
@@ -55,16 +65,16 @@ class Article extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['section_id', 'title', 'abstract', 'content'/*, 'file_attach'*/], 'required'],
-            [['section_id', 'sort_in_section', 'is_archived', 'is_deleted'], 'integer'],
+            [['title', 'abstract', 'content'/*',section_id', 'file_attach'*/], 'required'],
+            [['section_id', 'sort_in_section', 'status', 'is_deleted'], 'integer'],
             [['title', 'abstract', 'content', 'pdf_content'], 'string'],       		
             [['created_on', 'updated_on'], 'safe'],
             [['page_from', 'page_to'], 'string', 'max' => 6],
         	[['file_id'], 'exist', 'skipOnError' => true, 'targetClass' => ArticleFile::className(), 'targetAttribute' => ['file_id' => 'file_id']],
-        	[['file_attach'], 'file', 'skipOnEmpty' => true, 'extensions' => 'doc, docx'],
+        	[['file_attach'], 'file', 'skipOnEmpty' => true, 'extensions' => 'pdf'],
         	[['section_id'], 'exist', 'skipOnError' => true, 'targetClass' => Section::className(), 'targetAttribute' => ['section_id' => 'section_id']],
-        	[['post_reviewers', 'post_authors', 'post_correspondent_author', 'post_keywords'], 'required'],
-        	[['post_reviewers', 'post_authors', 'post_correspondent_author', 'post_keywords'], 'each', 'rule' => ['integer']],        		
+        	[['post_authors', 'post_correspondent_author', 'post_keywords'], 'required'],
+        	[['post_reviewers', 'post_editors', 'post_authors', 'post_correspondent_author', 'post_keywords'], 'each', 'rule' => ['integer']],        		
         ];
     }
     
@@ -162,6 +172,22 @@ class Article extends \yii\db\ActiveRecord
         return $this->hasMany(User::className(), ['id' => 'reviewer_id'])->viaTable('article_reviewer', ['article_id' => 'article_id']);
     }
     
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getArticleEditors()
+    {
+    	return $this->hasMany(ArticleEditor::className(), ['article_id' => 'article_id']);
+    }
+    
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getEditors()
+    {
+    	return $this->hasMany(User::className(), ['id' => 'editor_id'])->viaTable('article_editor', ['article_id' => 'article_id']);
+    }
+    
     public function uploadFile($file_attach)
     {
     	try {
@@ -205,7 +231,7 @@ class Article extends \yii\db\ActiveRecord
     			'page_from' => 'Page from',
     			'page_to' => 'Page to',
     			'sort_in_section' => 'Sort in section',
-    			'is_archived' => 'Is archived',
+    			'status' => 'Status',
     			'file_id' => 'File ID',
     			'file_attach' => 'File',    			
     			'created_on' => 'Created on',
@@ -215,6 +241,7 @@ class Article extends \yii\db\ActiveRecord
     			'post_authors' => 'Authors',
     			'post_correspondent_author' => 'Correspondent Author',
     			'post_reviewers' => 'Reviewers',
+    			'post_editors' => 'Editors',
     	];
     }
 }

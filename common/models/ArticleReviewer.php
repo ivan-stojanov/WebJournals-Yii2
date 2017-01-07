@@ -96,7 +96,7 @@ class ArticleReviewer extends \yii\db\ActiveRecord
     	if($articleReviewers_array != null && count($articleReviewers_array)>0 ){
     		$article_reviewers_string = "";
     		foreach ($articleReviewers_array as $article_reviewer){
-    			$article_reviewers_string .= $article_reviewer->reviewer->fullName.", ";
+    			$article_reviewers_string .= $article_reviewer->reviewer->fullName." <".$article_reviewer->reviewer->email.">, ";
     		}
     		$article_reviewers_string = trim($article_reviewers_string, ", ");
     	}

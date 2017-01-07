@@ -3,6 +3,7 @@
 use yii\helpers\Html;
 use yii\widgets\DetailView;
 use yii\grid\DataColumn;
+use yii\helpers\ArrayHelper;
 
 /* @var $this yii\web\View */
 /* @var $model common\models\Article */
@@ -28,9 +29,8 @@ $this->title = $model->title;
         <?= Html::a('View in PDF', ['pdfview', 'id' => $model->article_id], ['class' => 'btn btn-success']) ?>
     </p>
     
-    <?= DetailView::widget([
-        'model' => $model,
-        'attributes' => [
+    <?php 
+    	$attributes = [
         	'title:ntext',
         	//'article_id',
         	//'section_id',
@@ -38,7 +38,7 @@ $this->title = $model->title;
         		'class' => DataColumn::className(), // this line is optional
         		'attribute' => 'section_id',
         		'label' => 'Section title',
-        		'value' => $model->section->title,
+        		'value' => (isset($model->section)) ? $model->section->title : null,
         		'format' => 'HTML'
         	],
             //'abstract:ntext',
@@ -61,24 +61,42 @@ $this->title = $model->title;
             //'page_from',
             //'page_to',
             //'sort_in_section',
+        ];
+    /*if($user_can_modify) {
+    	$attributes = ArrayHelper::merge($attributes, [
         	[
         		'class' => DataColumn::className(), // this line is optional
         		'attribute' => 'is_archived',
         		'value' => ($model->is_archived == 0) ? "<div class='glyphicon glyphicon-remove'></div>" : "<div class='glyphicon glyphicon-ok'></div>",
         		'format' => 'HTML'
-        	],
+        	]
+    	]);
+    }*/
+    	$attributes = ArrayHelper::merge($attributes, [
         	[
         		'class' => DataColumn::className(), // this line is optional
         		'attribute' => 'file_attach',
         		'value' => ($model->file != null) ? "<a href='../@web/uploads/".$model->file->file_name."' download='".$model->file->file_name."'>".$model->file->file_original_name."</a>" : null,
         		'format' => 'HTML'
-        	],
+        	]
+    	]);
+    if($user_can_modify) {
+    	$attributes = ArrayHelper::merge($attributes, [
         	[
         		'class' => DataColumn::className(), // this line is optional
         		'label' => 'Reviewers',
         		'value' => $article_reviewers_string,
-        		'format' => 'HTML'
+        		//'format' => 'HTML'
         	],
+    		[
+    			'class' => DataColumn::className(), // this line is optional
+    			'label' => 'Editors',
+    			'value' => $article_editors_string,
+    			//'format' => 'HTML'
+    		]    			
+    	]);
+    }
+    	$attributes = ArrayHelper::merge($attributes, [    
         	[
         		'class' => DataColumn::className(), // this line is optional
         		'label' => 'Authors',
@@ -110,7 +128,12 @@ $this->title = $model->title;
     			'format' => 'HTML'
     		],
             //'is_deleted',
-        ],
+        ]);    
+    ?>
+    
+    <?= DetailView::widget([
+        'model' => $model,
+        'attributes' => $attributes,
     ]) ?>
 
 </div>

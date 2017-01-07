@@ -16,7 +16,9 @@ $this->title = 'Update Article';
     	'arrayArticleKeyword' => $arrayArticleKeyword,
     	'arrayArticleAuthor' => $arrayArticleAuthor,
     	'arrayArticleReviewer' => $arrayArticleReviewer,
+    	'arrayArticleEditor' => $arrayArticleEditor,
     	'post_msg' => $post_msg,
+    	'isAdminOrEditor' => $isAdminOrEditor,
     ]) ?>
 
 </div>

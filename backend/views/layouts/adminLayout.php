@@ -132,11 +132,9 @@ AppAsset::register($this);
                                 <li>
                                     <a href='<?php echo Url::to(['/user/index?type=editor']); ?>'><i class="fa fa-user fa-fw"></i> Editors</a>
                                 </li>
-                       <?php } ?>       
                                 <li>
                                     <a href='<?php echo Url::to(['/user/index?type=reviewer']); ?>'><i class="fa fa-user fa-fw"></i> Reviewers</a>
                                 </li>
-                       <?php if (Yii::$app->session->get('user.is_admin') == true){ ?>       
                                 <li>
                                     <a href='<?php echo Url::to(['/user/create']); ?>'><i class="fa fa-plus fa-fw"></i> Create New User</a>
                                 </li>

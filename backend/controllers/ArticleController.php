@@ -8,6 +8,7 @@ use common\models\Article;
 use common\models\ArticleAuthor;
 use common\models\ArticleKeyword;
 use common\models\ArticleReviewer;
+use common\models\ArticleEditor;
 use common\models\ArticleFile;
 use common\models\Keyword;
 use common\models\User;
@@ -17,6 +18,7 @@ use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 use yii\base\Object;
 use yii\web\UploadedFile;
+use yii\helpers\ArrayHelper;
 
 /**
  * ArticleController implements the CRUD actions for Article model.
@@ -126,6 +128,7 @@ class ArticleController extends Controller
     	}    	
     	$article_keywords_string = ArticleKeyword::getKeywordsForArticleString($id);    	 
     	$article_reviewers_string = ArticleReviewer::getReviewersForArticleString($id);
+    	$article_editors_string = ArticleEditor::getEditorsForArticleString($id);
     	
     	$current_user_id = ','.Yii::$app->user->id.',';
     	$user_can_modify = (strpos($article_authors['ids'], $current_user_id) !== false);
@@ -136,6 +139,7 @@ class ArticleController extends Controller
         	'article_authors' => $article_authors,
         	'article_keywords_string' => $article_keywords_string,
         	'article_reviewers_string' => $article_reviewers_string,
+        	'article_editors_string' => $article_editors_string,        		
         	'article_correspondent_author' => $article_correspondent_author,
         	'user_can_modify' => $user_can_modify,
         ]);
@@ -152,12 +156,15 @@ class ArticleController extends Controller
     		return $this->redirect(['site/error']);
     	}
 
+    	$isAdminOrEditor = (Yii::$app->session->get('user.is_admin') == true);
+    	$isAdminOrEditor = $isAdminOrEditor || (Yii::$app->session->get('user.is_editor') == true);
     	$modelArticle = new Article();
     	$modelKeyword = new Keyword();
     	$arrayArticleKeyword = [];
     	$modelUser = new User();
     	$arrayArticleAuthor = [];
     	$arrayArticleReviewer = [];
+    	$arrayArticleEditor = [];
     	$correspondent_author = null;
     		
     	$post_msg = null;
@@ -165,54 +172,102 @@ class ArticleController extends Controller
     	$addKeywords = false;
     	$addAuthors = false;
     	$addReviewers = false;
+    	$addEditors = false;
+    	$file_attach = null;
     		
     	if ($modelArticle->load(Yii::$app->request->post())) {
-    		if(Yii::$app->request->post()['Article'] != null)
+    		if(isset(Yii::$app->request->post()['Article']) && Yii::$app->request->post()['Article'] != null)
     		{
     			$file_attach = UploadedFile::getInstance($modelArticle, "file_attach");
     			if($file_attach != null)
     			{
     				$modelArticle->file_attach = $file_attach;
-    				$modelArticle->file_id = $modelArticle->uploadFile($file_attach);
     			}
     		
-    			if(Yii::$app->request->post()['Article']['post_keywords'] != null)
+    			if(isset(Yii::$app->request->post()['Article']['post_keywords']) && Yii::$app->request->post()['Article']['post_keywords'] != null)
     			{
     				$modelArticle->post_keywords = Yii::$app->request->post()['Article']['post_keywords'];
     				$addKeywords = true;
     			}
-    			if(Yii::$app->request->post()['Article']['post_authors'] != null)
+    			if(isset(Yii::$app->request->post()['Article']['post_authors']) && Yii::$app->request->post()['Article']['post_authors'] != null)
     			{
     				$modelArticle->post_authors = Yii::$app->request->post()['Article']['post_authors'];
     				$addAuthors = true;
     			}   			
-    			if(Yii::$app->request->post()['Article']['post_reviewers'] != null)
+    			if(isset(Yii::$app->request->post()['Article']['post_reviewers']) && Yii::$app->request->post()['Article']['post_reviewers'] != null)
     			{
     				$modelArticle->post_reviewers = Yii::$app->request->post()['Article']['post_reviewers'];
     				$addReviewers = true;
     			}
-    			if(Yii::$app->request->post()['Article']['post_correspondent_author'] != null)
+    			if(isset(Yii::$app->request->post()['Article']['post_editors']) && Yii::$app->request->post()['Article']['post_editors'] != null)
+    			{
+    				$modelArticle->post_editors = Yii::$app->request->post()['Article']['post_editors'];
+    				$addEditors = true;
+    			}    			
+    			if(isset(Yii::$app->request->post()['Article']['post_correspondent_author']) && Yii::$app->request->post()['Article']['post_correspondent_author'] != null)
     			{
     				$correspondent_author = Yii::$app->request->post()['Article']['post_correspondent_author'][0];
     			}
     		}
     			 
-    		$modelSection = Section::findOne($modelArticle->section_id);
-    		$modelArticle->sort_in_section = count($modelSection->articles);
+    		if($isAdminOrEditor == true) {
+    			$modelSection = Section::findOne($modelArticle->section_id);
+    			$modelArticle->sort_in_section = count($modelSection->articles);    			 
+    		}
     		
     		// validate all models
     		$valid = $modelArticle->validate();
     			 
-    		if ($valid) {
+    		if ($valid) {    			
+    			if($file_attach != null)
+    			{
+    				$modelArticle->file_id = $modelArticle->uploadFile($file_attach);
+    			}    			
     			$transaction = \Yii::$app->db->beginTransaction();
     			try {
-    				if ($flag = $modelArticle->save(false)) {
+    				if ($flag = $modelArticle->save(false)) { 
     		
     				} else {
     					Yii::error("ArticleController->actionCreate(1): ".json_encode($modelArticle->getErrors()), "custom_errors_articles");
     				}
     				if ($flag) {
     					$transaction->commit();
+    					
+    					if($addAuthors && $modelArticle != null && $modelArticle->post_authors != null && count($modelArticle->post_authors)>0) {
+    						$correspondent_author_is_regular_author = false;
+    						foreach ($modelArticle->post_authors as $indexAuthorOrder => $authorId) {
+    							if(isset($correspondent_author) && (intval($correspondent_author) == intval($authorId))){
+    								$correspondent_author_is_regular_author = true;
+    							}
+    						}
+    						$current_is_author = ArrayHelper::isIn(Yii::$app->user->id, $modelArticle->post_authors);
+    						$current_is_author = $current_is_author || (Yii::$app->session->get('user.is_admin') == true);
+    						
+    						if($correspondent_author_is_regular_author == false || $current_is_author == false) {
+    							//Yii::$app->session->setFlash('error', 'Authors are not correctly updated! Correspondent author is not in the list for regular authors!');
+    							$post_msg["type"] = "danger";
+    							$post_msg["text"] = "Authors are not correctly updated!<br><br>";
+    							
+    							if($current_is_author == false){
+    								$post_msg["text"] .= "You are not listed as an author and You have to be! ";
+    							}
+    							if($correspondent_author_is_regular_author == false){
+    								$post_msg["text"] .= "Correspondent author is not in the list for regular authors! ";
+    							}
+
+    							return $this->render('create_admin', [
+						   				'modelArticle' => $modelArticle,
+						    			'modelKeyword' => $modelKeyword,
+						    			'modelUser' => $modelUser,
+						    			'arrayArticleKeyword' => $arrayArticleKeyword,
+						   				'arrayArticleAuthor' => $arrayArticleAuthor,
+						    			'arrayArticleReviewer' => $arrayArticleReviewer,
+    									'arrayArticleEditor' => $arrayArticleEditor,
+						    			'post_msg' => $post_msg,
+    									'isAdminOrEditor' => $isAdminOrEditor,
+						    	]);
+    						}    						
+    					}    						
     		
     					ArticleKeyword::deleteAll([
     							'article_id' => intval($modelArticle->article_id)
@@ -232,8 +287,7 @@ class ArticleController extends Controller
     					ArticleAuthor::deleteAll([
     							'article_id' => intval($modelArticle->article_id)
     					]);
-    					if($addKeywords && $modelArticle != null && $modelArticle->post_authors != null && count($modelArticle->post_authors)>0) {
-    						$correspondent_author_is_regular_author = false;
+    					if($addAuthors && $modelArticle != null && $modelArticle->post_authors != null && count($modelArticle->post_authors)>0) {
     						foreach ($modelArticle->post_authors as $indexAuthorOrder => $authorId) {
     							$articleAuthorItem = new ArticleAuthor();
     							$articleAuthorItem->article_id = $modelArticle->article_id;
@@ -242,15 +296,11 @@ class ArticleController extends Controller
     							$articleAuthorItem->created_on = date("Y-m-d H:i:s");
     							if(isset($correspondent_author) && (intval($correspondent_author) == intval($authorId))){
     								$articleAuthorItem->is_correspondent = true;
-    								$correspondent_author_is_regular_author = true;
     							}
     							if(!$articleAuthorItem->save()){
     								Yii::error("ArticleController->actionCreate(3): ".json_encode($articleAuthorItem->getErrors()), "custom_errors_articles");
     							}
    							}
-   							if($correspondent_author_is_regular_author == false) {
-   								Yii::$app->session->setFlash('error', 'Authors are not correctly updated! Correspondent author is not in the list for regular authors!');
-   							}   							
    						}
    						ArticleReviewer::deleteAll([
     							'article_id' => intval($modelArticle->article_id)
@@ -266,11 +316,24 @@ class ArticleController extends Controller
     							}
     						}
     					}
-    	
+    					ArticleEditor::deleteAll([
+    							'article_id' => intval($modelArticle->article_id)
+    					]);
+    					if($addEditors && $modelArticle != null && $modelArticle->post_editors != null && count($modelArticle->post_editors)>0){
+    						foreach ($modelArticle->post_editors as $indexEditorOrder => $editorId) {
+    							$articleEditorItem = new ArticleEditor();
+    							$articleEditorItem->article_id = $modelArticle->article_id;
+    							$articleEditorItem->editor_id = intval($editorId);
+    							$articleEditorItem->created_on = date("Y-m-d H:i:s");
+    							if(!$articleEditorItem->save()){
+    								Yii::error("ArticleController->actionCreate(5): ".json_encode($articleEditorItem->getErrors()), "custom_errors_articles");
+    							}
+    						}
+    					}
     					return $this->redirect(['view', 'id' => $modelArticle->article_id]);
     				}
     			} catch (Exception $e) {
-    				Yii::error("ArticleController->actionCreate(5): ".json_encode($e), "custom_errors_articles");
+    				Yii::error("ArticleController->actionCreate(6): ".json_encode($e), "custom_errors_articles");
     				$transaction->rollBack();
    				}
    			}
@@ -283,7 +346,9 @@ class ArticleController extends Controller
     			'arrayArticleKeyword' => $arrayArticleKeyword,
    				'arrayArticleAuthor' => $arrayArticleAuthor,
     			'arrayArticleReviewer' => $arrayArticleReviewer,
+    			'arrayArticleEditor' => $arrayArticleEditor,
     			'post_msg' => $post_msg,
+    			'isAdminOrEditor' => $isAdminOrEditor,
     	]);  	
     }
 
@@ -299,6 +364,8 @@ class ArticleController extends Controller
     		return $this->redirect(['site/error']);
     	}
     	
+    	$isAdminOrEditor = (Yii::$app->session->get('user.is_admin') == true);
+    	$isAdminOrEditor = $isAdminOrEditor || (Yii::$app->session->get('user.is_editor') == true);
     	$article_authors = ArticleAuthor::getAuthorsForArticleString($id);
     	$current_user_id = ','.Yii::$app->user->id.',';
     	$user_can_modify = (strpos($article_authors['ids'], $current_user_id) !== false);
@@ -339,26 +406,34 @@ class ArticleController extends Controller
         	}
         }
         
+        $modelArticleEditor = new ArticleEditor();
+        $arrayArticleEditor = [];
+        $articleEditors_array = $modelArticleEditor->getEditorsForArticle($id);
+        if($articleEditors_array != null && count($articleEditors_array)>0){
+        	foreach ($articleEditors_array as $articleEditor){
+        		$arrayArticleEditor[] = $articleEditor->editor->id;
+        	}
+        }        
+        
         $post_msg = null;
         $keywords_are_changed = true;
         $authors_are_changed = true;
         $reviewers_are_changed = true;
+        $editors_are_changed = true;
+        $file_attach = null;
+        
         if ($modelArticle->load(Yii::$app->request->post())) 
         {
         	//to do = load is not loading uploaded file
-        	if(Yii::$app->request->post()['Article'] != null)
+        	if(isset(Yii::$app->request->post()['Article']) && Yii::$app->request->post()['Article'] != null)
         	{
         		$file_attach = UploadedFile::getInstance($modelArticle, "file_attach");
              	if($file_attach != null)
              	{
-             		$modelArticle->file_attach = $file_attach;             		 
-             		$modelArticle->file_id = $modelArticle->uploadFile($file_attach);             		 
-             	}            	
-        	}
-
-        	if(Yii::$app->request->post()['Article'] != null)        	   
-        	{
-        		if(Yii::$app->request->post()['Article']['post_keywords'] != null)
+             		$modelArticle->file_attach = $file_attach;             		          		 
+             	}
+             	
+        		if(isset(Yii::$app->request->post()['Article']['post_keywords']) && Yii::$app->request->post()['Article']['post_keywords'] != null)
         		{
         			$modelArticle->post_keywords = Yii::$app->request->post()['Article']['post_keywords'];
         			$current_keyword_array = [];
@@ -373,7 +448,7 @@ class ArticleController extends Controller
         				$arrayArticleKeyword = $current_keyword_array_int;
         			}
         		}
-        		if(Yii::$app->request->post()['Article']['post_authors'] != null)
+        		if(isset(Yii::$app->request->post()['Article']['post_authors']) && Yii::$app->request->post()['Article']['post_authors'] != null)
         		{
         			$modelArticle->post_authors = Yii::$app->request->post()['Article']['post_authors'];
         			$current_author_array = [];
@@ -388,7 +463,7 @@ class ArticleController extends Controller
         				$arrayArticleAuthor = $current_author_array_int;        				
         			}        			
         		}
-        		if(Yii::$app->request->post()['Article']['post_reviewers'] != null)
+        		if(isset(Yii::$app->request->post()['Article']['post_reviewers']) && Yii::$app->request->post()['Article']['post_reviewers'] != null)
         		{
         			$modelArticle->post_reviewers = Yii::$app->request->post()['Article']['post_reviewers'];
         			$current_reviewer_array = [];
@@ -397,7 +472,16 @@ class ArticleController extends Controller
         			}
         			$reviewers_are_changed = !($modelArticle->post_reviewers == $current_reviewer_array);
         		}
-        		if(Yii::$app->request->post()['Article']['post_correspondent_author'] != null)
+        		if(isset(Yii::$app->request->post()['Article']['post_editors']) && Yii::$app->request->post()['Article']['post_editors'] != null)
+        		{
+        			$modelArticle->post_editors = Yii::$app->request->post()['Article']['post_editors'];
+        			$current_editor_array = [];
+        			foreach ($modelArticle->articleEditors as $editorObject){
+        				$current_editor_array[] = (string)$editorObject->editor_id;
+        			}
+        			$editors_are_changed = !($modelArticle->post_editors == $current_editor_array);
+        		}
+        		if(isset(Yii::$app->request->post()['Article']['post_correspondent_author']) && Yii::$app->request->post()['Article']['post_correspondent_author'] != null)
         		{
         			$modelArticle->post_correspondent_author = [intval(Yii::$app->request->post()['Article']['post_correspondent_author'][0])];
         			$correspondent_author_is_changed = !($modelArticle->post_correspondent_author[0] == $articleCorrespondentAuthor);
@@ -419,6 +503,10 @@ class ArticleController extends Controller
         	// validate all models
         	$valid = $modelArticle->validate();        	
         	if ($valid) {
+        		if($file_attach != null)
+        		{
+        			$modelArticle->file_id = $modelArticle->uploadFile($file_attach);
+        		}
         		$transaction = \Yii::$app->db->beginTransaction();
         		try {
         			if ($flag = $modelArticle->save(false)) {
@@ -427,7 +515,48 @@ class ArticleController extends Controller
         				Yii::error("ArticleController->actionUpdate(1): ".json_encode($modelArticle->getErrors()), "custom_errors_articles");
         			}
         			if ($flag) {
-        				$transaction->commit();
+        				$transaction->commit();        				
+        				
+        			    if($authors_are_changed || $correspondent_author_is_changed) {
+        					$correspondent_author_is_regular_author = false;
+        					if($modelArticle != null && $modelArticle->post_authors != null && count($modelArticle->post_authors)>0) {
+	        					foreach ($modelArticle->post_authors as $indexAuthorOrder => $authorId) {
+	        						if(isset($modelArticle->post_correspondent_author) && (count($modelArticle->post_correspondent_author) > 0) 
+	        								&& (intval($modelArticle->post_correspondent_author[0]) == intval($authorId)))
+	        						{
+	        							$correspondent_author_is_regular_author = true;
+	        						}
+	        					}
+        					}
+        			        
+        					$current_is_author = ArrayHelper::isIn(Yii::$app->user->id, $modelArticle->post_authors);
+    						$current_is_author = $current_is_author || (Yii::$app->session->get('user.is_admin') == true);
+    						
+    						if($correspondent_author_is_regular_author == false || $current_is_author == false) {
+    							//Yii::$app->session->setFlash('error', 'Authors are not correctly updated! Correspondent author is not in the list for regular authors!');
+    							$post_msg["type"] = "danger";
+    							$post_msg["text"] = "Authors are not correctly updated!<br><br>";
+    							
+    							if($current_is_author == false){
+    								$post_msg["text"] .= "You are not listed as an author and You have to be! ";
+    							}
+    							if($correspondent_author_is_regular_author == false){
+    								$post_msg["text"] .= "Correspondent author is not in the list for regular authors! ";
+    							}
+    							
+        						return $this->render('update', [
+        								'modelArticle' => $modelArticle,
+        								'modelKeyword' => $modelKeyword,
+        								'modelUser' => $modelUser,
+        								'arrayArticleKeyword' => $arrayArticleKeyword,
+        								'arrayArticleAuthor' => $arrayArticleAuthor,
+        								'arrayArticleReviewer' => $arrayArticleReviewer,
+        								'arrayArticleEditor' => $arrayArticleEditor,
+        								'post_msg' => $post_msg,
+        								'isAdminOrEditor' => $isAdminOrEditor,
+        						]);
+        					}
+        				}        				
         				
         				if($keywords_are_changed) {
         					ArticleKeyword::deleteAll([
@@ -451,7 +580,6 @@ class ArticleController extends Controller
         					ArticleAuthor::deleteAll([
         							'article_id' => intval($id)
         					]);
-        					$correspondent_author_is_regular_author = false;
         					if($modelArticle != null && $modelArticle->post_authors != null && count($modelArticle->post_authors)>0) {
 	        					foreach ($modelArticle->post_authors as $indexAuthorOrder => $authorId) {
 	        						$articleAuthorItem = new ArticleAuthor();
@@ -464,15 +592,11 @@ class ArticleController extends Controller
 	        								&& (intval($modelArticle->post_correspondent_author[0]) == intval($authorId)))
 	        						{
 	        							$articleAuthorItem->is_correspondent = true;
-	        							$correspondent_author_is_regular_author = true;
 	        						}
 	        						if(!$articleAuthorItem->save()){
 	        							Yii::error("ArticleController->actionUpdate(3): ".json_encode($articleAuthorItem->getErrors()), "custom_errors_articles");
 	        						}
 	        					}
-        					}
-        					if($correspondent_author_is_regular_author == false) {
-        						Yii::$app->session->setFlash('error', 'Authors are not correctly updated! Correspondent author is not in the list for regular authors!');
         					}
         				}
         				if($reviewers_are_changed) {
@@ -492,13 +616,30 @@ class ArticleController extends Controller
 	        					}
         					}
         				}
+        				if($editors_are_changed) {
+        					ArticleEditor::deleteAll([
+        							'article_id' => intval($id)
+        					]);
+        					if($modelArticle != null && $modelArticle->post_editors != null && count($modelArticle->post_editors)>0) {
+        						foreach ($modelArticle->post_editors as $indexEditorOrder => $editorId) {
+        							$articleEditorItem = new ArticleEditor();
+        							$articleEditorItem->article_id = $id;
+        							$articleEditorItem->editor_id = intval($editorId);
+        							$articleEditorItem->updated_on = date("Y-m-d H:i:s");
+        							$articleEditorItem->created_on = date("Y-m-d H:i:s");
+        							if(!$articleEditorItem->save()){
+        								Yii::error("ArticleController->actionUpdate(5): ".json_encode($articleEditorItem->getErrors()), "custom_errors_articles");
+        							}
+        						}
+        					}
+        				}        				
         	
         				if($update_sections_after_save == true && $section_id_old > 0 && $section_id_new > 0){
         					$modelOldSection = Section::findOne(['section_id' => $section_id_old]);
         					foreach ($modelOldSection->articles as $indexItem => $modelArticleItem) {
         						$modelArticleItem->sort_in_section = $indexItem;
         						if(!$modelArticleItem->save()){
-        							Yii::error("ArticleController->actionUpdate(5): ".json_encode($modelArticleItem->getErrors()), "custom_errors_articles");
+        							Yii::error("ArticleController->actionUpdate(6): ".json_encode($modelArticleItem->getErrors()), "custom_errors_articles");
         						}
         					}
         	
@@ -506,7 +647,7 @@ class ArticleController extends Controller
         					foreach ($modelNewSection->articles as $indexItem => $modelArticleItem) {
         						$modelArticleItem->sort_in_section = $indexItem;
         						if(!$modelArticleItem->save()){
-        							Yii::error("ArticleController->actionUpdate(6): ".json_encode($modelArticleItem->getErrors()), "custom_errors_articles");
+        							Yii::error("ArticleController->actionUpdate(7): ".json_encode($modelArticleItem->getErrors()), "custom_errors_articles");
         						}
         					}
         				}
@@ -514,7 +655,7 @@ class ArticleController extends Controller
           				return $this->redirect(['view', 'id' => $modelArticle->article_id]);
               		}
         		} catch (Exception $e) {
-        			Yii::error("ArticleController->actionUpdate(7): ".json_encode($e), "custom_errors_articles");
+        			Yii::error("ArticleController->actionUpdate(8): ".json_encode($e), "custom_errors_articles");
         			$transaction->rollBack();
         		}
         	}        			
@@ -523,6 +664,7 @@ class ArticleController extends Controller
         $modelArticle->post_keywords = $arrayArticleKeyword;
         $modelArticle->post_authors = $arrayArticleAuthor;
         $modelArticle->post_reviewers = $arrayArticleReviewer;
+        $modelArticle->post_editors = $arrayArticleEditor;
         $modelArticle->post_correspondent_author = [$articleCorrespondentAuthor];
         
         return $this->render('update', [
@@ -532,7 +674,9 @@ class ArticleController extends Controller
         	'arrayArticleKeyword' => $arrayArticleKeyword,
         	'arrayArticleAuthor' => $arrayArticleAuthor,
         	'arrayArticleReviewer' => $arrayArticleReviewer,
+        	'arrayArticleEditor' => $arrayArticleEditor,
             'post_msg' => $post_msg,
+        	'isAdminOrEditor' => $isAdminOrEditor,
         ]);
     }
 

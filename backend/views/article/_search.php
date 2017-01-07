@@ -45,13 +45,16 @@ use common\models\ArticleAuthor;
 	        	'attribute' => 'section_id',
 	        	'label' => 'Section title',
 	        	'value' =>function ($data) {
-	        		return displayColumnContent($data->section->title, 30);
+	        		if(isset($data->section))
+	        			return displayColumnContent($data->section->title, 30);
+	        		else
+	        			return null;
 	        	},
 	        	"format" => "HTML",
 	        	'filter'=>Article::get_sections(),
 	        	'headerOptions' => ['style' => 'width:25%'],
         	],
-        	[
+        	/*[
 	        	'class' => DataColumn::className(), // this line is optional
 	        	'attribute' => 'is_archived',
 	        	'value' =>function ($data) {
@@ -66,7 +69,7 @@ use common\models\ArticleAuthor;
 	        			"1" => "Archived",
 	        			"0" => "Active"
 	        	],        	
-        	],
+        	],*/
         	[
 	        	'class' => DataColumn::className(), // this line is optional
 	        	'label' => 'Authors',

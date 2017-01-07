@@ -79,7 +79,7 @@ class UserController extends Controller
     	
     	if (Yii::$app->user->isGuest || Yii::$app->session->get('user.is_admin') != true){
     		if(!($queryParams != null && $queryParams['type'] != null && 
-    		  ($queryParams['type'] == "author" || $queryParams['type'] == "unregisteredauthor" || $queryParams['type'] == "reviewer"))){
+    		  ($queryParams['type'] == "author" || $queryParams['type'] == "unregisteredauthor"))){
     			return $this->redirect(['site/error']);
     		}    			
     	}   	 	

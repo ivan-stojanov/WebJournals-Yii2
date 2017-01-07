@@ -18,7 +18,7 @@ class ArticleSearch extends Article
     public function rules() 
     { 
         return [ 
-            [['article_id', 'section_id', 'sort_in_section', 'is_archived', 'file_id', 'is_deleted'], 'integer'],
+            [['article_id', 'section_id', 'sort_in_section', 'status', 'file_id', 'is_deleted'], 'integer'],
             [['title', 'abstract', 'content', 'pdf_content', 'page_from', 'page_to', 'created_on', 'updated_on'], 'safe'],
         ]; 
     } 
@@ -65,7 +65,7 @@ class ArticleSearch extends Article
             'article_id' => $this->article_id,
             'section_id' => $this->section_id,
             'sort_in_section' => $this->sort_in_section,
-            'is_archived' => $this->is_archived,
+            'status' => $this->status,
             'file_id' => $this->file_id,
             'created_on' => $this->created_on,
             'updated_on' => $this->updated_on,

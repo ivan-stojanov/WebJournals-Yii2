@@ -33,15 +33,20 @@ $this->registerJsFile("@web/js/articleScript.js", [ 'depends' => ['backend\asset
     
     <?= $form->field($modelArticle, 'title')->textInput(['maxlength' => true]) ?>
     
-    <?= $form->field($modelArticle, 'section_id')->dropDownList(
+	<?php 
+	if($isAdminOrEditor == true) {
+		echo $form->field($modelArticle, 'section_id')->dropDownList(
     		ArrayHelper::map(Section::find()->all(), 'section_id', 'volumeissuesectiontitle'),
     		['prompt' => 'Select Section']
-    )->label('Volume name >> Issue name >> Section name') ?>
+    	)->label('Volume name >> Issue name >> Section name');		
+	}
+	?>
 
     <?php echo $form->field($modelArticle, 'abstract')->widget(TinyMce::className(), [
 	    'options' => ['rows' => 5],
-	    'language' => 'en_GB',
+	    'language' => 'en_GB',    	
 	    'clientOptions' => [
+	    	'browser_spellcheck' => true,
 			'theme' => "modern",
 		    'plugins' => [
 		        "advlist autolink lists link image charmap preview hr anchor pagebreak",
@@ -60,6 +65,7 @@ $this->registerJsFile("@web/js/articleScript.js", [ 'depends' => ['backend\asset
 	    'options' => ['rows' => 15],
 	    'language' => 'en_GB',
 	    'clientOptions' => [
+	    	'browser_spellcheck' => true,
 			'theme' => "modern",
 		    'plugins' => [
 		        "advlist autolink lists link image charmap preview hr anchor pagebreak",
@@ -74,15 +80,19 @@ $this->registerJsFile("@web/js/articleScript.js", [ 'depends' => ['backend\asset
 	    ]
 	]);?>
 	
-    <?php echo $form->field($modelArticle, 'is_archived', [
-    		'options' => [
-    			'id' => 'article_attribute__is_advertised_container'
-    		]    		
-    ])->widget(SwitchInput::classname(), [
-    		'options' => [
-    			'id' => 'article_attribute__is_advertised'
-    		]
-    ]); ?>
+	<?php 
+	/*if($isAdminOrEditor == true) {
+		echo $form->field($modelArticle, 'is_archived', [
+		    		'options' => [
+		    			'id' => 'article_attribute__is_archived_container'
+		    		]    		
+		    ])->widget(SwitchInput::classname(), [
+		    		'options' => [
+		    			'id' => 'article_attribute__is_archived'
+		    		]
+		    ]);		
+	}*/
+	?>
 
 	<?php 
 		$initialCaption = null;
@@ -112,15 +122,29 @@ $this->registerJsFile("@web/js/articleScript.js", [ 'depends' => ['backend\asset
     		],
     ]);?> 
 	
-	<?php echo $form->field($modelArticle, 'post_reviewers')->widget(Select2::classname(), [ //echo Select2::widget([
-	    'name' => 'kv-state-230',    	
-	    'data' => $modelUser->getUsersInAssociativeArray(['is_reviewer' => true]),
-    	'maintainOrder' => true,
-	    'options' => ['placeholder' => 'Select a reviewers ...', 'multiple' => true],
-	    'pluginOptions' => [
-	        'allowClear' => true,
-	    ],
-	]);?>
+	<?php 
+	if($isAdminOrEditor == true) {
+		echo $form->field($modelArticle, 'post_reviewers')->widget(Select2::classname(), [ //echo Select2::widget([
+				'name' => 'kv-state-230',
+				'data' => $modelUser->getUsersInAssociativeArray(['is_reviewer' => true]),
+				'maintainOrder' => true,
+				'options' => ['placeholder' => 'Select a reviewers ...', 'multiple' => true],
+				'pluginOptions' => [
+						'allowClear' => true,
+				],
+		]);	
+		
+		echo $form->field($modelArticle, 'post_editors')->widget(Select2::classname(), [ //echo Select2::widget([
+				'name' => 'kv-state-230',
+				'data' => $modelUser->getUsersInAssociativeArray(['is_editor' => true]),
+				'maintainOrder' => true,
+				'options' => ['placeholder' => 'Select an editors ...', 'multiple' => true],
+				'pluginOptions' => [
+						'allowClear' => true,
+				],
+		]);
+	}	
+	?>
 	
 	<?php echo $form->field($modelArticle, 'post_authors')->widget(Select2::classname(), [ //echo Select2::widget([
 	    'name' => 'kv-state-230',    	

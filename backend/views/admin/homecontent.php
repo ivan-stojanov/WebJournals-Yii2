@@ -24,6 +24,7 @@ $this->title = 'Homepage content';
 	    'options' => ['rows' => 15],
 	    'language' => 'en_GB',
 	    'clientOptions' => [
+	    	'browser_spellcheck' => true,
 			'theme' => "modern",
 		    'plugins' => [
 		        "advlist autolink lists link image charmap print preview hr anchor pagebreak",

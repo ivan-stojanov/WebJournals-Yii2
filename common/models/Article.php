@@ -73,7 +73,7 @@ class Article extends \yii\db\ActiveRecord
         	[['file_id'], 'exist', 'skipOnError' => true, 'targetClass' => ArticleFile::className(), 'targetAttribute' => ['file_id' => 'file_id']],
         	[['file_attach'], 'file', 'skipOnEmpty' => true, 'extensions' => 'pdf'],
         	[['section_id'], 'exist', 'skipOnError' => true, 'targetClass' => Section::className(), 'targetAttribute' => ['section_id' => 'section_id']],
-        	[['post_authors', 'post_correspondent_author', 'post_keywords'], 'required'],
+        	[['post_authors', 'post_correspondent_author', 'post_keywords'], 'required', 'except' => 'article_change_status'],
         	[['post_reviewers', 'post_editors', 'post_authors', 'post_correspondent_author', 'post_keywords'], 'each', 'rule' => ['integer']],        		
         ];
     }
@@ -82,6 +82,7 @@ class Article extends \yii\db\ActiveRecord
     {
     	$scenarios = parent::scenarios();
     	$scenarios['section_crud'] = ['title']; //Scenario Attributes that will be validated
+    	$scenarios['article_change_status'] = ['status']; //Scenario Attributes that will be validated
     	return $scenarios;
     }
     
@@ -117,8 +118,10 @@ class Article extends \yii\db\ActiveRecord
     }
     
     public static function  get_sections(){
+    	//$firstElement[0] = 'No Section';
     	$sections = Section::find()->all();
     	$sections = ArrayHelper::map($sections, 'section_id', 'volumeissuesectiontitle');
+    	//$sections = ArrayHelper::merge($firstElement, $sections);
     	return $sections;
     }    
 

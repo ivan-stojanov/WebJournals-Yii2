@@ -6,6 +6,11 @@ use yii\helpers\Html;
 /* @var $model common\models\Article */
 
 $this->title = 'Update Article';
+
+if($canEditForm != true){
+	$this->title .= " (not editable)"; 
+}
+
 ?>
 <div class="article-update">
 
@@ -19,6 +24,7 @@ $this->title = 'Update Article';
     	'arrayArticleEditor' => $arrayArticleEditor,
     	'post_msg' => $post_msg,
     	'isAdminOrEditor' => $isAdminOrEditor,
+    	'canEditForm' => $canEditForm,
     ]) ?>
 
 </div>

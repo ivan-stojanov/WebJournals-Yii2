@@ -97,7 +97,7 @@ class ArticleAuthor extends \yii\db\ActiveRecord
     		$article_authors_string = "";    		
     		foreach ($articleAuthors_array as $articleAuthor){
     			$article_authors_ids .= $articleAuthor->author->id.",";
-    			$article_authors_string .= $articleAuthor->author->fullName.", ";
+    			$article_authors_string .= $articleAuthor->author->fullName." <".$articleAuthor->author->email.">, ";
     			if($articleAuthor->is_correspondent == true){
     				$article_correspondent_author = $articleAuthor->author->id;
     			}

@@ -20,6 +20,7 @@ $this->title = 'Create Article';
     	'arrayArticleEditor' => $arrayArticleEditor,
     	'post_msg' => $post_msg,
     	'isAdminOrEditor' => $isAdminOrEditor,
+    	'canEditForm' => $canEditForm,
     ]) ?>
 
 </div>

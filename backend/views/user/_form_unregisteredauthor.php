@@ -56,7 +56,7 @@ $this->registerJsFile("@web/js/userScript.js", [ 'depends' => ['\yii\web\JqueryA
 		    	<?php 
 		    		echo Html::submitButton('Save', ['class' => 'btn btn-primary', 'name' => 'signup-button']);
 			    	if($is_update == true && (Yii::$app->session->get('user.is_admin') == true)){
-			    		echo "&nbsp;&nbsp;";
+			    		echo "&nbsp;";
 	        			echo Html::a('Register User', ['update', 'id' => $model->id], ['class' => 'btn btn-success']);
 			    	}
 		    	?>

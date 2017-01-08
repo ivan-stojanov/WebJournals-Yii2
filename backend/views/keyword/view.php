@@ -21,7 +21,7 @@ $this->title = $modelKeyword->content;
     	<?php 
     	if($user_can_modify) {
     			echo Html::a('Update Keyword', ['update', 'id' => $modelKeyword->keyword_id], ['class' => 'btn btn-primary']);
-    			echo "&nbsp;&nbsp;";
+    			echo "&nbsp;";
     		if(!$modelKeyword->is_deleted){
     			echo Html::a('Archive Keyword Usage', ['archive', 'id' => $modelKeyword->keyword_id], [
     					'class' => 'btn btn-danger',

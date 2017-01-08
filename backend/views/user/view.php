@@ -20,13 +20,13 @@ $this->title = 'User Details';
 	    	<?php if($model->is_unregistered_author) {
 	        	echo Html::a('Update', ['updateunregisteredauthor', 'id' => $model->id], ['class' => 'btn btn-primary']);
 	        	if(Yii::$app->session->get('user.is_admin') == true){
-	        		echo "&nbsp;&nbsp;";
+	        		echo "&nbsp;";
 	        		echo Html::a('Register User', ['update', 'id' => $model->id], ['class' => 'btn btn-success']);
 	    		}
 	    	} else {
 	        	echo Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']);
 	        }
-	        echo "&nbsp;&nbsp;";
+	        echo "&nbsp;";
 	        echo Html::a('Delete', ['delete', 'id' => $model->id], [
 	            'class' => 'btn btn-danger',
 	            'data' => [

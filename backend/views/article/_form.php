@@ -31,23 +31,24 @@ $this->registerJsFile("@web/js/articleScript.js", [ 'depends' => ['backend\asset
 
     <?php $form = ActiveForm::begin(['options' => ['enctype' => 'multipart/form-data']]); ?>
     
-    <?= $form->field($modelArticle, 'title')->textInput(['maxlength' => true]) ?>
+    <?= $form->field($modelArticle, 'title')->textInput(['maxlength' => true, 'disabled' => !$canEditForm]) ?>
     
 	<?php 
 	if($isAdminOrEditor == true) {
 		echo $form->field($modelArticle, 'section_id')->dropDownList(
     		ArrayHelper::map(Section::find()->all(), 'section_id', 'volumeissuesectiontitle'),
-    		['prompt' => 'Select Section']
+    		['prompt' => 'Select Section', 'disabled' => !$canEditForm]		
     	)->label('Volume name >> Issue name >> Section name');		
 	}
 	?>
 
     <?php echo $form->field($modelArticle, 'abstract')->widget(TinyMce::className(), [
-	    'options' => ['rows' => 5],
+	    'options' => ['rows' => 5, 'disabled' => !$canEditForm],
 	    'language' => 'en_GB',    	
 	    'clientOptions' => [
 	    	'browser_spellcheck' => true,
 			'theme' => "modern",
+	    	'readonly' => intval(!$canEditForm),
 		    'plugins' => [
 		        "advlist autolink lists link image charmap preview hr anchor pagebreak",
 		        "searchreplace wordcount visualblocks visualchars code",
@@ -62,11 +63,12 @@ $this->registerJsFile("@web/js/articleScript.js", [ 'depends' => ['backend\asset
 	]);?> 
 
     <?php echo $form->field($modelArticle, 'content')->widget(TinyMce::className(), [
-	    'options' => ['rows' => 15],
+	    'options' => ['rows' => 15, 'disabled' => !$canEditForm],
 	    'language' => 'en_GB',
 	    'clientOptions' => [
 	    	'browser_spellcheck' => true,
 			'theme' => "modern",
+	    	'readonly' => intval(!$canEditForm),
 		    'plugins' => [
 		        "advlist autolink lists link image charmap preview hr anchor pagebreak",
 		        "searchreplace wordcount visualblocks visualchars code",
@@ -112,7 +114,8 @@ $this->registerJsFile("@web/js/articleScript.js", [ 'depends' => ['backend\asset
     		]    		
     ])->widget(FileInput::classname(), [
     		'options' => [
-	    	    'multiple' => false,                            	
+	    	    'multiple' => false,
+    			'disabled' => !$canEditForm,
     		],
     		'pluginOptions' => [
     			'showUpload' => false,
@@ -128,7 +131,7 @@ $this->registerJsFile("@web/js/articleScript.js", [ 'depends' => ['backend\asset
 				'name' => 'kv-state-230',
 				'data' => $modelUser->getUsersInAssociativeArray(['is_reviewer' => true]),
 				'maintainOrder' => true,
-				'options' => ['placeholder' => 'Select a reviewers ...', 'multiple' => true],
+				'options' => ['placeholder' => 'Select a reviewers ...', 'multiple' => true, 'disabled' => !$canEditForm],
 				'pluginOptions' => [
 						'allowClear' => true,
 				],
@@ -138,7 +141,7 @@ $this->registerJsFile("@web/js/articleScript.js", [ 'depends' => ['backend\asset
 				'name' => 'kv-state-230',
 				'data' => $modelUser->getUsersInAssociativeArray(['is_editor' => true]),
 				'maintainOrder' => true,
-				'options' => ['placeholder' => 'Select an editors ...', 'multiple' => true],
+				'options' => ['placeholder' => 'Select an editors ...', 'multiple' => true, 'disabled' => !$canEditForm],
 				'pluginOptions' => [
 						'allowClear' => true,
 				],
@@ -150,7 +153,7 @@ $this->registerJsFile("@web/js/articleScript.js", [ 'depends' => ['backend\asset
 	    'name' => 'kv-state-230',    	
 	    'data' => $modelUser->getUsersInAssociativeArray(['is_author' => true]),
     	'maintainOrder' => true,		
-	    'options' => ['placeholder' => 'Select an authors ...', 'multiple' => true],
+	    'options' => ['placeholder' => 'Select an authors ...', 'multiple' => true, 'disabled' => !$canEditForm],
 	    'pluginOptions' => [
 	        'allowClear' => true
 	    ],
@@ -163,7 +166,7 @@ $this->registerJsFile("@web/js/articleScript.js", [ 'depends' => ['backend\asset
 		    'name' => 'kv-state-230',    	
 		    'data' => $modelUser->getUsersInAssociativeArray(['is_author' => true]),
 			'showToggleAll' => false,
-		    'options' => ['placeholder' => 'Select an correspondent author ...', 'multiple' => true],
+		    'options' => ['placeholder' => 'Select an correspondent author ...', 'multiple' => true, 'disabled' => !$canEditForm],
 		    'pluginOptions' => [
 		        'allowClear' => true,
 		    	'maximumSelectionLength' => 1,	    	
@@ -174,7 +177,7 @@ $this->registerJsFile("@web/js/articleScript.js", [ 'depends' => ['backend\asset
 	    'name' => 'kv-state-230',    	
 	    'data' => $modelKeyword->getKeywordsInAssociativeArray(),
     	'maintainOrder' => true,
-	    'options' => ['placeholder' => 'Select a keywords ...', 'multiple' => true],
+	    'options' => ['placeholder' => 'Select a keywords ...', 'multiple' => true, 'disabled' => !$canEditForm],
 	    'pluginOptions' => [
 	        'allowClear' => true
 	    ],
@@ -189,7 +192,7 @@ $this->registerJsFile("@web/js/articleScript.js", [ 'depends' => ['backend\asset
     <?php /* <?= $form->field($modelArticle, 'sort_in_section')->textInput() ?> */ ?>
 
     <div class="form-group">
-        <?= Html::submitButton($modelArticle->isNewRecord ? 'Create' : 'Update', ['class' => $modelArticle->isNewRecord ? 'btn btn-success' : 'btn btn-primary']) ?>
+        <?= Html::submitButton($modelArticle->isNewRecord ? 'Create' : 'Update', ['class' => $modelArticle->isNewRecord ? 'btn btn-success' : 'btn btn-primary', 'disabled' => !$canEditForm]) ?>
     </div>
 
     <?php ActiveForm::end(); ?>

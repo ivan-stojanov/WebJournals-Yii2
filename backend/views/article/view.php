@@ -4,6 +4,7 @@ use yii\helpers\Html;
 use yii\widgets\DetailView;
 use yii\grid\DataColumn;
 use yii\helpers\ArrayHelper;
+use common\models\Article;
 
 /* @var $this yii\web\View */
 /* @var $model common\models\Article */
@@ -16,17 +17,45 @@ $this->title = $model->title;
     <h1><?= Html::encode($this->title) ?></h1>    
 
     <p>
-	    <?php if($user_can_modify) { ?>
-	        <?= Html::a('Update', ['update', 'id' => $model->article_id], ['class' => 'btn btn-primary']) ?>
-	        <?= Html::a('Delete', ['delete', 'id' => $model->article_id], [
-	            'class' => 'btn btn-danger',
+	<?php 
+	    if($user_can_modify) {
+	    	$updateBtnClasses = 'btn btn-primary';
+	    	if($model->status != Article::STATUS_SUBMITTED) {
+	    		$updateBtnClasses .= ' disabled';
+	    	}
+	        echo Html::a('Update', ['update', 'id' => $model->article_id], [
+	        	'class' => $updateBtnClasses	        		
+	        ]);
+	        echo "&nbsp;";
+	        $deleteBtnClasses = 'btn btn-danger';
+	        if($model->status != Article::STATUS_SUBMITTED) {
+	        	$deleteBtnClasses .= ' disabled';
+	        }
+	        echo Html::a('Delete', ['delete', 'id' => $model->article_id], [
+	            'class' => $deleteBtnClasses,
 	            'data' => [
 	                'confirm' => 'Are you sure you want to delete this item?',
 	                'method' => 'post',
 	            ],
-	        ]) ?>    	
-	    <?php } ?>
-        <?= Html::a('View in PDF', ['pdfview', 'id' => $model->article_id], ['class' => 'btn btn-success']) ?>
+	        ]);  	
+	    }
+	    echo "&nbsp;";
+        echo Html::a('View in PDF', ['pdfview', 'id' => $model->article_id], ['class' => 'btn btn-success']);
+		if($isAdminOrEditor) {
+			echo "&nbsp;";
+			$reviewBtnClasses = 'btn btn-warning';
+			if($model->status != Article::STATUS_SUBMITTED) {
+				$reviewBtnClasses .= ' disabled';
+			}
+			echo Html::a('Move for Review', ['moveforreview', 'id' => $model->article_id], [
+				'class' => $reviewBtnClasses,
+				'data' => [
+					'confirm' => 'Are you sure you want to move this article into \'review\' state?',
+					'method' => 'post',
+				],
+			]);
+		}
+    ?>
     </p>
     
     <?php 
@@ -62,16 +91,30 @@ $this->title = $model->title;
             //'page_to',
             //'sort_in_section',
         ];
-    /*if($user_can_modify) {
+    //if($user_can_modify) {
     	$attributes = ArrayHelper::merge($attributes, [
         	[
         		'class' => DataColumn::className(), // this line is optional
-        		'attribute' => 'is_archived',
-        		'value' => ($model->is_archived == 0) ? "<div class='glyphicon glyphicon-remove'></div>" : "<div class='glyphicon glyphicon-ok'></div>",
+        		'attribute' => 'status',
+        		'value' =>
+        			($model->status == Article::STATUS_SUBMITTED) ? 
+        				"<div class='glyphicon glyphicon-book'> Submitted</div> (Article can still be edited)"
+        			: (($model->status == Article::STATUS_UNDER_REVIEW) ?
+        				"<div class='glyphicon glyphicon-eye-open'> Under review</div> (Article can not be edited)"
+        			: (($model->status == Article::STATUS_REVIEW_REQUIRED) ?
+        				"<div class='glyphicon glyphicon-eye-open'> Review required</div> (Article can not be edited)"
+        			: (($model->status == Article::STATUS_ACCEPTED_FOR_PUBLICATION) ?
+        				"<div class='glyphicon glyphicon-ok-circle'> Accepted for publication</div> (Article can not be edited)"
+        			: (($model->status == Article::STATUS_PUBLISHED) ?
+        				"<div class='glyphicon glyphicon-ok'> Published</div> (Article can not be edited)"
+        			: (($model->status == Article::STATUS_REJECTED) ?
+        				"<div class='glyphicon glyphicon-remove'> Rejected</div> (Article can not be edited)"
+        			: null))))),
+        		//	($model->is_archived == 0) ? "<div class='glyphicon glyphicon-remove'></div>" : "<div class='glyphicon glyphicon-ok'></div>",
         		'format' => 'HTML'
         	]
     	]);
-    }*/
+    //}
     	$attributes = ArrayHelper::merge($attributes, [
         	[
         		'class' => DataColumn::className(), // this line is optional
@@ -91,7 +134,7 @@ $this->title = $model->title;
     		[
     			'class' => DataColumn::className(), // this line is optional
     			'label' => 'Editors',
-    			'value' => $article_editors_string,
+    			'value' => $article_editors['string'],
     			//'format' => 'HTML'
     		]    			
     	]);
@@ -101,7 +144,7 @@ $this->title = $model->title;
         		'class' => DataColumn::className(), // this line is optional
         		'label' => 'Authors',
         		'value' => $article_authors['string'],
-        		'format' => 'HTML'
+        		//'format' => 'HTML'
         	],
         	[
         		'class' => DataColumn::className(), // this line is optional

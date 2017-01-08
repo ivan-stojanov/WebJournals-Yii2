@@ -63,7 +63,6 @@ class ArticleSearch extends Article
         // grid filtering conditions 
         $query->andFilterWhere([
             'article_id' => $this->article_id,
-            'section_id' => $this->section_id,
             'sort_in_section' => $this->sort_in_section,
             'status' => $this->status,
             'file_id' => $this->file_id,
@@ -71,6 +70,16 @@ class ArticleSearch extends Article
             'updated_on' => $this->updated_on,
             'is_deleted' => $this->is_deleted,
         ]);
+       
+        if($this->section_id != '0'){
+        	$query->andFilterWhere([
+       			'section_id' => $this->section_id,
+        	]);        	
+        } else {
+        	$query->andFilterWhere([
+				'section_id' => null     		
+        	]);        	
+        }
 
         $query->andFilterWhere(['like', 'title', $this->title])
             ->andFilterWhere(['like', 'abstract', $this->abstract])

@@ -48,28 +48,44 @@ use common\models\ArticleAuthor;
 	        		if(isset($data->section))
 	        			return displayColumnContent($data->section->title, 30);
 	        		else
+	        			/*if(!isset($data->section_id)){
+	        				return 0;
+	        			}*/
 	        			return null;
 	        	},
 	        	"format" => "HTML",
 	        	'filter'=>Article::get_sections(),
 	        	'headerOptions' => ['style' => 'width:25%'],
         	],
-        	/*[
+        	[
 	        	'class' => DataColumn::className(), // this line is optional
-	        	'attribute' => 'is_archived',
+	        	'attribute' => 'status',
 	        	'value' =>function ($data) {
-	        		if ($data->is_archived == 1)
-	        			return "<div class='glyphicon glyphicon-remove'> Archived</div>";
-	        		else
-	        			return "<div class='glyphicon glyphicon-ok'> Active</div>";
-	        	},
+	        		if ($data->status == Article::STATUS_SUBMITTED)
+	        			return "<div class='glyphicon glyphicon-book'> Submitted</div>";
+	        		else if ($data->status == Article::STATUS_UNDER_REVIEW)
+	        			return "<div class='glyphicon glyphicon-eye-open'> Under review</div>";
+	        		else if ($data->status == Article::STATUS_REVIEW_REQUIRED)
+	        			return "<div class='glyphicon glyphicon-eye-open'> Review required</div>";
+	        		else if ($data->status == Article::STATUS_ACCEPTED_FOR_PUBLICATION)
+	        			return "<div class='glyphicon glyphicon-ok-circle'> Accepted for publication</div>";
+	        		else if ($data->status == Article::STATUS_PUBLISHED)
+	        			return "<div class='glyphicon glyphicon-ok'> Published</div>";
+	        		else if ($data->status == Article::STATUS_REJECTED)
+	        			return "<div class='glyphicon glyphicon-remove'> Rejected</div>";	        		 
+        		},
 	        	"label" => "Status",
 	        	"format" => "HTML",
 	        	'filter'=>[
-	        			"1" => "Archived",
-	        			"0" => "Active"
-	        	],        	
-        	],*/
+	        			(string)Article::STATUS_SUBMITTED => "Submitted",
+	        			(string)Article::STATUS_UNDER_REVIEW => "Under review",
+	        			(string)Article::STATUS_REVIEW_REQUIRED => "Review required",
+	        			(string)Article::STATUS_ACCEPTED_FOR_PUBLICATION => "Accepted for publication",
+	        			(string)Article::STATUS_PUBLISHED => "Published",
+	        			(string)Article::STATUS_REJECTED => "Rejected"
+	        	],
+	        	'headerOptions' => ['style' => 'width:20%'],
+        	],
         	[
 	        	'class' => DataColumn::className(), // this line is optional
 	        	'label' => 'Authors',

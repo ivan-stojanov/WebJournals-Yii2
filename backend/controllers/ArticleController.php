@@ -35,6 +35,7 @@ class ArticleController extends Controller
                 'class' => VerbFilter::className(),
                 'actions' => [
                     'delete' => ['POST'],
+                	'moveforreview' => ['POST'],
                 ],
             ],
         ];
@@ -128,10 +129,14 @@ class ArticleController extends Controller
     	}    	
     	$article_keywords_string = ArticleKeyword::getKeywordsForArticleString($id);    	 
     	$article_reviewers_string = ArticleReviewer::getReviewersForArticleString($id);
-    	$article_editors_string = ArticleEditor::getEditorsForArticleString($id);
-    	
+    	$article_editors = ArticleEditor::getEditorsForArticleString($id);    	
     	$current_user_id = ','.Yii::$app->user->id.',';
+    	 
+    	$isAdminOrEditor = ((strpos($article_editors['ids'], $current_user_id) !== false) && Yii::$app->session->get('user.is_editor'));
+    	$isAdminOrEditor = ($isAdminOrEditor || Yii::$app->session->get('user.is_admin'));
+    	
     	$user_can_modify = (strpos($article_authors['ids'], $current_user_id) !== false);
+    	$user_can_modify = ($user_can_modify || ((strpos($article_editors['ids'], $current_user_id) !== false) && Yii::$app->session->get('user.is_editor')));
     	$user_can_modify = ($user_can_modify || Yii::$app->session->get('user.is_admin'));
 
         return $this->render('view', [
@@ -139,9 +144,10 @@ class ArticleController extends Controller
         	'article_authors' => $article_authors,
         	'article_keywords_string' => $article_keywords_string,
         	'article_reviewers_string' => $article_reviewers_string,
-        	'article_editors_string' => $article_editors_string,        		
+        	'article_editors' => $article_editors,        		
         	'article_correspondent_author' => $article_correspondent_author,
         	'user_can_modify' => $user_can_modify,
+        	'isAdminOrEditor' => $isAdminOrEditor,
         ]);
     }
 
@@ -155,7 +161,8 @@ class ArticleController extends Controller
     	if (Yii::$app->user->isGuest){
     		return $this->redirect(['site/error']);
     	}
-
+    	
+    	$canEditForm = true;
     	$isAdminOrEditor = (Yii::$app->session->get('user.is_admin') == true);
     	$isAdminOrEditor = $isAdminOrEditor || (Yii::$app->session->get('user.is_editor') == true);
     	$modelArticle = new Article();
@@ -265,6 +272,7 @@ class ArticleController extends Controller
     									'arrayArticleEditor' => $arrayArticleEditor,
 						    			'post_msg' => $post_msg,
     									'isAdminOrEditor' => $isAdminOrEditor,
+    									'canEditForm' => $canEditForm,
 						    	]);
     						}    						
     					}    						
@@ -349,6 +357,7 @@ class ArticleController extends Controller
     			'arrayArticleEditor' => $arrayArticleEditor,
     			'post_msg' => $post_msg,
     			'isAdminOrEditor' => $isAdminOrEditor,
+    			'canEditForm' => $canEditForm,
     	]);  	
     }
 
@@ -364,10 +373,13 @@ class ArticleController extends Controller
     		return $this->redirect(['site/error']);
     	}
     	
-    	$isAdminOrEditor = (Yii::$app->session->get('user.is_admin') == true);
-    	$isAdminOrEditor = $isAdminOrEditor || (Yii::$app->session->get('user.is_editor') == true);
-    	$article_authors = ArticleAuthor::getAuthorsForArticleString($id);
     	$current_user_id = ','.Yii::$app->user->id.',';
+    	$article_editors = ArticleEditor::getEditorsForArticleString($id);
+    	$article_authors = ArticleAuthor::getAuthorsForArticleString($id);
+
+    	$isAdminOrEditor = ((strpos($article_editors['ids'], $current_user_id) !== false) && Yii::$app->session->get('user.is_editor'));
+    	$isAdminOrEditor = ($isAdminOrEditor || Yii::$app->session->get('user.is_admin'));    	
+    	
     	$user_can_modify = (strpos($article_authors['ids'], $current_user_id) !== false);
     	$user_can_modify = ($user_can_modify || Yii::$app->session->get('user.is_admin'));
     	if ($user_can_modify != true){
@@ -543,6 +555,8 @@ class ArticleController extends Controller
     							if($correspondent_author_is_regular_author == false){
     								$post_msg["text"] .= "Correspondent author is not in the list for regular authors! ";
     							}
+   							
+    							$canEditForm = ($modelArticle->status == Article::STATUS_SUBMITTED);
     							
         						return $this->render('update', [
         								'modelArticle' => $modelArticle,
@@ -554,6 +568,7 @@ class ArticleController extends Controller
         								'arrayArticleEditor' => $arrayArticleEditor,
         								'post_msg' => $post_msg,
         								'isAdminOrEditor' => $isAdminOrEditor,
+        								'canEditForm' => $canEditForm,
         						]);
         					}
         				}        				
@@ -667,6 +682,8 @@ class ArticleController extends Controller
         $modelArticle->post_editors = $arrayArticleEditor;
         $modelArticle->post_correspondent_author = [$articleCorrespondentAuthor];
         
+        $canEditForm = ($modelArticle->status == Article::STATUS_SUBMITTED);
+        
         return $this->render('update', [
             'modelArticle' => $modelArticle,
         	'modelKeyword' => $modelKeyword,
@@ -677,6 +694,7 @@ class ArticleController extends Controller
         	'arrayArticleEditor' => $arrayArticleEditor,
             'post_msg' => $post_msg,
         	'isAdminOrEditor' => $isAdminOrEditor,
+        	'canEditForm' => $canEditForm,
         ]);
     }
 
@@ -690,6 +708,13 @@ class ArticleController extends Controller
     {
     	if (Yii::$app->user->isGuest /*|| Yii::$app->session->get('user.is_admin') != true*/){
     		return $this->redirect(['site/error']);
+    	}
+    	
+    	$article_to_delete = $this->findModel($id);
+    	$canEditForm = ($article_to_delete->status == Article::STATUS_SUBMITTED);
+    	if($canEditForm != true){
+    		Yii::$app->session->setFlash('error', 'Article can not be modified/deleted at the current state!');
+    		return $this->redirect(['index']);
     	}
     	
     	$article_authors = ArticleAuthor::getAuthorsForArticleString($id);
@@ -708,9 +733,8 @@ class ArticleController extends Controller
     	]);
     	ArticleReviewer::deleteAll([
     			'article_id' => intval($id)
-    	]);
-    	
-        $article_to_delete = $this->findModel($id);
+    	]);    	
+        
         $file_id_to_delete = $article_to_delete->file_id;
         $parent_section = $article_to_delete->section;
         if(!$article_to_delete->delete()){
@@ -733,7 +757,43 @@ class ArticleController extends Controller
         }
         
         return $this->redirect(['index']);
-    }
+    }    
+    
+    /**
+     * Change the status of an existing Article model from STATUS_SUBMITTED to STATUS_UNDER_REVIEW.
+     * If change is successful or not, the browser will redirect on the view article (stay on the same) page with message result.
+     * @param integer $id
+     * @return mixed
+     */
+    public function actionMoveforreview($id)
+    {
+    	if (Yii::$app->user->isGuest /*|| Yii::$app->session->get('user.is_admin') != true*/){
+    		return $this->redirect(['site/error']);
+    	}
+    	
+    	$current_user_id = ','.Yii::$app->user->id.',';
+    	$article_editors = ArticleEditor::getEditorsForArticleString($id);
+    	
+    	$isAdminOrEditor = ((strpos($article_editors['ids'], $current_user_id) !== false) && Yii::$app->session->get('user.is_editor'));
+    	$isAdminOrEditor = ($isAdminOrEditor || Yii::$app->session->get('user.is_admin'));
+    	 
+    	if($isAdminOrEditor == true) {    		
+    		$modelArticle = $this->findModel($id);
+    		$modelArticle->scenario = 'article_change_status';
+    		$modelArticle->status = Article::STATUS_UNDER_REVIEW;
+    		$modelArticle->updated_on = date("Y-m-d H:i:s");
+    		if(!$modelArticle->save()){
+    			Yii::error("ArticleController->actionMoveforreview(1): ".json_encode($modelArticle->getErrors()), "custom_errors_articles");
+    			Yii::$app->session->setFlash('error', 'Some error occured! Please try again or contact the admin!');
+    		} else {
+    			Yii::$app->session->setFlash('success', 'Article status has been successfully changed into \'review\' state!');
+    		}    		
+    	} else {
+    		Yii::$app->session->setFlash('error', 'You do not have permission for performing this action!');
+    	}
+    
+    	return $this->redirect(['view', 'id' => $modelArticle->article_id]);
+    }    
 
     /**
      * Finds the Article model based on its primary key value.

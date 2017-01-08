@@ -84,16 +84,23 @@ class ArticleEditor extends \yii\db\ActiveRecord
      */
     public static function getEditorsForArticleString($articleID)
     {
+    	$article_editors_ids = null;
     	$article_editors_string = null;
     	$articleEditors_array = ArticleEditor::getEditorsForArticle($articleID);
     	if($articleEditors_array != null && count($articleEditors_array)>0 ){
+    		$article_editors_ids = ",";
     		$article_editors_string = "";
     		foreach ($articleEditors_array as $article_editor){
+    			$article_editors_ids .= $article_editor->editor->id.",";
     			$article_editors_string .= $article_editor->editor->fullName." <".$article_editor->editor->email.">, ";
     		}
     		$article_editors_string = trim($article_editors_string, ", ");
     	}
     	 
-    	return $article_editors_string;
+    	$article_editors = null;
+    	$article_editors['ids'] = $article_editors_ids;
+    	$article_editors['string'] = $article_editors_string;
+    	
+    	return $article_editors;
     }
 }

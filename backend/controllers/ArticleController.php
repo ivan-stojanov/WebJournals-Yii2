@@ -67,13 +67,16 @@ class ArticleController extends Controller
      */
     public function actionIndex()
     {
-    	if (Yii::$app->user->isGuest || Yii::$app->session->get('user.is_admin') != true){
+    	if (Yii::$app->user->isGuest) {
+    		return $this->redirect(Yii::$app->urlManagerFrontEnd->createUrl('site/login'));
+    	}
+    	if (Yii::$app->session->get('user.is_admin') != true){
     		return $this->redirect(['site/error']);
     	}
     	
     	$queryParams = Yii::$app->request->queryParams;
-    	$queryParams['is_deleted'] = 0;
-    	
+    	$queryParams['ArticleSearch']['is_deleted'] = 0;
+
         $searchModel = new ArticleSearch();
         $dataProvider = $searchModel->search($queryParams);
         $post_msg = null;
@@ -92,12 +95,15 @@ class ArticleController extends Controller
      */
     public function actionMyarticles()
     {
-    	if (Yii::$app->user->isGuest){
-    		return $this->redirect(['site/error'] /*|| Yii::$app->session->get('user.is_admin') != true*/);
+    	if (Yii::$app->user->isGuest) {
+    		return $this->redirect(Yii::$app->urlManagerFrontEnd->createUrl('site/login'));
     	}
+    	//if (Yii::$app->user->isGuest){
+    	//	return $this->redirect(['site/error'] /*|| Yii::$app->session->get('user.is_admin') != true*/);
+    	//}
     	 
     	$queryParams = Yii::$app->request->queryParams;
-    	$queryParams['is_deleted'] = 0;
+    	$queryParams['ArticleSearch']['is_deleted'] = 0;
     	 
     	$searchModel = new ArticleSearch();
     	$dataProvider = $searchModel->search($queryParams, Yii::$app->user->id);
@@ -118,9 +124,12 @@ class ArticleController extends Controller
      */
     public function actionView($id)
     {
-    	if (Yii::$app->user->isGuest /*|| Yii::$app->session->get('user.is_admin') != true*/){
-    		return $this->redirect(['site/error']);
+    	if (Yii::$app->user->isGuest) {
+    		return $this->redirect(Yii::$app->urlManagerFrontEnd->createUrl('site/login'));
     	}
+    	//if (Yii::$app->user->isGuest /*|| Yii::$app->session->get('user.is_admin') != true*/){
+    	//	return $this->redirect(['site/error']);
+    	//}
     	
     	$article_authors = ArticleAuthor::getAuthorsForArticleString($id);    	
     	$article_correspondent_author = null;
@@ -158,9 +167,12 @@ class ArticleController extends Controller
      */
     public function actionCreate()
     {
-    	if (Yii::$app->user->isGuest){
-    		return $this->redirect(['site/error']);
+    	if (Yii::$app->user->isGuest) {
+    		return $this->redirect(Yii::$app->urlManagerFrontEnd->createUrl('site/login'));
     	}
+    	//if (Yii::$app->user->isGuest){
+    	//	return $this->redirect(['site/error']);
+    	//}
     	
     	$canEditForm = true;
     	$isAdminOrEditor = (Yii::$app->session->get('user.is_admin') == true);
@@ -369,9 +381,12 @@ class ArticleController extends Controller
      */
     public function actionUpdate($id)
     {
-    	if (Yii::$app->user->isGuest){
-    		return $this->redirect(['site/error']);
+    	if (Yii::$app->user->isGuest) {
+    		return $this->redirect(Yii::$app->urlManagerFrontEnd->createUrl('site/login'));
     	}
+    	//if (Yii::$app->user->isGuest){
+    	//	return $this->redirect(['site/error']);
+    	//}
     	
     	$current_user_id = ','.Yii::$app->user->id.',';
     	$article_editors = ArticleEditor::getEditorsForArticleString($id);
@@ -706,9 +721,12 @@ class ArticleController extends Controller
      */
     public function actionDelete($id)
     {
-    	if (Yii::$app->user->isGuest /*|| Yii::$app->session->get('user.is_admin') != true*/){
-    		return $this->redirect(['site/error']);
+    	if (Yii::$app->user->isGuest) {
+    		return $this->redirect(Yii::$app->urlManagerFrontEnd->createUrl('site/login'));
     	}
+    	//if (Yii::$app->user->isGuest /*|| Yii::$app->session->get('user.is_admin') != true*/){
+    	//	return $this->redirect(['site/error']);
+    	//}
     	
     	$article_to_delete = $this->findModel($id);
     	$canEditForm = ($article_to_delete->status == Article::STATUS_SUBMITTED);
@@ -767,9 +785,12 @@ class ArticleController extends Controller
      */
     public function actionMoveforreview($id)
     {
-    	if (Yii::$app->user->isGuest /*|| Yii::$app->session->get('user.is_admin') != true*/){
-    		return $this->redirect(['site/error']);
+    	if (Yii::$app->user->isGuest) {
+    		return $this->redirect(Yii::$app->urlManagerFrontEnd->createUrl('site/login'));
     	}
+    	//if (Yii::$app->user->isGuest /*|| Yii::$app->session->get('user.is_admin') != true*/){
+    	//	return $this->redirect(['site/error']);
+    	//}
     	
     	$current_user_id = ','.Yii::$app->user->id.',';
     	$article_editors = ArticleEditor::getEditorsForArticleString($id);

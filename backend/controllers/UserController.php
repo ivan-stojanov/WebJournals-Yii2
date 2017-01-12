@@ -103,9 +103,12 @@ class UserController extends Controller
      */
     public function actionView($id)
     {
-    	if (Yii::$app->user->isGuest /*|| Yii::$app->session->get('user.is_admin') != true*/){
-    		return $this->redirect(['site/error']);
+    	if (Yii::$app->user->isGuest) {
+    		return $this->redirect(Yii::$app->urlManagerFrontEnd->createUrl('site/login'));
     	}
+    	//if (Yii::$app->user->isGuest /*|| Yii::$app->session->get('user.is_admin') != true*/){
+    	//	return $this->redirect(['site/error']);
+    	//}
     	
     	$model = $this->findModel($id);
     	
@@ -129,7 +132,10 @@ class UserController extends Controller
      */
     public function actionCreate()
     {
-    	if (Yii::$app->user->isGuest || Yii::$app->session->get('user.is_admin') != true){
+    	if (Yii::$app->user->isGuest) {
+    		return $this->redirect(Yii::$app->urlManagerFrontEnd->createUrl('site/login'));
+    	}
+    	if (Yii::$app->session->get('user.is_admin') != true){
     		return $this->redirect(['site/error']);
     	}
     	
@@ -150,7 +156,10 @@ class UserController extends Controller
      */
     public function actionUpdate($id)
     {
-    	if (Yii::$app->user->isGuest || Yii::$app->session->get('user.is_admin') != true){
+    	if (Yii::$app->user->isGuest) {
+    		return $this->redirect(Yii::$app->urlManagerFrontEnd->createUrl('site/login'));
+    	}
+    	if (Yii::$app->session->get('user.is_admin') != true){
     		return $this->redirect(['site/error']);
     	}
    	
@@ -165,7 +174,10 @@ class UserController extends Controller
      */
     public function actionDelete($id)
     {
-    	if (Yii::$app->user->isGuest || Yii::$app->session->get('user.is_admin') != true){
+    	if (Yii::$app->user->isGuest) {
+    		return $this->redirect(Yii::$app->urlManagerFrontEnd->createUrl('site/login'));
+    	}
+    	if (Yii::$app->session->get('user.is_admin') != true){
     		return $this->redirect(['site/error']);
     	}
     	
@@ -175,10 +187,13 @@ class UserController extends Controller
     }
 
     public function actionProfile()
-    {   	
+    {    	
     	if (Yii::$app->user->isGuest) {
-    		return $this->redirect(['site/error']);
+    		return $this->redirect(Yii::$app->urlManagerFrontEnd->createUrl('site/login'));
     	}
+    	//if (Yii::$app->user->isGuest) {
+    	//	return $this->redirect(['site/error']);
+    	//}
     
     	$currentId = Yii::$app->user->identity->attributes["id"];
     	
@@ -613,9 +628,12 @@ class UserController extends Controller
      */
     public function actionCreateunregisteredauthor()
     {
-    	if (Yii::$app->user->isGuest /*|| Yii::$app->session->get('user.is_admin') != true*/){
-    		return $this->redirect(['site/error']);
+    	if (Yii::$app->user->isGuest) {
+    		return $this->redirect(Yii::$app->urlManagerFrontEnd->createUrl('site/login'));
     	}
+    	//if (Yii::$app->user->isGuest /*|| Yii::$app->session->get('user.is_admin') != true*/){
+    	//	return $this->redirect(['site/error']);
+    	//}
     	 
     	$model = new User();
     
@@ -634,9 +652,12 @@ class UserController extends Controller
      */
     public function actionUpdateunregisteredauthor($id)
     {
-    	if (Yii::$app->user->isGuest /*|| Yii::$app->session->get('user.is_admin') != true*/){
-    		return $this->redirect(['site/error']);
+    	if (Yii::$app->user->isGuest) {
+    		return $this->redirect(Yii::$app->urlManagerFrontEnd->createUrl('site/login'));
     	}
+    	//if (Yii::$app->user->isGuest /*|| Yii::$app->session->get('user.is_admin') != true*/){
+    	//	return $this->redirect(['site/error']);
+    	//}
     	 
     	return $this->_editUnregisteredUserForm($id);
     }

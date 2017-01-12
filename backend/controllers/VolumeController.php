@@ -52,12 +52,15 @@ class VolumeController extends Controller
      */
     public function actionIndex()
     {
-    	if (Yii::$app->user->isGuest || Yii::$app->session->get('user.is_admin') != true){
+    	if (Yii::$app->user->isGuest) {
+    		return $this->redirect(Yii::$app->urlManagerFrontEnd->createUrl('site/login'));
+    	}
+    	if (Yii::$app->session->get('user.is_admin') != true){
     		return $this->redirect(['site/error']);
     	}
     	
     	$queryParams = Yii::$app->request->queryParams;
-    	$queryParams['is_deleted'] = 0;
+    	$queryParams['VolumeSearch']['is_deleted'] = 0;
     	
         $searchModel = new VolumeSearch();
         $dataProvider = $searchModel->search($queryParams);
@@ -77,7 +80,10 @@ class VolumeController extends Controller
      */
     public function actionView($id)
     {
-    	if (Yii::$app->user->isGuest || Yii::$app->session->get('user.is_admin') != true){
+    	if (Yii::$app->user->isGuest) {
+    		return $this->redirect(Yii::$app->urlManagerFrontEnd->createUrl('site/login'));
+    	}
+    	if (Yii::$app->session->get('user.is_admin') != true){
     		return $this->redirect(['site/error']);
     	}
     	
@@ -93,7 +99,10 @@ class VolumeController extends Controller
      */
     public function actionCreate()
     {
-    	if (Yii::$app->user->isGuest || Yii::$app->session->get('user.is_admin') != true){
+    	if (Yii::$app->user->isGuest) {
+    		return $this->redirect(Yii::$app->urlManagerFrontEnd->createUrl('site/login'));
+    	}
+    	if (Yii::$app->session->get('user.is_admin') != true){
     		return $this->redirect(['site/error']);
     	} 
     	
@@ -207,7 +216,10 @@ class VolumeController extends Controller
      */
     public function actionUpdate($id)
     {
-    	if (Yii::$app->user->isGuest || Yii::$app->session->get('user.is_admin') != true){
+    	if (Yii::$app->user->isGuest) {
+    		return $this->redirect(Yii::$app->urlManagerFrontEnd->createUrl('site/login'));
+    	}
+    	if (Yii::$app->session->get('user.is_admin') != true){
     		return $this->redirect(['site/error']);
     	}
     	
@@ -357,7 +369,10 @@ class VolumeController extends Controller
      */
     public function actionDelete($id)
     {
-    	if (Yii::$app->user->isGuest || Yii::$app->session->get('user.is_admin') != true){
+    	if (Yii::$app->user->isGuest) {
+    		return $this->redirect(Yii::$app->urlManagerFrontEnd->createUrl('site/login'));
+    	}
+    	if (Yii::$app->session->get('user.is_admin') != true){
     		return $this->redirect(['site/error']);
     	}
     	

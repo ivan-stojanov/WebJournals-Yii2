@@ -219,6 +219,20 @@ AppAsset::register($this);
                             </ul>
                             <!-- /.nav-second-level -->
                         </li>
+                        <?php if (Yii::$app->session->get('user.is_reviewer') == true){ ?>
+                        <li>
+                            <a href='#'><i class="fa fa-tasks fa-fw"></i> Reviewer Menu<span class="fa arrow"></span></a>
+                            <ul class="nav nav-second-level">
+                            	<li>
+                                    <a href='<?php echo Url::to(['/articlereviewer/pending']); ?>'><i class="fa fa-arrow-down fa-fw"></i> Pending Reviews</a>
+                                </li>
+                                <li>
+                                    <a href='<?php echo Url::to(['/articlereviewer/submitted']); ?>'><i class="fa fa-check-square-o fa-fw"></i> Submitted Reviews</a>
+                                </li>
+                            </ul>
+                            <!-- /.nav-second-level -->
+                        </li>
+                        <?php } ?> 
 						<!-- 
                         <li>
                             <a href="forms.html"><i class="fa fa-edit fa-fw"></i> Forms</a>

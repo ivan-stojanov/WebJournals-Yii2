@@ -50,9 +50,12 @@ class NOTUSEDUnregisteredUserController extends Controller
      */
     public function actionIndex()
     {
-    	if (Yii::$app->user->isGuest /*|| Yii::$app->session->get('user.is_admin') != true*/){
-    		return $this->redirect(['site/error']);
-    	}    	 
+    	if (Yii::$app->user->isGuest) {
+    		return $this->redirect(Yii::$app->urlManagerFrontEnd->createUrl('site/login'));
+    	}
+    	//if (Yii::$app->user->isGuest /*|| Yii::$app->session->get('user.is_admin') != true*/){
+    	//	return $this->redirect(['site/error']);
+    	//}    	 
     	
         $searchModel = new UnregisteredUserSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
@@ -73,9 +76,12 @@ class NOTUSEDUnregisteredUserController extends Controller
      */
     public function actionView($id)
     {
-    	if (Yii::$app->user->isGuest /*|| Yii::$app->session->get('user.is_admin') != true*/){
-    		return $this->redirect(['site/error']);
+    	if (Yii::$app->user->isGuest) {
+    		return $this->redirect(Yii::$app->urlManagerFrontEnd->createUrl('site/login'));
     	}
+    	//if (Yii::$app->user->isGuest /*|| Yii::$app->session->get('user.is_admin') != true*/){
+    	//	return $this->redirect(['site/error']);
+    	//}
     	
     	$model = $this->findModel($id);
     	
@@ -98,9 +104,12 @@ class NOTUSEDUnregisteredUserController extends Controller
      */
     public function actionCreate()
     {
-    	if (Yii::$app->user->isGuest /*|| Yii::$app->session->get('user.is_admin') != true*/){
-    		return $this->redirect(['site/error']);
-    	}   	
+    	if (Yii::$app->user->isGuest) {
+    		return $this->redirect(Yii::$app->urlManagerFrontEnd->createUrl('site/login'));
+    	}
+    	//if (Yii::$app->user->isGuest /*|| Yii::$app->session->get('user.is_admin') != true*/){
+    	//	return $this->redirect(['site/error']);
+    	//}   	
     	
         $model = new UnregisteredUser();
 
@@ -119,9 +128,12 @@ class NOTUSEDUnregisteredUserController extends Controller
      */
     public function actionUpdate($id)
     {
-    	if (Yii::$app->user->isGuest /*|| Yii::$app->session->get('user.is_admin') != true*/){
-    		return $this->redirect(['site/error']);
-    	}  	
+    	if (Yii::$app->user->isGuest) {
+    		return $this->redirect(Yii::$app->urlManagerFrontEnd->createUrl('site/login'));
+    	}
+    	//if (Yii::$app->user->isGuest /*|| Yii::$app->session->get('user.is_admin') != true*/){
+    	//	return $this->redirect(['site/error']);
+    	//}  	
     	
         return $this->_editUnregisteredUserForm($id);
     }
@@ -134,9 +146,12 @@ class NOTUSEDUnregisteredUserController extends Controller
      */
     public function actionDelete($id)
     {
-    	if (Yii::$app->user->isGuest /*|| Yii::$app->session->get('user.is_admin') != true*/){
-    		return $this->redirect(['site/error']);
-    	}   	
+    	if (Yii::$app->user->isGuest) {
+    		return $this->redirect(Yii::$app->urlManagerFrontEnd->createUrl('site/login'));
+    	}
+    	//if (Yii::$app->user->isGuest /*|| Yii::$app->session->get('user.is_admin') != true*/){
+    	//	return $this->redirect(['site/error']);
+    	//}   	
     	
         $this->findModel($id)->delete();
 

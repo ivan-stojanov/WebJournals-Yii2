@@ -50,9 +50,12 @@ class KeywordController extends Controller
      */
     public function actionIndex()
     {
-    	if (Yii::$app->user->isGuest /*|| Yii::$app->session->get('user.is_admin') != true*/){
-    		return $this->redirect(['site/error']);
+    	if (Yii::$app->user->isGuest) {
+    		return $this->redirect(Yii::$app->urlManagerFrontEnd->createUrl('site/login'));
     	}
+    	//if (Yii::$app->user->isGuest /*|| Yii::$app->session->get('user.is_admin') != true*/){
+    	//	return $this->redirect(['site/error']);
+    	//}
     	
         $searchModel = new KeywordSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
@@ -72,9 +75,12 @@ class KeywordController extends Controller
      */
     public function actionView($id)
     {
-    	if (Yii::$app->user->isGuest /*|| Yii::$app->session->get('user.is_admin') != true*/){
-    		return $this->redirect(['site/error']);
+    	if (Yii::$app->user->isGuest) {
+    		return $this->redirect(Yii::$app->urlManagerFrontEnd->createUrl('site/login'));
     	}
+    	//if (Yii::$app->user->isGuest /*|| Yii::$app->session->get('user.is_admin') != true*/){
+    	//	return $this->redirect(['site/error']);
+    	//}
     	
     	$modelKeyword = $this->findModel($id);
     	
@@ -93,9 +99,12 @@ class KeywordController extends Controller
      */
     public function actionCreate()
     {
-    	if (Yii::$app->user->isGuest /*|| Yii::$app->session->get('user.is_admin') != true*/){
-    		return $this->redirect(['site/error']);
+    	if (Yii::$app->user->isGuest) {
+    		return $this->redirect(Yii::$app->urlManagerFrontEnd->createUrl('site/login'));
     	}
+    	//if (Yii::$app->user->isGuest /*|| Yii::$app->session->get('user.is_admin') != true*/){
+    	//	return $this->redirect(['site/error']);
+    	//}
     	
         $modelKeyword = new Keyword();
         $modelKeyword->created_on = date("Y-m-d H:i:s");
@@ -145,7 +154,10 @@ class KeywordController extends Controller
      */
     public function actionUpdate($id)
     {
-    	if (Yii::$app->user->isGuest || Yii::$app->session->get('user.is_admin') != true){
+    	if (Yii::$app->user->isGuest) {
+    		return $this->redirect(Yii::$app->urlManagerFrontEnd->createUrl('site/login'));
+    	}
+    	if (Yii::$app->session->get('user.is_admin') != true){
     		return $this->redirect(['site/error']);
     	}
     	
@@ -171,7 +183,10 @@ class KeywordController extends Controller
      */
     public function actionArchive($id)
     {
-    	if (Yii::$app->user->isGuest || Yii::$app->session->get('user.is_admin') != true){
+    	if (Yii::$app->user->isGuest) {
+    		return $this->redirect(Yii::$app->urlManagerFrontEnd->createUrl('site/login'));
+    	}
+    	if (Yii::$app->session->get('user.is_admin') != true){
     		return $this->redirect(['site/error']);
     	}
     	
@@ -195,7 +210,10 @@ class KeywordController extends Controller
      */
     public function actionUnarchive($id)
     {
-    	if (Yii::$app->user->isGuest || Yii::$app->session->get('user.is_admin') != true){
+    	if (Yii::$app->user->isGuest) {
+    		return $this->redirect(Yii::$app->urlManagerFrontEnd->createUrl('site/login'));
+    	}
+    	if (Yii::$app->session->get('user.is_admin') != true){
     		return $this->redirect(['site/error']);
     	}
     	 

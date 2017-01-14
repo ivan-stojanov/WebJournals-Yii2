@@ -109,44 +109,40 @@ class ArticlereviewerController extends Controller
     	if (Yii::$app->user->isGuest) {
     		return $this->redirect(Yii::$app->urlManagerFrontEnd->createUrl('site/login'));
     	}
-    	if (Yii::$app->session->get('user.is_reviewer') != true){
-    		return $this->redirect(['site/error']);
-    	}
+    	//if (Yii::$app->session->get('user.is_reviewer') != true){
+    	//	return $this->redirect(['site/error']);
+    	//}
     	
     	$modelArticleReviewer = ArticleReviewer::findOne([
     		'article_id' => $id,
     		'reviewer_id' => Yii::$app->user->id,    			
     	]);
-    	
-    	var_dump($modelArticleReviewer);
     	 
-    	/*$article_authors = ArticleAuthor::getAuthorsForArticleString($id);
-    	$article_correspondent_author = null;
-    	if(isset($article_authors['correspondent_author'])){
-    		$article_correspondent_author = User::findOne(intval($article_authors['correspondent_author']));
-    	}
+    	$article_authors = ArticleAuthor::getAuthorsForArticleString($id);
     	$article_keywords_string = ArticleKeyword::getKeywordsForArticleString($id);
-    	$article_reviewers_string = ArticleReviewer::getReviewersForArticleString($id);
+    	$article_reviewers = ArticleReviewer::getReviewersForArticleString($id);
     	$article_editors = ArticleEditor::getEditorsForArticleString($id);
     	$current_user_id = ','.Yii::$app->user->id.',';
     
     	$isAdminOrEditor = ((strpos($article_editors['ids'], $current_user_id) !== false) && Yii::$app->session->get('user.is_editor'));
     	$isAdminOrEditor = ($isAdminOrEditor || Yii::$app->session->get('user.is_admin'));
+    	$isReviewer = ((strpos($article_reviewers['ids'], $current_user_id) !== false) && Yii::$app->session->get('user.is_reviewer'));
     	 
     	$user_can_modify = (strpos($article_authors['ids'], $current_user_id) !== false);
     	$user_can_modify = ($user_can_modify || ((strpos($article_editors['ids'], $current_user_id) !== false) && Yii::$app->session->get('user.is_editor')));
     	$user_can_modify = ($user_can_modify || Yii::$app->session->get('user.is_admin'));
     
     	return $this->render('view', [
-    			'model' => Article::findOne($id),
+    			'modelArticleReviewer' => $modelArticleReviewer,
+    			'modelArticle' => Article::findOne($id),
     			'article_authors' => $article_authors,
     			'article_keywords_string' => $article_keywords_string,
-    			'article_reviewers_string' => $article_reviewers_string,
+    			'article_reviewers' => $article_reviewers,
     			'article_editors' => $article_editors,
-    			'article_correspondent_author' => $article_correspondent_author,
     			'user_can_modify' => $user_can_modify,
     			'isAdminOrEditor' => $isAdminOrEditor,
-    	]);*/
+    			'isReviewer' => $isReviewer,
+    	]);
     }
 
 }

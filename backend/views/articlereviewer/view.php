@@ -9,174 +9,35 @@ use common\models\Article;
 /* @var $this yii\web\View */
 /* @var $model common\models\Article */
 
-$this->title = $model->title;
+$this->title = $modelArticle->title;
 
 ?>
 <div class="article-view">
 
-    <h1><?= Html::encode($this->title) ?></h1>    
+    <h1><?= Html::encode($this->title) ?></h1>
 
-    <p>
-	<?php 
-	    if($user_can_modify) {
-	    	$updateBtnClasses = 'btn btn-primary';
-	    	if($model->status != Article::STATUS_SUBMITTED) {
-	    		$updateBtnClasses .= ' disabled';
-	    	}
-	        echo Html::a('Update', ['update', 'id' => $model->article_id], [
-	        	'class' => $updateBtnClasses	        		
-	        ]);
-	        echo "&nbsp;";
-	        $deleteBtnClasses = 'btn btn-danger';
-	        if($model->status != Article::STATUS_SUBMITTED) {
-	        	$deleteBtnClasses .= ' disabled';
-	        }
-	        echo Html::a('Delete', ['delete', 'id' => $model->article_id], [
-	            'class' => $deleteBtnClasses,
-	            'data' => [
-	                'confirm' => 'Are you sure you want to delete this item?',
-	                'method' => 'post',
-	            ],
-	        ]);  	
-	    }
-	    echo "&nbsp;";
-        echo Html::a('View in PDF', ['pdfview', 'id' => $model->article_id], ['class' => 'btn btn-success']);
-		if($isAdminOrEditor) {
-			echo "&nbsp;";
-			$reviewBtnClasses = 'btn btn-warning';
-			if($model->status != Article::STATUS_SUBMITTED) {
-				$reviewBtnClasses .= ' disabled';
-			}
-			echo Html::a('Move for Review', ['moveforreview', 'id' => $model->article_id], [
-				'class' => $reviewBtnClasses,
-				'data' => [
-					'confirm' => 'Are you sure you want to move this article into \'review\' state?',
-					'method' => 'post',
-				],
-			]);
-		}
-    ?>
-    </p>
+	<?= $this->render('_article_details', [
+    			'model' => $modelArticle,
+    			'article_authors' => $article_authors,
+    			'article_keywords_string' => $article_keywords_string,
+    			'article_reviewers' => $article_reviewers,
+    			'article_editors' => $article_editors,
+    			'user_can_modify' => $user_can_modify,
+    			'isAdminOrEditor' => $isAdminOrEditor,
+    			'isReviewer' => $isReviewer,
+    ]) ?>
+    
+    <hr> 
+    <h1><?= Html::encode("Reviews") ?></h1>
     
     <?php 
-    	$attributes = [
-        	'title:ntext',
-        	//'article_id',
-        	//'section_id',
-        	[
-        		'class' => DataColumn::className(), // this line is optional
-        		'attribute' => 'section_id',
-        		'label' => 'Section title',
-        		'value' => (isset($model->section)) ? $model->section->title : null,
-        		'format' => 'HTML'
-        	],
-            //'abstract:ntext',
-        	[
-        		'class' => DataColumn::className(), // this line is optional
-        		'attribute' => 'abstract',        			
-        		'value' => Html::a('View in PDF', ['pdfview', 'id' => $model->article_id, 'partial' => 'abstract'], ['class' => 'btn btn-info btn-xs']),
-        		//'value' => (($model->abstract) && (isset($model->abstract)) && (strlen($model->abstract) > 0)) ? $model->abstract : null,
-        		'format' => 'HTML'
-        	],
-            //'content:ntext',
-        	[
-        		'class' => DataColumn::className(), // this line is optional
-        		'attribute' => 'content',
-        		'value' => Html::a('View in PDF', ['pdfview', 'id' => $model->article_id, 'partial' => 'content'], ['class' => 'btn btn-info btn-xs']),
-        		//'value' => (($model->content) && (isset($model->content)) && (strlen($model->content) > 0)) ? $model->content : null,
-        		'format' => 'HTML'
-        	],
-            //'pdf_content:ntext',
-            //'page_from',
-            //'page_to',
-            //'sort_in_section',
-        ];
-    //if($user_can_modify) {
-    	$attributes = ArrayHelper::merge($attributes, [
-        	[
-        		'class' => DataColumn::className(), // this line is optional
-        		'attribute' => 'status',
-        		'value' =>
-        			($model->status == Article::STATUS_SUBMITTED) ? 
-        				"<div class='glyphicon glyphicon-book'> Submitted</div> (Article can still be edited)"
-        			: (($model->status == Article::STATUS_UNDER_REVIEW) ?
-        				"<div class='glyphicon glyphicon-eye-open'> Under review</div> (Article can not be edited)"
-        			: (($model->status == Article::STATUS_REVIEW_REQUIRED) ?
-        				"<div class='glyphicon glyphicon-eye-open'> Review required</div> (Article can not be edited)"
-        			: (($model->status == Article::STATUS_ACCEPTED_FOR_PUBLICATION) ?
-        				"<div class='glyphicon glyphicon-ok-circle'> Accepted for publication</div> (Article can not be edited)"
-        			: (($model->status == Article::STATUS_PUBLISHED) ?
-        				"<div class='glyphicon glyphicon-ok'> Published</div> (Article can not be edited)"
-        			: (($model->status == Article::STATUS_REJECTED) ?
-        				"<div class='glyphicon glyphicon-remove'> Rejected</div> (Article can not be edited)"
-        			: null))))),
-        		//	($model->is_archived == 0) ? "<div class='glyphicon glyphicon-remove'></div>" : "<div class='glyphicon glyphicon-ok'></div>",
-        		'format' => 'HTML'
-        	]
-    	]);
-    //}
-    	$attributes = ArrayHelper::merge($attributes, [
-        	[
-        		'class' => DataColumn::className(), // this line is optional
-        		'attribute' => 'file_attach',
-        		'value' => ($model->file != null) ? "<a href='../@web/uploads/".$model->file->file_name."' download='".$model->file->file_name."'>".$model->file->file_original_name."</a>" : null,
-        		'format' => 'HTML'
-        	]
-    	]);
-    if($user_can_modify) {
-    	$attributes = ArrayHelper::merge($attributes, [
-        	[
-        		'class' => DataColumn::className(), // this line is optional
-        		'label' => 'Reviewers',
-        		'value' => $article_reviewers_string,
-        		//'format' => 'HTML'
-        	],
-    		[
-    			'class' => DataColumn::className(), // this line is optional
-    			'label' => 'Editors',
-    			'value' => $article_editors['string'],
-    			//'format' => 'HTML'
-    		]    			
-    	]);
-    }
-    	$attributes = ArrayHelper::merge($attributes, [    
-        	[
-        		'class' => DataColumn::className(), // this line is optional
-        		'label' => 'Authors',
-        		'value' => $article_authors['string'],
-        		//'format' => 'HTML'
-        	],
-        	[
-        		'class' => DataColumn::className(), // this line is optional
-        		'label' => 'Correspondent Author',
-        		'value' => (isset($article_correspondent_author)) ? ($article_correspondent_author->fullName." <".$article_correspondent_author->email.">") : null,
-        		//'format' => 'HTML'
-        	],        		
-        	[
-        		'class' => DataColumn::className(), // this line is optional
-        		'label' => 'Keywords',
-        		'value' => $article_keywords_string,
-        		'format' => 'HTML'
-        	],
-			[
-    			'class' => DataColumn::className(), // this line is optional
-    			'attribute' => 'created_on',
-    			'value' => (isset($model->created_on)) ? date("M d, Y, g:i:s A", strtotime($model->created_on)) : null,
-    			'format' => 'HTML'
-    		],
-    		[
-    			'class' => DataColumn::className(), // this line is optional
-    			'attribute' => 'updated_on',
-    			'value' => (isset($model->updated_on)) ? date("M d, Y, g:i:s A", strtotime($model->updated_on)) : null,
-    			'format' => 'HTML'
-    		],
-            //'is_deleted',
-        ]);    
+    	if($modelArticleReviewer->is_submited == 0) {
+    		echo "Review is not submitted yet!";
+    	} else if($modelArticleReviewer->is_submited == 1 && $modelArticleReviewer->is_editable == 1) {
+    		echo "Can edit submited Review!";
+    	} else if($modelArticleReviewer->is_submited == 1 && $modelArticleReviewer->is_editable == 0) {
+    		echo "Can not edit submited Review, just show it!";
+    	}
     ?>
-    
-    <?= DetailView::widget([
-        'model' => $model,
-        'attributes' => $attributes,
-    ]) ?>
 
 </div>

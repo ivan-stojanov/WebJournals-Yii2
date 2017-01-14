@@ -128,7 +128,7 @@ $this->title = $model->title;
         	[
         		'class' => DataColumn::className(), // this line is optional
         		'label' => 'Reviewers',
-        		'value' => $article_reviewers_string,
+        		'value' => $article_reviewers['string'],
         		//'format' => 'HTML'
         	],
     		[

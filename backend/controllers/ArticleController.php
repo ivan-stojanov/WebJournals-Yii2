@@ -137,7 +137,7 @@ class ArticleController extends Controller
     		$article_correspondent_author = User::findOne(intval($article_authors['correspondent_author']));
     	}    	
     	$article_keywords_string = ArticleKeyword::getKeywordsForArticleString($id);    	 
-    	$article_reviewers_string = ArticleReviewer::getReviewersForArticleString($id);
+    	$article_reviewers = ArticleReviewer::getReviewersForArticleString($id);
     	$article_editors = ArticleEditor::getEditorsForArticleString($id);    	
     	$current_user_id = ','.Yii::$app->user->id.',';
     	 
@@ -152,7 +152,7 @@ class ArticleController extends Controller
             'model' => $this->findModel($id),
         	'article_authors' => $article_authors,
         	'article_keywords_string' => $article_keywords_string,
-        	'article_reviewers_string' => $article_reviewers_string,
+        	'article_reviewers' => $article_reviewers,
         	'article_editors' => $article_editors,        		
         	'article_correspondent_author' => $article_correspondent_author,
         	'user_can_modify' => $user_can_modify,

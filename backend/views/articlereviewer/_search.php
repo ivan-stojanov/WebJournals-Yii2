@@ -55,7 +55,7 @@ use common\models\ArticleReviewer;
 	        	'class' => DataColumn::className(), // this line is optional
 	        	'label' => 'Reviewers',
 	        	'value' =>function ($data) {
-	        		return ArticleReviewer::getReviewersForArticleString($data->article_id)/*['string']*/;
+	        		return ArticleReviewer::getReviewersForArticleString($data->article_id)['string'];
 	        	},
 	        	"format" => "HTML",
 	        	'headerOptions' => ['style' => 'width:25%'],

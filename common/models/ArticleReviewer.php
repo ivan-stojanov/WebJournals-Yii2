@@ -12,6 +12,7 @@ use Yii;
  * @property integer $short_comment
  * @property string $long_comment
  * @property integer $is_submited
+ * @property integer $is_editable
  * @property string $created_on
  * @property string $updated_on
  *
@@ -35,7 +36,7 @@ class ArticleReviewer extends \yii\db\ActiveRecord
     {
         return [
             [['article_id', 'reviewer_id'], 'required'],
-            [['article_id', 'reviewer_id', 'short_comment', 'is_submited'], 'integer'],
+            [['article_id', 'reviewer_id', 'short_comment', 'is_submited', 'is_editable'], 'integer'],
             [['long_comment'], 'string'],
             [['created_on', 'updated_on'], 'safe'],
             [['article_id'], 'exist', 'skipOnError' => true, 'targetClass' => Article::className(), 'targetAttribute' => ['article_id' => 'article_id']],
@@ -53,7 +54,8 @@ class ArticleReviewer extends \yii\db\ActiveRecord
             'reviewer_id' => 'Reviewer ID',
             'short_comment' => 'Short Comment',
             'long_comment' => 'Long Comment',
-        	'is_submited' => 'Is Submited',        		
+        	'is_submited' => 'Is Submited',
+        	'is_editable' => 'Is Editable',
             'created_on' => 'Created On',
             'updated_on' => 'Updated On',
         ];
@@ -91,16 +93,23 @@ class ArticleReviewer extends \yii\db\ActiveRecord
      */
     public static function getReviewersForArticleString($articleID)
     {
+    	$article_reviewers_ids = null;
     	$article_reviewers_string = null;
     	$articleReviewers_array = ArticleReviewer::getReviewersForArticle($articleID);
     	if($articleReviewers_array != null && count($articleReviewers_array)>0 ){
+    		$article_reviewers_ids = ",";
     		$article_reviewers_string = "";
     		foreach ($articleReviewers_array as $article_reviewer){
+    			$article_reviewers_ids .= $article_reviewer->reviewer->id.",";
     			$article_reviewers_string .= $article_reviewer->reviewer->fullName." <".$article_reviewer->reviewer->email.">, ";
     		}
     		$article_reviewers_string = trim($article_reviewers_string, ", ");
     	}
     	
-    	return $article_reviewers_string;
+    	$article_reviewers = null;
+    	$article_reviewers['ids'] = $article_reviewers_ids;
+    	$article_reviewers['string'] = $article_reviewers_string;
+    	 
+    	return $article_reviewers;
     }
 }

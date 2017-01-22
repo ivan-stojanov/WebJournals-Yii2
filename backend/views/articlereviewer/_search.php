@@ -30,7 +30,7 @@ use common\models\ArticleReviewer;
 		$columns = [
             [
             	'class' => 'yii\grid\SerialColumn',
-            	'headerOptions' => ['style' => 'width:5%'],
+            	//'headerOptions' => ['style' => 'width:5%'],
             ],
         	[
         		'class' => DataColumn::className(), // this line is optional
@@ -40,7 +40,7 @@ use common\models\ArticleReviewer;
         			return displayColumnContent($data->title, 30);
         		},
         		"format" => "HTML",
-        		'headerOptions' => ['style' => 'width:25%'],
+        		//'headerOptions' => ['style' => 'width:25%'],
         	],
         	[
 	        	'class' => DataColumn::className(), // this line is optional
@@ -49,7 +49,7 @@ use common\models\ArticleReviewer;
     				return ArticleAuthor::getAuthorsForArticleString($data->article_id)['string'];
 	        	},
 	        	"format" => "HTML",
-	        	'headerOptions' => ['style' => 'width:25%'],
+	        	//'headerOptions' => ['style' => 'width:25%'],
         	],
         	[
 	        	'class' => DataColumn::className(), // this line is optional
@@ -58,14 +58,38 @@ use common\models\ArticleReviewer;
 	        		return ArticleReviewer::getReviewersForArticleString($data->article_id)['string'];
 	        	},
 	        	"format" => "HTML",
-	        	'headerOptions' => ['style' => 'width:25%'],
-        	],
-	        [
-	        	'class' => 'yii\grid\ActionColumn', 
-	        	'template' => '{view}', 
-	        	'headerOptions' => ['style' => 'width:5%'],	        		
-	        ],
+	        	//'headerOptions' => ['style' => 'width:25%'],
+        	]
         ];
+		if($isPending === false){
+		$columns[] = 
+        	[
+        		'class' => DataColumn::className(), // this line is optional
+        		'attribute' => 'articleReviewers.is_editable',
+        		'value' =>function ($data) {        		
+	        		$modelArticleReviewer = ArticleReviewer::findOne([
+	        				'article_id' => $data->article_id,
+	        				'reviewer_id' => Yii::$app->user->id,
+	        		]);        		
+        			if (isset($modelArticleReviewer) && ($modelArticleReviewer->is_editable == 1))
+        				return "<div class='glyphicon glyphicon-ok'></div>";
+        			else if (isset($modelArticleReviewer) && ($modelArticleReviewer->is_editable == 0))
+        				return "<div class='glyphicon glyphicon-remove'></div>";
+		         },
+        		"format" => "HTML",
+        		'filter'=>[
+        				"1" => "Yes",
+        				"0" => "No"        				
+		         ], 
+		         'headerOptions' => ['style' => 'width:10%'],
+        	];
+		}
+		$columns[] =
+			[
+				'class' => 'yii\grid\ActionColumn',
+				'template' => '{view}',
+				//'headerOptions' => ['style' => 'width:5%'],
+			];
 	?>
 
     <?= GridView::widget([

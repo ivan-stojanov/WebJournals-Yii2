@@ -26,6 +26,10 @@ class ArticlereviewerController extends Controller
 		return [
 			'verbs' => [
 				'class' => VerbFilter::className(),
+				'actions' => [
+					'asynch-create-article-review' => ['POST'],
+					'asynch-update-article-review' => ['POST'],
+				],
 			],
 		];
 	}
@@ -117,6 +121,10 @@ class ArticlereviewerController extends Controller
     		'article_id' => $id,
     		'reviewer_id' => Yii::$app->user->id,    			
     	]);
+    	
+    	//$modelsArticleReviewer = ArticleReviewer::findAll([
+    	//	'article_id' => $id
+    	//]);
     	 
     	$article_authors = ArticleAuthor::getAuthorsForArticleString($id);
     	$article_keywords_string = ArticleKeyword::getKeywordsForArticleString($id);
@@ -133,6 +141,7 @@ class ArticlereviewerController extends Controller
     	$user_can_modify = ($user_can_modify || Yii::$app->session->get('user.is_admin'));
     
     	return $this->render('view', [
+    			//'modelsArticleReviewer' => $modelsArticleReviewer,
     			'modelArticleReviewer' => $modelArticleReviewer,
     			'modelArticle' => Article::findOne($id),
     			'article_authors' => $article_authors,
@@ -143,6 +152,38 @@ class ArticlereviewerController extends Controller
     			'isAdminOrEditor' => $isAdminOrEditor,
     			'isReviewer' => $isReviewer,
     	]);
+    }
+    
+    /*
+     * Asynch functions called with Ajax - ArticleReviewer (Reviewer menu - articlereviewer view page)
+     */
+    public function actionAsynchCreateArticleReview()
+    {
+    	$articleReceivedID = Yii::$app->getRequest()->post('articleid');    
+    	$articleID = json_decode($articleReceivedID);
+    	
+    	$reviewerReceivedID = Yii::$app->getRequest()->post('reviewerid');
+    	$reviewerID = json_decode($reviewerReceivedID);
+    	 
+    	$modelArticleReviewer = ArticleReviewer::findOne([
+    			'article_id' => $articleID,
+    			'reviewer_id' => $reviewerID,
+    	]);
+    	 
+    	/*if ($modelArticleReviewer != null) {
+    		$modelArticleReviewer->short_comment = null;
+    		$modelArticleReviewer->long_comment = null;
+    		$modelArticleReviewer->updated_on = date("Y-m-d H:i:s");
+    		if(!$modelArticleReviewer->save()){
+    			throw new \Exception('Data not saved: '.print_r($modelArticleReviewer->errors, true), 500);
+    		} else {
+    			return "Review has been successfully created.";
+    		}
+    	} else {
+    		
+    	}*/
+    
+    	return "Empty message!";
     }
 
 }

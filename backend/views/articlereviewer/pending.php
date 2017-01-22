@@ -11,6 +11,7 @@
     	'searchModel' => $searchModel,
     	'post_msg' => $post_msg,
     	'title_msg' => "Pending Reviews",
+    	'isPending' => true,
     ]) ?>
     
 </div>

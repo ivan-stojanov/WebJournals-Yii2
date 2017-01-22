@@ -20,7 +20,14 @@ use Yii;
  * @property User $reviewer
  */
 class ArticleReviewer extends \yii\db\ActiveRecord
-{
+{	
+	static $STATUS_REVIEW = [
+		0 => "None",
+		1 => "Accept with minor change",
+		2 => "Accept with major change",
+		3 => "Rejecred",
+	];
+	
     /**
      * @inheritdoc
      */

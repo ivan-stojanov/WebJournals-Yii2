@@ -19,7 +19,7 @@ class ArticleSearch extends Article
     { 
         return [ 
             [['article_id', 'section_id', 'sort_in_section', 'status', 'file_id', 'is_deleted'], 'integer'],
-            [['title', 'abstract', 'content', 'pdf_content', 'page_from', 'page_to', 'created_on', 'updated_on'], 'safe'],
+            [['title', 'abstract', 'content', 'pdf_content', 'page_from', 'page_to', 'created_on', 'updated_on', 'articleReviewers.is_editable'], 'safe'],
         ]; 
     } 
 
@@ -30,7 +30,13 @@ class ArticleSearch extends Article
     { 
         // bypass scenarios() implementation in the parent class 
         return Model::scenarios(); 
-    } 
+    }
+    
+    public function attributes()
+    {
+    	// add related fields to searchable attributes
+    	return array_merge(parent::attributes(), ['articleReviewers.is_editable']);
+    }
 
     /** 
      * Creates data provider instance with search query applied 
@@ -41,7 +47,9 @@ class ArticleSearch extends Article
      */ 
     public function search($params, $author_id = null, $reviewer_id = null) 
     { 
-        $query = Article::find();
+        $query = Article::find();        
+        $query->joinWith(['articleReviewers' => function($query) { $query->from(['articleReviewers' => 'article_reviewer']); }]);
+        
         // add conditions that should always apply here 
         if($author_id != null) {
         	$query = $query->joinWith('articleAuthors')
@@ -51,7 +59,10 @@ class ArticleSearch extends Article
         	$conditionArray['article_reviewer.reviewer_id'] = $reviewer_id;
         	if(isset($params['ArticleSearch']['is_submited'])){
         		$conditionArray['article_reviewer.is_submited'] = $params['ArticleSearch']['is_submited'];
-        	}        	
+        	}
+        	if(isset($params['ArticleSearch']['articleReviewers.is_editable']) && $params['ArticleSearch']['articleReviewers.is_editable'] != ''){
+        		$conditionArray['article_reviewer.is_editable'] = $params['ArticleSearch']['articleReviewers.is_editable'];        		
+        	}
         	$query = $query->joinWith('articleReviewers')
         	->where($conditionArray);
         }
@@ -88,6 +99,9 @@ class ArticleSearch extends Article
 				'section_id' => null     		
         	]);        	
         }
+       
+        $query->andFilterWhere(['like','articleReviewers.is_editable',
+        		$this->getAttribute('articleReviewers.is_editable')]);
 
         $query->andFilterWhere(['like', 'title', $this->title])
             ->andFilterWhere(['like', 'abstract', $this->abstract])

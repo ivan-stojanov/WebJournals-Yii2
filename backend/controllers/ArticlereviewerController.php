@@ -63,6 +63,7 @@ class ArticlereviewerController extends Controller
     	$queryParams = Yii::$app->request->queryParams;
     	$queryParams['ArticleSearch']['is_deleted'] = 0;
     	$queryParams['ArticleSearch']['is_submited'] = 0;
+    	$queryParams['ArticleSearch']['statuses_review'] = "1,2"; //under review and review required
 
     	$searchModel = new ArticleSearch();
     	$dataProvider = $searchModel->search($queryParams, null, Yii::$app->user->id);
@@ -164,24 +165,88 @@ class ArticlereviewerController extends Controller
     	
     	$reviewerReceivedID = Yii::$app->getRequest()->post('reviewerid');
     	$reviewerID = json_decode($reviewerReceivedID);
+    	
+    	$shortcommentReceived = Yii::$app->getRequest()->post('shortcomment');
+    	$shortcomment = json_decode($shortcommentReceived);
+    	
+    	$longcommentReceived = Yii::$app->getRequest()->post('longcomment');
+    	$longcomment = json_decode($longcommentReceived);
     	 
     	$modelArticleReviewer = ArticleReviewer::findOne([
     			'article_id' => $articleID,
     			'reviewer_id' => $reviewerID,
     	]);
     	 
-    	/*if ($modelArticleReviewer != null) {
-    		$modelArticleReviewer->short_comment = null;
-    		$modelArticleReviewer->long_comment = null;
-    		$modelArticleReviewer->updated_on = date("Y-m-d H:i:s");
-    		if(!$modelArticleReviewer->save()){
-    			throw new \Exception('Data not saved: '.print_r($modelArticleReviewer->errors, true), 500);
-    		} else {
-    			return "Review has been successfully created.";
-    		}
+    	if ($modelArticleReviewer == null) {
+    		$modelArticleReviewer = new ArticleReviewer();
+    		$modelArticleReviewer->created_on = date("Y-m-d H:i:s");
     	} else {
-    		
-    	}*/
+    		$modelArticleReviewer->updated_on = date("Y-m-d H:i:s");
+    	}
+    	
+    	if($shortcomment == '0'){
+    		$shortcomment = 0;
+    	} else if(isset($shortcomment) && ($shortcomment != null) && ($shortcomment != '')){
+    		$shortcomment = intval($shortcomment);
+    	}
+    	
+    	$modelArticleReviewer->short_comment = $shortcomment;
+    	$modelArticleReviewer->long_comment = $longcomment;
+    	
+    	if(!$modelArticleReviewer->save()){
+    		Yii::error("ArticlereviewerController->actionAsynchCreateArticleReview(1): ".json_encode($modelArticleReviewer->getErrors()), "custom_errors_reviews");
+    		throw new \Exception('Data not saved: '.print_r($modelArticleReviewer->errors, true), 500);
+    	} else {
+    		return "Review has been successfully created! ".$modelArticleReviewer->shortcomment;
+    	}
+    
+    	return "Empty message!";
+    }
+    
+    /*
+     * Asynch functions called with Ajax - ArticleReviewer (Reviewer menu - articlereviewer view page)
+     */
+    public function actionAsynchUpdateArticleReview()
+    {
+    	$articleReceivedID = Yii::$app->getRequest()->post('articleid');
+    	$articleID = json_decode($articleReceivedID);
+    	 
+    	$reviewerReceivedID = Yii::$app->getRequest()->post('reviewerid');
+    	$reviewerID = json_decode($reviewerReceivedID);
+    	
+    	$shortcommentReceived = Yii::$app->getRequest()->post('shortcomment');
+    	$shortcomment = json_decode($shortcommentReceived);
+    	 
+    	$longcommentReceived = Yii::$app->getRequest()->post('longcomment');
+    	$longcomment = json_decode($longcommentReceived);
+    
+    	$modelArticleReviewer = ArticleReviewer::findOne([
+    			'article_id' => $articleID,
+    			'reviewer_id' => $reviewerID,
+    	]);
+    
+    	if ($modelArticleReviewer == null) {
+    		$modelArticleReviewer = new ArticleReviewer();
+    		$modelArticleReviewer->created_on = date("Y-m-d H:i:s");
+    	} else {
+    		$modelArticleReviewer->updated_on = date("Y-m-d H:i:s");
+    	}
+    	
+    	if($shortcomment == '0'){
+    		$shortcomment = 0;
+    	} else if(isset($shortcomment) && ($shortcomment != null) && ($shortcomment != '')){
+    		$shortcomment = intval($shortcomment);
+    	}
+    	 
+    	$modelArticleReviewer->short_comment = $shortcomment;
+    	$modelArticleReviewer->long_comment = $longcomment;
+    	 
+    	if(!$modelArticleReviewer->save()){
+    		Yii::error("ArticlereviewerController->actionAsynchUpdateArticleReview(1): ".json_encode($modelArticleReviewer->getErrors()), "custom_errors_reviews");
+    		throw new \Exception('Data not saved: '.print_r($modelArticleReviewer->errors, true), 500);
+    	} else {
+    		return "Review has been successfully updated!";
+    	}
     
     	return "Empty message!";
     }

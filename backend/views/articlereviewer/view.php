@@ -18,6 +18,11 @@ $this->registerJsFile("@web/js/articlereviewerScript.js", [ 'depends' => ['backe
 ?>
 <div class="article-view">
 
+	<div class="alert alert-dismissable hidden-div" id="articlereview-section-alert"> <?php /*alert-danger alert-success alert-warning */ ?>
+		<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+		<strong><span id="articlereview-section-alert-msg"></span></strong>
+	</div>
+
     <h1><?= Html::encode($this->title) ?></h1>
 
 	<?= $this->render('_article_details', [

@@ -22,10 +22,10 @@ use Yii;
 class ArticleReviewer extends \yii\db\ActiveRecord
 {	
 	static $STATUS_REVIEW = [
-		0 => "None",
+		0 => "Accept without change", //"None",
 		1 => "Accept with minor change",
 		2 => "Accept with major change",
-		3 => "Rejecred",
+		3 => "Rejected",
 	];
 	
     /**

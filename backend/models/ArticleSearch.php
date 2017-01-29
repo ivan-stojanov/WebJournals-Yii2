@@ -89,6 +89,21 @@ class ArticleSearch extends Article
             'updated_on' => $this->updated_on,
             'is_deleted' => $this->is_deleted,
         ]);
+        
+        if(isset($params['ArticleSearch']['statuses_review'])){
+        	$allowed_statuses = explode(",",$params['ArticleSearch']['statuses_review']);
+        	$status_array = [];
+        	foreach ($allowed_statuses as $statusItem) {
+        		$status_array[] = intval($statusItem);
+        	}
+        	$query->andFilterWhere([
+        		'in', 'status', $status_array
+        	]);
+        } else {
+        	$query->andFilterWhere([
+        		'status' => $this->status,
+         	]);
+        }
        
         if($this->section_id != '0'){
         	$query->andFilterWhere([

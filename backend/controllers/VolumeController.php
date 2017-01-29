@@ -162,7 +162,6 @@ class VolumeController extends Controller
 	        							$modelIssue->cover_image = $newImage->image_id;
 	        						}  else {
 	        							Yii::error("VolumeController->actionCreate(1): ".json_encode($newImage->getErrors()), "custom_errors_volumes");
-		        						$modelIssue->cover_image = null;
 		        					}
         						}  else {
 	        						$modelIssue->cover_image = null;

@@ -13,24 +13,30 @@ $('#create-review-btn').on('click', function(event) {
 		alert("An error occured while gettig the value for reviewerid");
 		return;
 	}	
-	//alert(articleid + reviewerid);
 
     $.ajax({
         type: 'POST',
         //contentType: 'application/json; charset=utf-8',
         async: true,
-        url: '../asynch-create-article-review',
+        url: './asynch-create-article-review',
         data: {
         	articleid: JSON.stringify(articleid),
         	reviewerid: JSON.stringify(reviewerid),
+        	shortcomment: $("#articlereviewer-short_comment").val(),
+        	longcomment: $("#articlereviewer-long_comment").val(),
         },
         dataType: 'text',
         success: function (successData) {
         	if(successData != "Empty message!") {
-        		alert(successData);
-        	}        	
+        		$("#articlereview-section-alert").removeClass("hidden-div");
+        		$("#articlereview-section-alert").addClass("alert-success");
+        		$("#articlereview-section-alert-msg").text(successData);
+        	}
         },
         error: function (xhr, error) {
+    		$("#articlereview-section-alert").removeClass("hidden-div");
+    		$("#articlereview-section-alert").addClass("alert-danger");
+    		$("#articlereview-section-alert-msg").text(error);
     		console.log("error");
         	console.log(xhr);
         	console.log(error);
@@ -53,24 +59,30 @@ $('#update-review-btn').on('click', function(event) {
 		alert("An error occured while gettig the value for reviewerid");
 		return;
 	}	
-	//alert(articleid + reviewerid);
 
     $.ajax({
         type: 'POST',
         //contentType: 'application/json; charset=utf-8',
         async: true,
-        url: '../asynch-update-article-review',
+        url: './asynch-update-article-review',
         data: {
         	articleid: JSON.stringify(articleid),
         	reviewerid: JSON.stringify(reviewerid),
+        	shortcomment: $("#articlereviewer-short_comment").val(),
+        	longcomment: $("#articlereviewer-long_comment").val(),
         },
         dataType: 'text',
         success: function (successData) {
         	if(successData != "Empty message!") {
-        		alert(successData);
+        		$("#articlereview-section-alert").removeClass("hidden-div");
+        		$("#articlereview-section-alert").addClass("alert-success");
+        		$("#articlereview-section-alert-msg").text(successData);
         	}        	
         },
         error: function (xhr, error) {
+    		$("#articlereview-section-alert").removeClass("hidden-div");
+    		$("#articlereview-section-alert").addClass("alert-danger");
+    		$("#articlereview-section-alert-msg").text(error);
     		console.log("error");
         	console.log(xhr);
         	console.log(error);

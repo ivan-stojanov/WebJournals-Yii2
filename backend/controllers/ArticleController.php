@@ -36,6 +36,7 @@ class ArticleController extends Controller
                 'actions' => [
                     'delete' => ['POST'],
                 	'moveforreview' => ['POST'],
+                	'moveforreviewrequired' => ['POST'],
                 ],
             ],
         ];
@@ -141,22 +142,56 @@ class ArticleController extends Controller
     	$article_editors = ArticleEditor::getEditorsForArticleString($id);    	
     	$current_user_id = ','.Yii::$app->user->id.',';
     	 
-    	$isAdminOrEditor = ((strpos($article_editors['ids'], $current_user_id) !== false) && Yii::$app->session->get('user.is_editor'));
-    	$isAdminOrEditor = ($isAdminOrEditor || Yii::$app->session->get('user.is_admin'));
+    	$isEditor = ((strpos($article_editors['ids'], $current_user_id) !== false) && Yii::$app->session->get('user.is_editor'));
+    	$isAdminOrEditor = ($isEditor || Yii::$app->session->get('user.is_admin'));
     	
     	$user_can_modify = (strpos($article_authors['ids'], $current_user_id) !== false);
     	$user_can_modify = ($user_can_modify || ((strpos($article_editors['ids'], $current_user_id) !== false) && Yii::$app->session->get('user.is_editor')));
     	$user_can_modify = ($user_can_modify || Yii::$app->session->get('user.is_admin'));
 
+    	$modelArticle = $this->findModel($id);
+    	$modelsArticleReviewer = null;
+    	if($isAdminOrEditor) {
+    		if($modelArticle->status != Article::STATUS_SUBMITTED && $modelArticle->status != Article::STATUS_UNDER_REVIEW) {
+	    		$modelsArticleReviewer = ArticleReviewer::findAll([
+	    			'article_id' => $id,
+	    			'is_submited' => 1,
+	    		]);
+    		}
+    	}
+    	
+    	$modelCurrentUserAsReviewer = null; 
+    	if($isEditor && $modelArticle->status == Article::STATUS_REVIEW_REQUIRED){
+    		$modelCurrentUserAsReviewer = ArticleReviewer::findOne([
+	    		'article_id' => $id,
+	    		'reviewer_id' => Yii::$app->user->id,
+	    	]);
+    		if($modelCurrentUserAsReviewer == null){
+    			$modelCurrentUserAsReviewer = new ArticleReviewer();
+    			$modelCurrentUserAsReviewer->article_id = $id;
+    			$modelCurrentUserAsReviewer->reviewer_id = Yii::$app->user->id;
+    			$modelCurrentUserAsReviewer->short_comment = 0; // => "Accept without change", //"None",
+    			$modelCurrentUserAsReviewer->long_comment = "";
+    			//to do: add scenario here
+    			$modelCurrentUserAsReviewer->created_on = date("Y-m-d H:i:s");
+    			if(!$modelCurrentUserAsReviewer->save()){
+    				Yii::error("ArticleController->actionView(1): ".json_encode($modelCurrentUserAsReviewer->getErrors()), "custom_errors_articles");
+    			}
+    		}
+    	}
+    	
         return $this->render('view', [
-            'model' => $this->findModel($id),
+            'model' => $modelArticle,
+        	'modelsArticleReviewer' => $modelsArticleReviewer,
+        	'modelCurrentUserAsReviewer' => $modelCurrentUserAsReviewer,
         	'article_authors' => $article_authors,
         	'article_keywords_string' => $article_keywords_string,
         	'article_reviewers' => $article_reviewers,
         	'article_editors' => $article_editors,        		
         	'article_correspondent_author' => $article_correspondent_author,
-        	'user_can_modify' => $user_can_modify,
-        	'isAdminOrEditor' => $isAdminOrEditor,
+        	'user_can_modify' => $user_can_modify,        		
+        	'isEditor' => $isEditor,
+        	'isAdminOrEditor' => $isAdminOrEditor,        		
         ]);
     }
 
@@ -259,19 +294,30 @@ class ArticleController extends Controller
     								$correspondent_author_is_regular_author = true;
     							}
     						}
+    						
+    						$reviewer_is_editor = false;
+    						foreach ($modelArticle->post_reviewers as $reviewerItem) {
+    							if(ArrayHelper::isIn($reviewerItem, $modelArticle->post_editors)){
+    								$reviewer_is_editor = true;
+    							}
+    						}
+    						
     						$current_is_author = ArrayHelper::isIn(Yii::$app->user->id, $modelArticle->post_authors);
     						$current_is_author = $current_is_author || (Yii::$app->session->get('user.is_admin') == true);
     						
-    						if($correspondent_author_is_regular_author == false || $current_is_author == false) {
+    						if($correspondent_author_is_regular_author == false || $current_is_author == false || $reviewer_is_editor == true) {
     							//Yii::$app->session->setFlash('error', 'Authors are not correctly updated! Correspondent author is not in the list for regular authors!');
     							$post_msg["type"] = "danger";
-    							$post_msg["text"] = "Authors are not correctly updated!<br><br>";
+    							$post_msg["text"] = "Users are not correctly updated!<br><br>";
     							
     							if($current_is_author == false){
-    								$post_msg["text"] .= "You are not listed as an author and You have to be! ";
+    								$post_msg["text"] .= "You are not listed as an author and You have to be!<br>";
     							}
     							if($correspondent_author_is_regular_author == false){
-    								$post_msg["text"] .= "Correspondent author is not in the list for regular authors! ";
+    								$post_msg["text"] .= "Correspondent author is not in the list for regular authors!<br>";
+    							}
+    							if($reviewer_is_editor == true){
+    								$post_msg["text"] .= "Editor can not be set as an reviewer!<br>";
     							}
 
     							return $this->render('create_admin', [
@@ -555,20 +601,30 @@ class ArticleController extends Controller
 	        						}
 	        					}
         					}
+        					
+        					$reviewer_is_editor = false;
+        					foreach ($modelArticle->post_reviewers as $reviewerItem) {
+        						if(ArrayHelper::isIn($reviewerItem, $modelArticle->post_editors)){
+        							$reviewer_is_editor = true;
+        						}
+        					}
         			        
         					$current_is_author = ArrayHelper::isIn(Yii::$app->user->id, $modelArticle->post_authors);
     						$current_is_author = $current_is_author || (Yii::$app->session->get('user.is_admin') == true);
     						
-    						if($correspondent_author_is_regular_author == false || $current_is_author == false) {
+    						if($correspondent_author_is_regular_author == false || $current_is_author == false || $reviewer_is_editor == true) {
     							//Yii::$app->session->setFlash('error', 'Authors are not correctly updated! Correspondent author is not in the list for regular authors!');
     							$post_msg["type"] = "danger";
-    							$post_msg["text"] = "Authors are not correctly updated!<br><br>";
+    							$post_msg["text"] = "Users are not correctly updated!<br><br>";
     							
     							if($current_is_author == false){
-    								$post_msg["text"] .= "You are not listed as an author and You have to be! ";
+    								$post_msg["text"] .= "You are not listed as an author and You have to be!<br>";
     							}
     							if($correspondent_author_is_regular_author == false){
-    								$post_msg["text"] .= "Correspondent author is not in the list for regular authors! ";
+    								$post_msg["text"] .= "Correspondent author is not in the list for regular authors!<br>";
+    							}
+    							if($reviewer_is_editor == true){
+    								$post_msg["text"] .= "Editor can not be set as an reviewer!<br>";
     							}
    							
     							$canEditForm = ($modelArticle->status == Article::STATUS_SUBMITTED);
@@ -814,6 +870,70 @@ class ArticleController extends Controller
     	}
     
     	return $this->redirect(['view', 'id' => $modelArticle->article_id]);
+    }
+    
+    /**
+     * Change the status of an existing Article model from STATUS_UNDER_REVIEW to STATUS_REVIEW_REQUIRED.
+     * If change is successful or not, the browser will redirect on the view article (stay on the same) page with message result.
+     * @param integer $id
+     * @return mixed
+     */
+    public function actionMoveforreviewrequired($id)
+    {
+    	if (Yii::$app->user->isGuest) {
+    		return $this->redirect(Yii::$app->urlManagerFrontEnd->createUrl('site/login'));
+    	}
+    	//if (Yii::$app->user->isGuest /*|| Yii::$app->session->get('user.is_admin') != true*/){
+    	//	return $this->redirect(['site/error']);
+    	//}
+    	 
+    	$current_user_id = ','.Yii::$app->user->id.',';
+    	$article_editors = ArticleEditor::getEditorsForArticleString($id);
+    	 
+    	$isAdminOrEditor = ((strpos($article_editors['ids'], $current_user_id) !== false) && Yii::$app->session->get('user.is_editor'));
+    	$isAdminOrEditor = ($isAdminOrEditor || Yii::$app->session->get('user.is_admin'));
+    
+    	if($isAdminOrEditor == true) {
+    		$transaction = \Yii::$app->db->beginTransaction();
+    		try {
+	    		$modelArticle = $this->findModel($id);
+	    		$modelArticle->scenario = 'article_change_status';
+	    		$modelArticle->status = Article::STATUS_REVIEW_REQUIRED;
+	    		$modelArticle->updated_on = date("Y-m-d H:i:s");
+	    		if($flag = $modelArticle->save(false)){
+	    			$modelsArticleReviewer = ArticleReviewer::findAll([
+	    				'article_id' => $id
+	    			]);
+	    			
+	    			foreach ($modelsArticleReviewer as $index => $modelArticleReviewer) {
+	    				$modelArticleReviewer->is_editable = 0;
+	    				$modelArticleReviewer->updated_on = date("Y-m-d H:i:s");
+	    			
+	    				if (($flag = $modelArticleReviewer->save(false)) === false) {
+	    					Yii::error("ArticleController->actionMoveforreviewrequired(1): ".json_encode($modelArticleReview->getErrors()), "custom_errors_articles");
+	    					$transaction->rollBack();
+	    					break;
+	    				}
+	    			}
+	    			if ($flag) {
+	    				$transaction->commit();
+	    				Yii::$app->session->setFlash('success', 'Article status has been successfully changed into \'review required\' state!');
+	    			}
+	    		} else {
+	    			Yii::error("ArticleController->actionMoveforreviewrequired(2): ".json_encode($modelArticle->getErrors()), "custom_errors_articles");
+	    			$transaction->rollBack();
+	    			Yii::$app->session->setFlash('error', 'Some error occured! Please try again or contact the admin!');
+		    	}
+	    	} catch (Exception $e) {
+	    		Yii::error("ArticleController->actionMoveforreviewrequired(3): ".json_encode($e), "custom_errors_articles");
+	    		$transaction->rollBack();
+	    		Yii::$app->session->setFlash('error', 'Some error occured! Please try again or contact the admin!');
+	    	}
+    	} else {
+    		Yii::$app->session->setFlash('error', 'You do not have permission for performing this action!');
+    	}
+    
+    	return $this->redirect(['view', 'id' => $modelArticle->article_id]);
     }    
 
     /**
@@ -867,7 +987,144 @@ class ArticleController extends Controller
     	return "Empty message!";
     }
     
+    /*
+     * Asynch functions called with Ajax - Article (article view page when see from edior and with status Article::STATUS_REVIEW_REQUIRED)
+     */
+    public function actionAsynchArticleStatusAccept()
+    {
+    	$articleReceivedID = Yii::$app->getRequest()->post('articleid');
+    	$articleID = json_decode($articleReceivedID);
+    
+    	$reviewerReceivedID = Yii::$app->getRequest()->post('reviewerid');
+    	$reviewerID = json_decode($reviewerReceivedID);
+    	 
+    	$shortcommentReceived = Yii::$app->getRequest()->post('shortcomment');
+    	$shortcomment = $shortcommentReceived; //json_decode($shortcommentReceived);
+    
+    	$longcommentReceived = Yii::$app->getRequest()->post('longcomment');
+    	$longcomment = $longcommentReceived; //json_decode($longcommentReceived);
+    
+    	$modelArticleReviewer = ArticleReviewer::findOne([
+    			'article_id' => $articleID,
+    			'reviewer_id' => $reviewerID,
+    	]);
+    	
+    	$transaction = \Yii::$app->db->beginTransaction();
+    	try {
+    		if ($modelArticleReviewer == null) {
+    			$modelArticleReviewer = new ArticleReviewer();
+    			$modelArticleReviewer->created_on = date("Y-m-d H:i:s");
+    		} else {
+    			$modelArticleReviewer->updated_on = date("Y-m-d H:i:s");
+    		}
+    		 
+    		if($shortcomment == '0'){
+    			$shortcomment = 0;
+    		} else if(isset($shortcomment) && ($shortcomment != null) && ($shortcomment != '')){
+    			$shortcomment = intval($shortcomment);
+    		}
+    		 
+    		$modelArticleReviewer->short_comment = $shortcomment;
+    		$modelArticleReviewer->long_comment = $longcomment;
+    		$modelArticleReviewer->is_submited = 1;
+    		$modelArticleReviewer->is_editable = 0;
+    		 
+    		if($flag = $modelArticleReviewer->save(false)){    			
+    			$modelArticle = $this->findModel($articleID);
+    			$modelArticle->status = Article::STATUS_ACCEPTED_FOR_PUBLICATION;
+    			$modelArticle->updated_on = date("Y-m-d H:i:s");
+    			if (($flag = $modelArticle->save(false)) === false) {
+    				Yii::error("ArticleController->actionAsynchArticleStatusAccept(1): ".json_encode($modelArticle->getErrors()), "custom_errors_articles");
+    				$transaction->rollBack();
+    			}
+    			
+    			if ($flag) {
+    				$transaction->commit();
+    				return "Article has been successfully accepted! Please refresh the page to get the updated status!";
+    			}    			
+     		} else {
+    			Yii::error("ArticleController->actionAsynchArticleStatusAccept(2): ".json_encode($modelArticleReviewer->getErrors()), "custom_errors_articles");
+    			$transaction->rollBack();
+    			throw new \Exception('Data not saved: '.print_r($modelArticleReviewer->errors, true), 500);
+    		}    		
+    	} catch (Exception $e) {
+    		Yii::error("ArticleController->actionAsynchArticleStatusAccept(3): ".json_encode($e), "custom_errors_articles");
+    		$transaction->rollBack();
+    		throw new \Exception('Some error occured! Please try again or contact the admin!', 500);
+    	}
+    
+    	return "Empty message!";
+    }    
 
+    /*
+     * Asynch functions called with Ajax - Article (article view page when see from edior and with status Article::STATUS_REVIEW_REQUIRED)
+     */
+    public function actionAsynchArticleStatusReject()
+    {
+    	$articleReceivedID = Yii::$app->getRequest()->post('articleid');
+    	$articleID = json_decode($articleReceivedID);
+    
+    	$reviewerReceivedID = Yii::$app->getRequest()->post('reviewerid');
+    	$reviewerID = json_decode($reviewerReceivedID);
+    
+    	$shortcommentReceived = Yii::$app->getRequest()->post('shortcomment');
+    	$shortcomment = $shortcommentReceived; //json_decode($shortcommentReceived);
+    
+    	$longcommentReceived = Yii::$app->getRequest()->post('longcomment');
+    	$longcomment = $longcommentReceived; //json_decode($longcommentReceived);
+    
+    	$modelArticleReviewer = ArticleReviewer::findOne([
+    			'article_id' => $articleID,
+    			'reviewer_id' => $reviewerID,
+    	]);
+    	 
+    	$transaction = \Yii::$app->db->beginTransaction();
+    	try {
+    		if ($modelArticleReviewer == null) {
+    			$modelArticleReviewer = new ArticleReviewer();
+    			$modelArticleReviewer->created_on = date("Y-m-d H:i:s");
+    		} else {
+    			$modelArticleReviewer->updated_on = date("Y-m-d H:i:s");
+    		}
+    		 
+    		if($shortcomment == '0'){
+    			$shortcomment = 0;
+    		} else if(isset($shortcomment) && ($shortcomment != null) && ($shortcomment != '')){
+    			$shortcomment = intval($shortcomment);
+    		}
+    		 
+    		$modelArticleReviewer->short_comment = $shortcomment;
+    		$modelArticleReviewer->long_comment = $longcomment;
+    		$modelArticleReviewer->is_submited = 1;
+    		$modelArticleReviewer->is_editable = 0;
+    		 
+    		if($flag = $modelArticleReviewer->save(false)){
+    			$modelArticle = $this->findModel($articleID);
+    			$modelArticle->status = Article::STATUS_REJECTED;
+    			$modelArticle->updated_on = date("Y-m-d H:i:s");
+    			if (($flag = $modelArticle->save(false)) === false) {
+    				Yii::error("ArticleController->actionAsynchArticleStatusReject(1): ".json_encode($modelArticle->getErrors()), "custom_errors_articles");
+    				$transaction->rollBack();
+    			}
+    			 
+    			if ($flag) {
+    				$transaction->commit();
+    				return "Article has been successfully rejected! Please refresh the page to get the updated status!";
+    			}
+    		} else {
+    			Yii::error("ArticleController->actionAsynchArticleStatusReject(2): ".json_encode($modelArticleReviewer->getErrors()), "custom_errors_articles");
+    			$transaction->rollBack();
+    			throw new \Exception('Data not saved: '.print_r($modelArticleReviewer->errors, true), 500);
+    		}
+    	} catch (Exception $e) {
+    		Yii::error("ArticleController->actionAsynchArticleStatusReject(3): ".json_encode($e), "custom_errors_articles");
+    		$transaction->rollBack();
+    		throw new \Exception('Some error occured! Please try again or contact the admin!', 500);
+    	}
+    
+    	return "Empty message!";
+    }
+    
     public function actionPdfview($id, $partial = null)
     {
     	$modelArticle = $this->findModel($id);

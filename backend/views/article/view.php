@@ -4,15 +4,24 @@ use yii\helpers\Html;
 use yii\widgets\DetailView;
 use yii\grid\DataColumn;
 use yii\helpers\ArrayHelper;
+use yii\widgets\ActiveForm;
 use common\models\Article;
+use common\models\ArticleReviewer;
 
 /* @var $this yii\web\View */
 /* @var $model common\models\Article */
 
 $this->title = $model->title;
 
+\backend\assets\AppAsset::register($this);
+$this->registerJsFile("@web/js/articleScript.js", [ 'depends' => ['backend\assets\CustomJuiAsset'], 'position' => \yii\web\View::POS_END]);
 ?>
 <div class="article-view">
+
+	<div class="alert alert-dismissable hidden-div" id="article-section-alert"> <?php /*alert-danger alert-success alert-warning */ ?>
+		<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+		<strong><span id="article-section-alert-msg"></span></strong>
+	</div>
 
     <h1><?= Html::encode($this->title) ?></h1>    
 
@@ -41,11 +50,12 @@ $this->title = $model->title;
 	    }
 	    echo "&nbsp;";
         echo Html::a('View in PDF', ['pdfview', 'id' => $model->article_id], ['class' => 'btn btn-success']);
-		if($isAdminOrEditor) {
-			echo "&nbsp;";
+		if($isAdminOrEditor) {			
 			$reviewBtnClasses = 'btn btn-warning';
 			if($model->status != Article::STATUS_SUBMITTED) {
-				$reviewBtnClasses .= ' disabled';
+				$reviewBtnClasses .= ' disabled hidden';
+			} else {
+				echo "&nbsp;";
 			}
 			echo Html::a('Move for Review', ['moveforreview', 'id' => $model->article_id], [
 				'class' => $reviewBtnClasses,
@@ -54,11 +64,45 @@ $this->title = $model->title;
 					'method' => 'post',
 				],
 			]);
+			
+			$reviewrequiredBtnClasses = 'btn btn-warning';
+			if($model->status != Article::STATUS_UNDER_REVIEW) {
+				$reviewrequiredBtnClasses .= ' disabled hidden';
+			} else {
+				echo "&nbsp;";
+			}
+			echo Html::a('Move to Review Required stage', ['moveforreviewrequired', 'id' => $model->article_id], [
+					'class' => $reviewrequiredBtnClasses,
+					'data' => [
+							'confirm' => 'Are you sure you want to disable the reviews and move this article into \'review required\' state?',
+							'method' => 'post',
+					],
+			]);
+			
+			//echo "add button for moving to other stages";
 		}
     ?>
     </p>
     
-    <?php 
+    <?php    
+        if($isEditor != null && $modelCurrentUserAsReviewer != null) {
+        	echo "<hr>";
+	?>	
+			<h2><i>Editor Review:</i></h2>
+	<?php
+			$form = ActiveForm::begin();
+			echo $form->field($modelCurrentUserAsReviewer, 'short_comment')->dropDownList(
+					ArticleReviewer::$STATUS_REVIEW,
+					['prompt' => 'Select Status']
+					);
+			echo $form->field($modelCurrentUserAsReviewer, 'long_comment');
+			echo Html::button('Accept for publication', ['id' => 'accept-article-btn', 'data-articleid' => $modelCurrentUserAsReviewer->article_id, 'data-reviewerid' => $modelCurrentUserAsReviewer->reviewer_id, 'class' => 'btn btn-success']);
+			echo "&nbsp;&nbsp;";
+			echo Html::button('Reject', ['id' => 'reject-article-btn', 'data-articleid' => $modelCurrentUserAsReviewer->article_id, 'data-reviewerid' => $modelCurrentUserAsReviewer->reviewer_id, 'class' => 'btn btn-danger']);
+			ActiveForm::end();
+			echo "<hr>";
+    	}   
+   
     	$attributes = [
         	'title:ntext',
         	//'article_id',
@@ -178,5 +222,46 @@ $this->title = $model->title;
         'model' => $model,
         'attributes' => $attributes,
     ]) ?>
+    
+    <?php    	
+    	if($modelsArticleReviewer != null) {
+    ?>
+			<h2><i>Submited Review(s):</i></h2>    	  		    
+	<?php    		
+    	    foreach ($modelsArticleReviewer as $index => $modelArticleReviewer){
+    	    	echo DetailView::widget([
+    	    		'model' => $modelArticleReviewer,
+    	    		'attributes' => [
+    	    			[
+    	    				'class' => DataColumn::className(), // this line is optional
+    	    				'attribute' => 'reviewer_id',
+    	    				'value' => $modelArticleReviewer->reviewer->fullName." <".$modelArticleReviewer->reviewer->email.">",
+    	    				//'format' => 'HTML'
+    	    			],
+    	    			[
+    	    				'class' => DataColumn::className(), // this line is optional
+    	    				'attribute' => 'short_comment',
+    	    				'value' => ArticleReviewer::$STATUS_REVIEW[$modelArticleReviewer->short_comment],
+    	    				'format' => 'HTML'
+    	    			],
+    	    			'long_comment',
+    	    			[
+    	    				'class' => DataColumn::className(), // this line is optional
+    	    				'attribute' => 'created_on',
+    	    				'value' => (isset($modelArticleReviewer->created_on)) ? date("M d, Y, g:i:s A", strtotime($modelArticleReviewer->created_on)) : null,
+    	    				'format' => 'HTML'
+    	    			],
+    	    			[
+    	    				'class' => DataColumn::className(), // this line is optional
+    	    				'attribute' => 'updated_on',
+    	    				'value' => (isset($modelArticleReviewer->updated_on)) ? date("M d, Y, g:i:s A", strtotime($modelArticleReviewer->updated_on)) : null,
+    	    				'format' => 'HTML'
+    	    			],
+    	    		],
+    	    	]);
+    	    }
+    	}
+    	
+	?>
 
 </div>

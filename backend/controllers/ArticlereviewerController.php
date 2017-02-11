@@ -167,10 +167,10 @@ class ArticlereviewerController extends Controller
     	$reviewerID = json_decode($reviewerReceivedID);
     	
     	$shortcommentReceived = Yii::$app->getRequest()->post('shortcomment');
-    	$shortcomment = json_decode($shortcommentReceived);
+    	$shortcomment = $shortcommentReceived; //json_decode($shortcommentReceived);
     	
     	$longcommentReceived = Yii::$app->getRequest()->post('longcomment');
-    	$longcomment = json_decode($longcommentReceived);
+    	$longcomment = $longcommentReceived; //json_decode($longcommentReceived);
     	 
     	$modelArticleReviewer = ArticleReviewer::findOne([
     			'article_id' => $articleID,
@@ -192,12 +192,13 @@ class ArticlereviewerController extends Controller
     	
     	$modelArticleReviewer->short_comment = $shortcomment;
     	$modelArticleReviewer->long_comment = $longcomment;
+    	$modelArticleReviewer->is_submited = 1;
     	
     	if(!$modelArticleReviewer->save()){
     		Yii::error("ArticlereviewerController->actionAsynchCreateArticleReview(1): ".json_encode($modelArticleReviewer->getErrors()), "custom_errors_reviews");
     		throw new \Exception('Data not saved: '.print_r($modelArticleReviewer->errors, true), 500);
     	} else {
-    		return "Review has been successfully created! ".$modelArticleReviewer->shortcomment;
+    		return "Review has been successfully created! Please refresh the page to get the updated status!";
     	}
     
     	return "Empty message!";
@@ -215,11 +216,11 @@ class ArticlereviewerController extends Controller
     	$reviewerID = json_decode($reviewerReceivedID);
     	
     	$shortcommentReceived = Yii::$app->getRequest()->post('shortcomment');
-    	$shortcomment = json_decode($shortcommentReceived);
+    	$shortcomment = $shortcommentReceived; //json_decode($shortcommentReceived);
     	 
     	$longcommentReceived = Yii::$app->getRequest()->post('longcomment');
-    	$longcomment = json_decode($longcommentReceived);
-    
+    	$longcomment = $longcommentReceived; //json_decode($longcommentReceived);
+    	   
     	$modelArticleReviewer = ArticleReviewer::findOne([
     			'article_id' => $articleID,
     			'reviewer_id' => $reviewerID,
@@ -240,12 +241,13 @@ class ArticlereviewerController extends Controller
     	 
     	$modelArticleReviewer->short_comment = $shortcomment;
     	$modelArticleReviewer->long_comment = $longcomment;
+    	$modelArticleReviewer->is_submited = 1;
     	 
     	if(!$modelArticleReviewer->save()){
     		Yii::error("ArticlereviewerController->actionAsynchUpdateArticleReview(1): ".json_encode($modelArticleReviewer->getErrors()), "custom_errors_reviews");
     		throw new \Exception('Data not saved: '.print_r($modelArticleReviewer->errors, true), 500);
     	} else {
-    		return "Review has been successfully updated!";
+    		return "Review has been successfully updated! Please refresh the page to get the updated status!";
     	}
     
     	return "Empty message!";

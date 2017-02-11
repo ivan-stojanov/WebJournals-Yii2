@@ -42,7 +42,7 @@ class ArticleReviewer extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['article_id', 'reviewer_id'], 'required'],
+            [['article_id', 'reviewer_id', 'short_comment', 'long_comment'], 'required'],
             [['article_id', 'reviewer_id', 'short_comment', 'is_submited', 'is_editable'], 'integer'],
             [['long_comment'], 'string'],
             [['created_on', 'updated_on'], 'safe'],
@@ -57,14 +57,14 @@ class ArticleReviewer extends \yii\db\ActiveRecord
     public function attributeLabels()
     {
         return [
-            'article_id' => 'Article ID',
-            'reviewer_id' => 'Reviewer ID',
+            'article_id' => 'Article',
+            'reviewer_id' => 'Reviewer',
             'short_comment' => 'Short Comment',
             'long_comment' => 'Long Comment',
         	'is_submited' => 'Is Submited',
         	'is_editable' => 'Is Editable',
-            'created_on' => 'Created On',
-            'updated_on' => 'Updated On',
+            'created_on' => 'Created on',
+            'updated_on' => 'Updated on',
         ];
     }
 

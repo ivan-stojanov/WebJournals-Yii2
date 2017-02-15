@@ -21,38 +21,63 @@ $this->registerJsFile("@web/js/articleScript.js", [ 'depends' => ['backend\asset
 	<div class="alert alert-dismissable hidden-div" id="article-section-alert"> <?php /*alert-danger alert-success alert-warning */ ?>
 		<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
 		<strong><span id="article-section-alert-msg"></span></strong>
-	</div>
+	</div>	
+	
+	<?php 
+		if($model->status == Article::STATUS_REJECTED) {
+	?>
+		<div class="alert alert-dismissable alert-danger">
+			<strong><span>Article has been rejected!</span></strong>
+		</div>	
+	<?php
+		} else if($model->status == Article::STATUS_ACCEPTED_FOR_PUBLICATION) {
+	?>
+		<div class="alert alert-dismissable alert-warning">
+			<strong><span>Article has been accepted for publication! Editors/Admins should publish it!</span></strong>
+		</div>	
+	<?php
+		} else if($model->status == Article::STATUS_PUBLISHED) {
+	?>
+		<div class="alert alert-dismissable alert-success">
+			<strong><span>Article has been published!</span></strong>
+		</div>					
+	<?php
+		}
+	?>
 
     <h1><?= Html::encode($this->title) ?></h1>    
 
     <p>
 	<?php 
-	    if($user_can_modify) {
-	    	$updateBtnClasses = 'btn btn-primary';
-	    	if($model->status != Article::STATUS_SUBMITTED) {
+	    if($user_can_modify && $model->status != Article::STATUS_REJECTED && $model->status != Article::STATUS_PUBLISHED) {
+	    	$updateBtnClasses = 'btn btn-primary';	    	
+	    	if($model->status != Article::STATUS_SUBMITTED && $model->status != Article::STATUS_IMPROVEMENT
+	    			&& ($model->status != Article::STATUS_ACCEPTED_FOR_PUBLICATION || !$isAdminOrEditor)) {
 	    		$updateBtnClasses .= ' disabled';
 	    	}
 	        echo Html::a('Update', ['update', 'id' => $model->article_id], [
 	        	'class' => $updateBtnClasses	        		
 	        ]);
-	        echo "&nbsp;";
-	        $deleteBtnClasses = 'btn btn-danger';
-	        if($model->status != Article::STATUS_SUBMITTED) {
-	        	$deleteBtnClasses .= ' disabled';
+	        if($model->status != Article::STATUS_ACCEPTED_FOR_PUBLICATION) {
+		        echo "&nbsp;";
+		        $deleteBtnClasses = 'btn btn-danger';
+		        if($model->status != Article::STATUS_SUBMITTED) {
+		        	$deleteBtnClasses .= ' disabled';
+		        }
+		        echo Html::a('Delete', ['delete', 'id' => $model->article_id], [
+		            'class' => $deleteBtnClasses,
+		            'data' => [
+		                'confirm' => 'Are you sure you want to delete this item?',
+		                'method' => 'post',
+		            ],
+		        ]);  
 	        }
-	        echo Html::a('Delete', ['delete', 'id' => $model->article_id], [
-	            'class' => $deleteBtnClasses,
-	            'data' => [
-	                'confirm' => 'Are you sure you want to delete this item?',
-	                'method' => 'post',
-	            ],
-	        ]);  	
 	    }
 	    echo "&nbsp;";
         echo Html::a('View in PDF', ['pdfview', 'id' => $model->article_id], ['class' => 'btn btn-success']);
-		if($isAdminOrEditor) {			
+		if($isAdminOrEditor) {
 			$reviewBtnClasses = 'btn btn-warning';
-			if($model->status != Article::STATUS_SUBMITTED) {
+			if($model->status != Article::STATUS_SUBMITTED && $model->status != Article::STATUS_IMPROVEMENT) {
 				$reviewBtnClasses .= ' disabled hidden';
 			} else {
 				echo "&nbsp;";
@@ -77,16 +102,29 @@ $this->registerJsFile("@web/js/articleScript.js", [ 'depends' => ['backend\asset
 							'confirm' => 'Are you sure you want to disable the reviews and move this article into \'review required\' state?',
 							'method' => 'post',
 					],
+			]);			
+
+			$publishedBtnClasses = 'btn btn-warning';
+			if($model->status != Article::STATUS_ACCEPTED_FOR_PUBLICATION) {
+				$publishedBtnClasses .= ' disabled hidden';
+			} else {
+				echo "&nbsp;";
+			}
+			echo Html::a('Publish', ['moveforpublish', 'id' => $model->article_id], [
+					'class' => $publishedBtnClasses,
+					'data' => [
+							'confirm' => 'Are you sure you want to \'publish\' this article?',
+							'method' => 'post',
+					],
 			]);
-			
-			//echo "add button for moving to other stages";
 		}
     ?>
     </p>
     
     <?php    
-        if($isEditor != null && $modelCurrentUserAsReviewer != null) {
-        	echo "<hr>";
+    	echo "<hr>";
+        if($isEditor != null && $modelCurrentUserAsReviewer != null) {        	
+        	echo "<div id='editor-review-section'>";
 	?>	
 			<h2><i>Editor Review:</i></h2>
 	<?php
@@ -99,8 +137,11 @@ $this->registerJsFile("@web/js/articleScript.js", [ 'depends' => ['backend\asset
 			echo Html::button('Accept for publication', ['id' => 'accept-article-btn', 'data-articleid' => $modelCurrentUserAsReviewer->article_id, 'data-reviewerid' => $modelCurrentUserAsReviewer->reviewer_id, 'class' => 'btn btn-success']);
 			echo "&nbsp;&nbsp;";
 			echo Html::button('Reject', ['id' => 'reject-article-btn', 'data-articleid' => $modelCurrentUserAsReviewer->article_id, 'data-reviewerid' => $modelCurrentUserAsReviewer->reviewer_id, 'class' => 'btn btn-danger']);
-			ActiveForm::end();
+			echo "&nbsp;&nbsp;";
+			echo Html::button('Move back for improvement', ['id' => 'improvement-article-btn', 'data-articleid' => $modelCurrentUserAsReviewer->article_id, 'data-reviewerid' => $modelCurrentUserAsReviewer->reviewer_id, 'class' => 'btn btn-warning']);
+			ActiveForm::end();				
 			echo "<hr>";
+			echo "</div>";
     	}   
    
     	$attributes = [
@@ -147,13 +188,15 @@ $this->registerJsFile("@web/js/articleScript.js", [ 'depends' => ['backend\asset
         				"<div class='glyphicon glyphicon-eye-open'> Under review</div> (Article can not be edited)"
         			: (($model->status == Article::STATUS_REVIEW_REQUIRED) ?
         				"<div class='glyphicon glyphicon-eye-open'> Review required</div> (Article can not be edited)"
+					: (($model->status == Article::STATUS_IMPROVEMENT) ?
+        				"<div class='glyphicon glyphicon-edit'> Improvement</div> (Article can be edited again)"
         			: (($model->status == Article::STATUS_ACCEPTED_FOR_PUBLICATION) ?
         				"<div class='glyphicon glyphicon-ok-circle'> Accepted for publication</div> (Article can not be edited)"
         			: (($model->status == Article::STATUS_PUBLISHED) ?
         				"<div class='glyphicon glyphicon-ok'> Published</div> (Article can not be edited)"
         			: (($model->status == Article::STATUS_REJECTED) ?
         				"<div class='glyphicon glyphicon-remove'> Rejected</div> (Article can not be edited)"
-        			: null))))),
+        			: null)))))),
         		//	($model->is_archived == 0) ? "<div class='glyphicon glyphicon-remove'></div>" : "<div class='glyphicon glyphicon-ok'></div>",
         		'format' => 'HTML'
         	]

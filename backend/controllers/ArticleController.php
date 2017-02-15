@@ -37,6 +37,7 @@ class ArticleController extends Controller
                     'delete' => ['POST'],
                 	'moveforreview' => ['POST'],
                 	'moveforreviewrequired' => ['POST'],
+                	'moveforpublish' => ['POST'],                		
                 ],
             ],
         ];
@@ -151,7 +152,7 @@ class ArticleController extends Controller
 
     	$modelArticle = $this->findModel($id);
     	$modelsArticleReviewer = null;
-    	if($isAdminOrEditor) {
+    	if($isAdminOrEditor || $user_can_modify) {
     		if($modelArticle->status != Article::STATUS_SUBMITTED && $modelArticle->status != Article::STATUS_UNDER_REVIEW) {
 	    		$modelsArticleReviewer = ArticleReviewer::findAll([
 	    			'article_id' => $id,
@@ -170,9 +171,7 @@ class ArticleController extends Controller
     			$modelCurrentUserAsReviewer = new ArticleReviewer();
     			$modelCurrentUserAsReviewer->article_id = $id;
     			$modelCurrentUserAsReviewer->reviewer_id = Yii::$app->user->id;
-    			$modelCurrentUserAsReviewer->short_comment = 0; // => "Accept without change", //"None",
-    			$modelCurrentUserAsReviewer->long_comment = "";
-    			//to do: add scenario here
+    			$modelCurrentUserAsReviewer->scenario = 'article_reviewer_init';
     			$modelCurrentUserAsReviewer->created_on = date("Y-m-d H:i:s");
     			if(!$modelCurrentUserAsReviewer->save()){
     				Yii::error("ArticleController->actionView(1): ".json_encode($modelCurrentUserAsReviewer->getErrors()), "custom_errors_articles");
@@ -627,7 +626,7 @@ class ArticleController extends Controller
     								$post_msg["text"] .= "Editor can not be set as an reviewer!<br>";
     							}
    							
-    							$canEditForm = ($modelArticle->status == Article::STATUS_SUBMITTED);
+    							$canEditForm = ($modelArticle->status == Article::STATUS_SUBMITTED || $modelArticle->status == Article::STATUS_IMPROVEMENT || $modelArticle->status == Article::STATUS_ACCEPTED_FOR_PUBLICATION);
     							
         						return $this->render('update', [
         								'modelArticle' => $modelArticle,
@@ -753,7 +752,7 @@ class ArticleController extends Controller
         $modelArticle->post_editors = $arrayArticleEditor;
         $modelArticle->post_correspondent_author = [$articleCorrespondentAuthor];
         
-        $canEditForm = ($modelArticle->status == Article::STATUS_SUBMITTED);
+        $canEditForm = ($modelArticle->status == Article::STATUS_SUBMITTED || $modelArticle->status == Article::STATUS_IMPROVEMENT || $modelArticle->status == Article::STATUS_ACCEPTED_FOR_PUBLICATION);
         
         return $this->render('update', [
             'modelArticle' => $modelArticle,
@@ -934,7 +933,46 @@ class ArticleController extends Controller
     	}
     
     	return $this->redirect(['view', 'id' => $modelArticle->article_id]);
-    }    
+    }
+    
+    /**
+     * Change the status of an existing Article model from STATUS_ACCEPTED_FOR_PUBLICATION to STATUS_PUBLISHED.
+     * If change is successful or not, the browser will redirect on the view article (stay on the same) page with message result.
+     * @param integer $id
+     * @return mixed
+     */
+    public function actionMoveforpublish($id)
+    {
+    	if (Yii::$app->user->isGuest) {
+    		return $this->redirect(Yii::$app->urlManagerFrontEnd->createUrl('site/login'));
+    	}
+    	//if (Yii::$app->user->isGuest /*|| Yii::$app->session->get('user.is_admin') != true*/){
+    	//	return $this->redirect(['site/error']);
+    	//}
+    	 
+    	$current_user_id = ','.Yii::$app->user->id.',';
+    	$article_editors = ArticleEditor::getEditorsForArticleString($id);
+    	 
+    	$isAdminOrEditor = ((strpos($article_editors['ids'], $current_user_id) !== false) && Yii::$app->session->get('user.is_editor'));
+    	$isAdminOrEditor = ($isAdminOrEditor || Yii::$app->session->get('user.is_admin'));
+    
+    	if($isAdminOrEditor == true) {
+    		$modelArticle = $this->findModel($id);
+    		$modelArticle->scenario = 'article_change_status';
+    		$modelArticle->status = Article::STATUS_PUBLISHED;
+    		$modelArticle->updated_on = date("Y-m-d H:i:s");
+    		if(!$modelArticle->save()){
+    			Yii::error("ArticleController->actionMoveforpublish(1): ".json_encode($modelArticle->getErrors()), "custom_errors_articles");
+    			Yii::$app->session->setFlash('error', 'Some error occured! Please try again or contact the admin!');
+    		} else {
+    			//Yii::$app->session->setFlash('success', 'Article status has been successfully \'published\'!');
+    		}
+    	} else {
+    		Yii::$app->session->setFlash('error', 'You do not have permission for performing this action!');
+    	}
+    
+    	return $this->redirect(['view', 'id' => $modelArticle->article_id]);
+    }
 
     /**
      * Finds the Article model based on its primary key value.
@@ -1118,6 +1156,75 @@ class ArticleController extends Controller
     		}
     	} catch (Exception $e) {
     		Yii::error("ArticleController->actionAsynchArticleStatusReject(3): ".json_encode($e), "custom_errors_articles");
+    		$transaction->rollBack();
+    		throw new \Exception('Some error occured! Please try again or contact the admin!', 500);
+    	}
+    
+    	return "Empty message!";
+    }
+    
+    /*
+     * Asynch functions called with Ajax - Article (article view page when see from edior and with status Article::STATUS_REVIEW_REQUIRED)
+     */
+    public function actionAsynchArticleStatusImprovement()
+    {
+    	$articleReceivedID = Yii::$app->getRequest()->post('articleid');
+    	$articleID = json_decode($articleReceivedID);
+    
+    	$reviewerReceivedID = Yii::$app->getRequest()->post('reviewerid');
+    	$reviewerID = json_decode($reviewerReceivedID);
+    
+    	$shortcommentReceived = Yii::$app->getRequest()->post('shortcomment');
+    	$shortcomment = $shortcommentReceived; //json_decode($shortcommentReceived);
+    
+    	$longcommentReceived = Yii::$app->getRequest()->post('longcomment');
+    	$longcomment = $longcommentReceived; //json_decode($longcommentReceived);
+    
+    	$modelArticleReviewer = ArticleReviewer::findOne([
+    			'article_id' => $articleID,
+    			'reviewer_id' => $reviewerID,
+    	]);
+    
+    	$transaction = \Yii::$app->db->beginTransaction();
+    	try {
+    		if ($modelArticleReviewer == null) {
+    			$modelArticleReviewer = new ArticleReviewer();
+    			$modelArticleReviewer->created_on = date("Y-m-d H:i:s");
+    		} else {
+    			$modelArticleReviewer->updated_on = date("Y-m-d H:i:s");
+    		}
+    		 
+    		if($shortcomment == '0'){
+    			$shortcomment = 0;
+    		} else if(isset($shortcomment) && ($shortcomment != null) && ($shortcomment != '')){
+    			$shortcomment = intval($shortcomment);
+    		}
+    		 
+    		$modelArticleReviewer->short_comment = $shortcomment;
+    		$modelArticleReviewer->long_comment = $longcomment;
+    		$modelArticleReviewer->is_submited = 1;
+    		$modelArticleReviewer->is_editable = 1;
+    		 
+    		if($flag = $modelArticleReviewer->save(false)){
+    			$modelArticle = $this->findModel($articleID);
+    			$modelArticle->status = Article::STATUS_IMPROVEMENT;
+    			$modelArticle->updated_on = date("Y-m-d H:i:s");
+    			if (($flag = $modelArticle->save(false)) === false) {
+    				Yii::error("ArticleController->actionAsynchArticleStatusImprovement(1): ".json_encode($modelArticle->getErrors()), "custom_errors_articles");
+    				$transaction->rollBack();
+    			}
+    
+    			if ($flag) {
+    				$transaction->commit();
+    				return "Article has been successfully moved back for improvement! Please refresh the page to get the updated status!";
+    			}
+    		} else {
+    			Yii::error("ArticleController->actionAsynchArticleStatusImprovement(2): ".json_encode($modelArticleReviewer->getErrors()), "custom_errors_articles");
+    			$transaction->rollBack();
+    			throw new \Exception('Data not saved: '.print_r($modelArticleReviewer->errors, true), 500);
+    		}
+    	} catch (Exception $e) {
+    		Yii::error("ArticleController->actionAsynchArticleStatusImprovement(3): ".json_encode($e), "custom_errors_articles");
     		$transaction->rollBack();
     		throw new \Exception('Some error occured! Please try again or contact the admin!', 500);
     	}

@@ -42,13 +42,21 @@ class ArticleReviewer extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['article_id', 'reviewer_id', 'short_comment', 'long_comment'], 'required'],
+            [['article_id', 'reviewer_id'], 'required'],
+        	[['short_comment', 'long_comment'], 'required', 'except' => 'article_reviewer_init'],
             [['article_id', 'reviewer_id', 'short_comment', 'is_submited', 'is_editable'], 'integer'],
             [['long_comment'], 'string'],
             [['created_on', 'updated_on'], 'safe'],
             [['article_id'], 'exist', 'skipOnError' => true, 'targetClass' => Article::className(), 'targetAttribute' => ['article_id' => 'article_id']],
             [['reviewer_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['reviewer_id' => 'id']],
         ];
+    }
+    
+    public function scenarios()
+    {
+    	$scenarios = parent::scenarios();
+    	$scenarios['article_reviewer_init'] = ['article_id', 'reviewer_id']; //Scenario Attributes that will be validated
+    	return $scenarios;
     }
 
     /**

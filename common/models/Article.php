@@ -40,9 +40,10 @@ class Article extends \yii\db\ActiveRecord
 	const STATUS_SUBMITTED = 0;
 	const STATUS_UNDER_REVIEW = 1;
 	const STATUS_REVIEW_REQUIRED = 2;
-	const STATUS_ACCEPTED_FOR_PUBLICATION = 3;
-	const STATUS_PUBLISHED = 4;
-	const STATUS_REJECTED = 5;
+	const STATUS_IMPROVEMENT = 3;
+	const STATUS_ACCEPTED_FOR_PUBLICATION = 4;
+	const STATUS_PUBLISHED = 5;
+	const STATUS_REJECTED = 6;
 	
 	public $post_keywords = [];
 	public $post_authors = [];

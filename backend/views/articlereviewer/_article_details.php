@@ -58,6 +58,8 @@ use common\models\Article;
        				"<div class='glyphicon glyphicon-eye-open'> Under review</div> (Article can not be edited)"
        			: (($model->status == Article::STATUS_REVIEW_REQUIRED) ?
        				"<div class='glyphicon glyphicon-eye-open'> Review required</div> (Article can not be edited)"
+       			: (($model->status == Article::STATUS_IMPROVEMENT) ?
+       				"<div class='glyphicon glyphicon-edit'> Improvement</div> (Article can be edited again)"
        			: (($model->status == Article::STATUS_ACCEPTED_FOR_PUBLICATION) ?
        				"<div class='glyphicon glyphicon-ok-circle'> Accepted for publication</div> (Article can not be edited)"
        			: (($model->status == Article::STATUS_PUBLISHED) ?

@@ -67,6 +67,8 @@ use common\models\ArticleAuthor;
 	        			return "<div class='glyphicon glyphicon-eye-open'> Under review</div>";
 	        		else if ($data->status == Article::STATUS_REVIEW_REQUIRED)
 	        			return "<div class='glyphicon glyphicon-eye-open'> Review required</div>";
+	        		else if ($data->status == Article::STATUS_IMPROVEMENT)
+	        			return "<div class='glyphicon glyphicon-edit'> Improvement</div>";
 	        		else if ($data->status == Article::STATUS_ACCEPTED_FOR_PUBLICATION)
 	        			return "<div class='glyphicon glyphicon-ok-circle'> Accepted for publication</div>";
 	        		else if ($data->status == Article::STATUS_PUBLISHED)
@@ -80,6 +82,7 @@ use common\models\ArticleAuthor;
 	        			(string)Article::STATUS_SUBMITTED => "Submitted",
 	        			(string)Article::STATUS_UNDER_REVIEW => "Under review",
 	        			(string)Article::STATUS_REVIEW_REQUIRED => "Review required",
+	        			(string)Article::STATUS_IMPROVEMENT => "Improvement",
 	        			(string)Article::STATUS_ACCEPTED_FOR_PUBLICATION => "Accepted for publication",
 	        			(string)Article::STATUS_PUBLISHED => "Published",
 	        			(string)Article::STATUS_REJECTED => "Rejected"

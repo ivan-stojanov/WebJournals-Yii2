@@ -123,7 +123,7 @@ $this->registerJsFile("@web/js/articleScript.js", [ 'depends' => ['backend\asset
     
     <?php    
     	echo "<hr>";
-        if($isEditor != null && $modelCurrentUserAsReviewer != null) {        	
+        if($isAdminOrEditor != null && $modelCurrentUserAsReviewer != null) {        	
         	echo "<div id='editor-review-section'>";
 	?>	
 			<h2><i>Editor Review:</i></h2>

@@ -63,7 +63,7 @@ class ArticlereviewerController extends Controller
     	$queryParams = Yii::$app->request->queryParams;
     	$queryParams['ArticleSearch']['is_deleted'] = 0;
     	$queryParams['ArticleSearch']['is_submited'] = 0;
-    	$queryParams['ArticleSearch']['statuses_review'] = "1,2"; //under review and review required
+    	$queryParams['ArticleSearch']['statuses_review'] = "1"; //under review and review required
 
     	$searchModel = new ArticleSearch();
     	$dataProvider = $searchModel->search($queryParams, null, Yii::$app->user->id);
@@ -127,6 +127,9 @@ class ArticlereviewerController extends Controller
     	//	'article_id' => $id
     	//]);
     	 
+    	$modelArticle = Article::findOne($id);
+    	$canEditForm = ($modelArticle->status == Article::STATUS_UNDER_REVIEW);
+    	
     	$article_authors = ArticleAuthor::getAuthorsForArticleString($id);
     	$article_keywords_string = ArticleKeyword::getKeywordsForArticleString($id);
     	$article_reviewers = ArticleReviewer::getReviewersForArticleString($id);
@@ -144,7 +147,7 @@ class ArticlereviewerController extends Controller
     	return $this->render('view', [
     			//'modelsArticleReviewer' => $modelsArticleReviewer,
     			'modelArticleReviewer' => $modelArticleReviewer,
-    			'modelArticle' => Article::findOne($id),
+    			'modelArticle' => $modelArticle,
     			'article_authors' => $article_authors,
     			'article_keywords_string' => $article_keywords_string,
     			'article_reviewers' => $article_reviewers,
@@ -152,6 +155,7 @@ class ArticlereviewerController extends Controller
     			'user_can_modify' => $user_can_modify,
     			'isAdminOrEditor' => $isAdminOrEditor,
     			'isReviewer' => $isReviewer,
+    			'canEditForm' => $canEditForm,
     	]);
     }
     

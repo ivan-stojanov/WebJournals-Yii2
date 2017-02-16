@@ -132,7 +132,7 @@ class ArticleController extends Controller
     	//if (Yii::$app->user->isGuest /*|| Yii::$app->session->get('user.is_admin') != true*/){
     	//	return $this->redirect(['site/error']);
     	//}
-    	
+
     	$article_authors = ArticleAuthor::getAuthorsForArticleString($id);    	
     	$article_correspondent_author = null;
     	if(isset($article_authors['correspondent_author'])){
@@ -162,7 +162,7 @@ class ArticleController extends Controller
     	}
     	
     	$modelCurrentUserAsReviewer = null; 
-    	if($isEditor && $modelArticle->status == Article::STATUS_REVIEW_REQUIRED){
+    	if($isAdminOrEditor && $modelArticle->status == Article::STATUS_REVIEW_REQUIRED){
     		$modelCurrentUserAsReviewer = ArticleReviewer::findOne([
 	    		'article_id' => $id,
 	    		'reviewer_id' => Yii::$app->user->id,
@@ -178,7 +178,7 @@ class ArticleController extends Controller
     			}
     		}
     	}
-    	
+
         return $this->render('view', [
             'model' => $modelArticle,
         	'modelsArticleReviewer' => $modelsArticleReviewer,
@@ -295,10 +295,12 @@ class ArticleController extends Controller
     						}
     						
     						$reviewer_is_editor = false;
-    						foreach ($modelArticle->post_reviewers as $reviewerItem) {
-    							if(ArrayHelper::isIn($reviewerItem, $modelArticle->post_editors)){
-    								$reviewer_is_editor = true;
-    							}
+    						if($modelArticle != null && $modelArticle->post_reviewers != null && count($modelArticle->post_reviewers)>0) {
+	    						foreach ($modelArticle->post_reviewers as $reviewerItem) {
+	    							if(ArrayHelper::isIn($reviewerItem, $modelArticle->post_editors)){
+	    								$reviewer_is_editor = true;
+	    							}
+	    						}
     						}
     						
     						$current_is_author = ArrayHelper::isIn(Yii::$app->user->id, $modelArticle->post_authors);
@@ -376,6 +378,7 @@ class ArticleController extends Controller
     							$articleReviewerItem->article_id = $modelArticle->article_id;
    								$articleReviewerItem->reviewer_id = intval($reviewerId);
    								$articleReviewerItem->created_on = date("Y-m-d H:i:s");
+   								$articleReviewerItem->scenario = 'article_reviewer_init';
    								if(!$articleReviewerItem->save()){
     								Yii::error("ArticleController->actionCreate(4): ".json_encode($articleReviewerItem->getErrors()), "custom_errors_articles");
     							}
@@ -602,10 +605,12 @@ class ArticleController extends Controller
         					}
         					
         					$reviewer_is_editor = false;
-        					foreach ($modelArticle->post_reviewers as $reviewerItem) {
-        						if(ArrayHelper::isIn($reviewerItem, $modelArticle->post_editors)){
-        							$reviewer_is_editor = true;
-        						}
+        					if($modelArticle != null && $modelArticle->post_reviewers != null && count($modelArticle->post_reviewers)>0) {
+	        					foreach ($modelArticle->post_reviewers as $reviewerItem) {
+	        						if(ArrayHelper::isIn($reviewerItem, $modelArticle->post_editors)){
+	        							$reviewer_is_editor = true;
+	        						}
+	        					}
         					}
         			        
         					$current_is_author = ArrayHelper::isIn(Yii::$app->user->id, $modelArticle->post_authors);
@@ -695,6 +700,7 @@ class ArticleController extends Controller
 	        						$articleReviewerItem->reviewer_id = intval($reviewerId);
 	        						$articleReviewerItem->updated_on = date("Y-m-d H:i:s");
 	        						$articleReviewerItem->created_on = date("Y-m-d H:i:s");
+	        						$articleReviewerItem->scenario = 'article_reviewer_init';
 	        						if(!$articleReviewerItem->save()){
 	        							Yii::error("ArticleController->actionUpdate(4): ".json_encode($articleReviewerItem->getErrors()), "custom_errors_articles");
 	        						}
@@ -861,7 +867,36 @@ class ArticleController extends Controller
     		if(!$modelArticle->save()){
     			Yii::error("ArticleController->actionMoveforreview(1): ".json_encode($modelArticle->getErrors()), "custom_errors_articles");
     			Yii::$app->session->setFlash('error', 'Some error occured! Please try again or contact the admin!');
-    		} else {
+    		} else {    			
+    			$modelsArticleReviewer = ArticleReviewer::findAll([
+    					'article_id' => $id,
+    					'is_submited' => 0
+    			]);    			
+    			foreach ($modelsArticleReviewer as $index => $modelArticleReviewer) {
+    				$email_sent_reviewer = Yii::$app->mailer->compose(['html' => 'moveForReviewReviewer-html', 'text' => 'moveForReviewReviewer-text'], ['modelArticleReviewer' => $modelArticleReviewer])
+						    				->setTo($modelArticleReviewer->reviewer->email)
+						    				->setFrom([Yii::$app->user->identity->email => Yii::$app->user->identity->fullName])
+						    				->setSubject("Article sent for Review!")
+						    				->send();
+    				if(!$email_sent_reviewer) {
+    					Yii::error("ArticleController->actionMoveforreview(2): Failure! Email to reviewer has not been sent", "custom_errors_articles");
+    				}
+    			}
+    			$modelsArticleAuthor = ArticleAuthor::findAll([
+    					'article_id' => $id,
+    					'is_correspondent' => 1
+    			]);
+    			foreach ($modelsArticleAuthor as $index => $modelArticleAuthor) {
+    				$email_sent_author = Yii::$app->mailer->compose(['html' => 'moveForReviewAuthor-html', 'text' => 'moveForReviewAuthor-text'], ['modelArticleAuthor' => $modelArticleAuthor])
+						    				->setTo($modelArticleAuthor->author->email)
+						    				->setFrom([Yii::$app->user->identity->email => Yii::$app->user->identity->fullName])
+						    				->setSubject("Article sent for Review!")
+						    				->send();
+    				if(!$email_sent_author) {
+    					Yii::error("ArticleController->actionMoveforreview(3): Failure! Email to author has not been sent", "custom_errors_articles");
+    				}
+    			}
+    			
     			Yii::$app->session->setFlash('success', 'Article status has been successfully changed into \'review\' state!');
     		}    		
     	} else {

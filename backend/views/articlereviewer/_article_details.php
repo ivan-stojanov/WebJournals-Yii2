@@ -66,7 +66,7 @@ use common\models\Article;
        				"<div class='glyphicon glyphicon-ok'> Published</div> (Article can not be edited)"
        			: (($model->status == Article::STATUS_REJECTED) ?
        				"<div class='glyphicon glyphicon-remove'> Rejected</div> (Article can not be edited)"
-       			: null))))),
+       			: null)))))),
        		//	($model->is_archived == 0) ? "<div class='glyphicon glyphicon-remove'></div>" : "<div class='glyphicon glyphicon-ok'></div>",
        		'format' => 'HTML'
        	]

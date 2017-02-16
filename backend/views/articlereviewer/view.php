@@ -36,30 +36,40 @@ $this->registerJsFile("@web/js/articlereviewerScript.js", [ 'depends' => ['backe
     			'isReviewer' => $isReviewer,
     ]) ?>
     
+    <?php 
+    	$disabled = "disabled";
+    ?>    
+    
     <hr> 
     <h1><?= Html::encode("My Review") ?></h1>
     
     <?php 
     	if($modelArticleReviewer->is_submited == 0) {
-    		echo "Status: Review is not submitted yet!";
+    		if($canEditForm)
+    			echo "Status: Review is not submitted yet!";
+    		else
+    			echo "Status: Article is not 'under review' state!";
     		$form = ActiveForm::begin();    		
     		    echo $form->field($modelArticleReviewer, 'short_comment')->dropDownList(
     		    	ArticleReviewer::$STATUS_REVIEW,
-    		    	['prompt' => 'Select Status']
+    		    	['prompt' => 'Select Status', 'disabled' => !$canEditForm]
     		    );    		    
-    		    echo $form->field($modelArticleReviewer, 'long_comment');
-    		    echo Html::button('Submit', ['id' => 'create-review-btn', 'data-articleid' => $modelArticleReviewer->article_id, 'data-reviewerid' => $modelArticleReviewer->reviewer_id, 'class' => 'btn btn-primary']);
+    		    echo $form->field($modelArticleReviewer, 'long_comment')->textInput(['disabled' => !$canEditForm]);
+    		    echo Html::button('Submit', ['id' => 'create-review-btn', 'data-articleid' => $modelArticleReviewer->article_id, 'data-reviewerid' => $modelArticleReviewer->reviewer_id, 'class' => 'btn btn-primary', 'disabled' => !$canEditForm]);
     		ActiveForm::end();
     		echo "<hr>";
     	} else if($modelArticleReviewer->is_submited == 1 && $modelArticleReviewer->is_editable == 1) {
-    		echo "Status: Review is submitted, but can be edited still!";
+    		if($canEditForm)
+    			echo "Status: Review is submitted, but can be edited still!";
+    		else
+    			echo "Status: Article is not 'under review' state!";    		
     		$form = ActiveForm::begin();
     			echo $form->field($modelArticleReviewer, 'short_comment')->dropDownList(
     				ArticleReviewer::$STATUS_REVIEW,
-    				['prompt' => 'Select Status']
+    				['prompt' => 'Select Status', 'disabled' => !$canEditForm]
     			);
-    			echo $form->field($modelArticleReviewer, 'long_comment');
-    		    echo Html::button('Submit', ['id' => 'update-review-btn', 'data-articleid' => $modelArticleReviewer->article_id, 'data-reviewerid' => $modelArticleReviewer->reviewer_id, 'class' => 'btn btn-primary']);
+    			echo $form->field($modelArticleReviewer, 'long_comment')->textInput(['disabled' => !$canEditForm]);
+    		    echo Html::button('Submit', ['id' => 'update-review-btn', 'data-articleid' => $modelArticleReviewer->article_id, 'data-reviewerid' => $modelArticleReviewer->reviewer_id, 'class' => 'btn btn-primary', 'disabled' => !$canEditForm]);
     		ActiveForm::end();    		
     		echo "<hr>";
     	} else if($modelArticleReviewer->is_submited == 1 && $modelArticleReviewer->is_editable == 0) {

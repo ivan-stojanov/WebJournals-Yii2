@@ -76,18 +76,32 @@ $this->registerJsFile("@web/js/articleScript.js", [ 'depends' => ['backend\asset
 	    echo "&nbsp;";
         echo Html::a('View in PDF', ['pdfview', 'id' => $model->article_id], ['class' => 'btn btn-success']);
 		if($isAdminOrEditor) {
-			$reviewBtnClasses = 'btn btn-warning';
-			if($model->status != Article::STATUS_SUBMITTED && $model->status != Article::STATUS_IMPROVEMENT) {
-				$reviewBtnClasses .= ' disabled hidden';
+			$reviewOneBtnClasses = 'btn btn-warning';
+			if($model->status != Article::STATUS_SUBMITTED) {
+				$reviewOneBtnClasses .= ' disabled hidden';
 			} else {
 				echo "&nbsp;";
 			}
 			echo Html::a('Move for Review', ['moveforreview', 'id' => $model->article_id], [
-				'class' => $reviewBtnClasses,
+				'class' => $reviewOneBtnClasses,
 				'data' => [
 					'confirm' => 'Are you sure you want to move this article into \'review\' state?',
 					'method' => 'post',
 				],
+			]);
+			
+			$reviewTwoBtnClasses = 'btn btn-warning';
+			if($model->status != Article::STATUS_IMPROVEMENT) {
+				$reviewTwoBtnClasses .= ' disabled hidden';
+			} else {
+				echo "&nbsp;";
+			}
+			echo Html::a('Move for Review', ['moveforreviewagain', 'id' => $model->article_id], [
+					'class' => $reviewTwoBtnClasses,
+					'data' => [
+							'confirm' => 'Are you sure you want to move this article into \'review\' state?',
+							'method' => 'post',
+					],
 			]);
 			
 			$reviewrequiredBtnClasses = 'btn btn-warning';
@@ -134,7 +148,7 @@ $this->registerJsFile("@web/js/articleScript.js", [ 'depends' => ['backend\asset
 					['prompt' => 'Select Status']
 					);
 			echo $form->field($modelCurrentUserAsReviewer, 'long_comment');
-			echo Html::button('Accept for publication', ['id' => 'accept-article-btn', 'data-articleid' => $modelCurrentUserAsReviewer->article_id, 'data-reviewerid' => $modelCurrentUserAsReviewer->reviewer_id, 'class' => 'btn btn-success']);
+			echo Html::button('Accept for publication', ['id' => 'acceptforpublication-article-btn', 'data-articleid' => $modelCurrentUserAsReviewer->article_id, 'data-reviewerid' => $modelCurrentUserAsReviewer->reviewer_id, 'class' => 'btn btn-success']);
 			echo "&nbsp;&nbsp;";
 			echo Html::button('Reject', ['id' => 'reject-article-btn', 'data-articleid' => $modelCurrentUserAsReviewer->article_id, 'data-reviewerid' => $modelCurrentUserAsReviewer->reviewer_id, 'class' => 'btn btn-danger']);
 			echo "&nbsp;&nbsp;";
@@ -148,13 +162,33 @@ $this->registerJsFile("@web/js/articleScript.js", [ 'depends' => ['backend\asset
         	'title:ntext',
         	//'article_id',
         	//'section_id',
-        	[
-        		'class' => DataColumn::className(), // this line is optional
-        		'attribute' => 'section_id',
-        		'label' => 'Section title',
-        		'value' => (isset($model->section)) ? $model->section->title : null,
-        		'format' => 'HTML'
-        	],
+        ];
+    	if(($user_can_modify || $isAdminOrEditor) && $model->status == Article::STATUS_PUBLISHED) {
+	    	$attributes = ArrayHelper::merge($attributes, [  	
+	        	[
+	        		'class' => DataColumn::className(), // this line is optional
+	        		'attribute' => 'section_id',
+	        		'label' => 'Section title',
+	        		'value' => (isset($model->section)) ? $model->section->title : null,
+	        		'format' => 'HTML'
+	        	],
+	    		[
+	    			'class' => DataColumn::className(), // this line is optional
+	    			//'attribute' => 'issue_id',
+	    			'label' => 'Issue title',
+	    			'value' => (isset($model->section->issue)) ? $model->section->issue->title : null,
+	    			'format' => 'HTML'
+	    		],
+	    		[
+	    			'class' => DataColumn::className(), // this line is optional
+	    			//'attribute' => 'volume_id',
+	    			'label' => 'Volume title',
+	    			'value' => (isset($model->section->issue->volume)) ? $model->section->issue->volume->title : null,
+	    			'format' => 'HTML'
+	    		],	    			
+	    	]);
+    	}
+    	$attributes = ArrayHelper::merge($attributes, [    			
             //'abstract:ntext',
         	[
         		'class' => DataColumn::className(), // this line is optional
@@ -175,7 +209,7 @@ $this->registerJsFile("@web/js/articleScript.js", [ 'depends' => ['backend\asset
             //'page_from',
             //'page_to',
             //'sort_in_section',
-        ];
+    	]);    
     //if($user_can_modify) {
     	$attributes = ArrayHelper::merge($attributes, [
         	[

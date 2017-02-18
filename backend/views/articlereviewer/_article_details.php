@@ -18,13 +18,33 @@ use common\models\Article;
        	'title:ntext',
        	//'article_id',
        	//'section_id',
-       	[
-       		'class' => DataColumn::className(), // this line is optional
-       		'attribute' => 'section_id',
-       		'label' => 'Section title',
-       		'value' => (isset($model->section)) ? $model->section->title : null,
-       		'format' => 'HTML'
-       	],
+    ];
+    if(($user_can_modify || $isAdminOrEditor) && $model->status == Article::STATUS_PUBLISHED) {
+    	$attributes = ArrayHelper::merge($attributes, [
+    		[
+    			'class' => DataColumn::className(), // this line is optional
+    			'attribute' => 'section_id',
+    			'label' => 'Section title',
+    			'value' => (isset($model->section)) ? $model->section->title : null,
+    			'format' => 'HTML'
+    		],
+    		[
+    			'class' => DataColumn::className(), // this line is optional
+    			//'attribute' => 'issue_id',
+    			'label' => 'Issue title',
+    			'value' => (isset($model->section->issue)) ? $model->section->issue->title : null,
+    			'format' => 'HTML'
+    		],
+    		[
+    			'class' => DataColumn::className(), // this line is optional
+    			//'attribute' => 'volume_id',
+    			'label' => 'Volume title',
+    			'value' => (isset($model->section->issue->volume)) ? $model->section->issue->volume->title : null,
+    			'format' => 'HTML'
+    		],
+    	]);
+    }
+    $attributes = ArrayHelper::merge($attributes, [
         //'abstract:ntext',
        	[
        		'class' => DataColumn::className(), // this line is optional
@@ -45,7 +65,7 @@ use common\models\Article;
         //'page_from',
         //'page_to',
         //'sort_in_section',
-    ];
+    ]);
 //if($user_can_modify) {
    	$attributes = ArrayHelper::merge($attributes, [
        	[

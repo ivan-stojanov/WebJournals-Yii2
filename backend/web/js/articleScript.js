@@ -24,7 +24,7 @@ $('.article_attribute__file_attach').on('fileclear', function(event) {
     });
 });
 
-$('#accept-article-btn').on('click', function(event) {
+$('#acceptforpublication-article-btn').on('click', function(event) {
 	var articleid = 0;
 	var reviewerid = 0;
 	if ($(this).attr('data-articleid')) {
@@ -50,7 +50,7 @@ $('#accept-article-btn').on('click', function(event) {
 	    type: 'POST',
 	    //contentType: 'application/json; charset=utf-8',
 	    async: true,
-	    url: './asynch-article-status-accept',
+	    url: './asynch-article-status-accept-publication',
 	    data: {
 	    	articleid: JSON.stringify(articleid),
 	    	reviewerid: JSON.stringify(reviewerid),

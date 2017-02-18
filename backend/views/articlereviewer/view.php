@@ -41,72 +41,77 @@ $this->registerJsFile("@web/js/articlereviewerScript.js", [ 'depends' => ['backe
     ?>    
     
     <hr> 
-    <h1><?= Html::encode("My Review") ?></h1>
-    
-    <?php 
-    	if($modelArticleReviewer->is_submited == 0) {
-    		if($canEditForm)
-    			echo "Status: Review is not submitted yet!";
-    		else
-    			echo "Status: Article is not 'under review' state!";
-    		$form = ActiveForm::begin();    		
-    		    echo $form->field($modelArticleReviewer, 'short_comment')->dropDownList(
-    		    	ArticleReviewer::$STATUS_REVIEW,
-    		    	['prompt' => 'Select Status', 'disabled' => !$canEditForm]
-    		    );    		    
-    		    echo $form->field($modelArticleReviewer, 'long_comment')->textInput(['disabled' => !$canEditForm]);
-    		    echo Html::button('Submit', ['id' => 'create-review-btn', 'data-articleid' => $modelArticleReviewer->article_id, 'data-reviewerid' => $modelArticleReviewer->reviewer_id, 'class' => 'btn btn-primary', 'disabled' => !$canEditForm]);
-    		ActiveForm::end();
-    		echo "<hr>";
-    	} else if($modelArticleReviewer->is_submited == 1 && $modelArticleReviewer->is_editable == 1) {
-    		if($canEditForm)
-    			echo "Status: Review is submitted, but can be edited still!";
-    		else
-    			echo "Status: Article is not 'under review' state!";    		
-    		$form = ActiveForm::begin();
-    			echo $form->field($modelArticleReviewer, 'short_comment')->dropDownList(
-    				ArticleReviewer::$STATUS_REVIEW,
-    				['prompt' => 'Select Status', 'disabled' => !$canEditForm]
-    			);
-    			echo $form->field($modelArticleReviewer, 'long_comment')->textInput(['disabled' => !$canEditForm]);
-    		    echo Html::button('Submit', ['id' => 'update-review-btn', 'data-articleid' => $modelArticleReviewer->article_id, 'data-reviewerid' => $modelArticleReviewer->reviewer_id, 'class' => 'btn btn-primary', 'disabled' => !$canEditForm]);
-    		ActiveForm::end();    		
-    		echo "<hr>";
-    	} else if($modelArticleReviewer->is_submited == 1 && $modelArticleReviewer->is_editable == 0) {
-    		echo "Status: Can not edit submitted Review!";//, just show it
-    		echo DetailView::widget([
-    			'model' => $modelArticleReviewer,
-    			'attributes' => [
-    				[
-    					'class' => DataColumn::className(), // this line is optional
-    					'attribute' => 'short_comment',
-    					'value' => (isset(ArticleReviewer::$STATUS_REVIEW[$modelArticleReviewer->short_comment])) ? ArticleReviewer::$STATUS_REVIEW[$modelArticleReviewer->short_comment] : null,
-    					'format' => 'HTML'
-    				],
-    				[
-    					'class' => DataColumn::className(), // this line is optional
-    					'attribute' => 'long_comment',
-    					'value' => (isset($modelArticleReviewer->long_comment)) ? $modelArticleReviewer->long_comment : null,
-    					'format' => 'HTML'
-    				],
-    				//'created_on:datetime',
-    				//'updated_on:datetime',
-    				[
-    					'class' => DataColumn::className(), // this line is optional
-    					'attribute' => 'created_on',
-    					'value' => (isset($modelArticleReviewer->created_on)) ? date("M d, Y, g:i:s A", strtotime($modelArticleReviewer->created_on)) : null,
-    					'format' => 'HTML'
-    				],
-    				[
-    					'class' => DataColumn::className(), // this line is optional
-    					'attribute' => 'updated_on',
-    					'value' => (isset($modelArticleReviewer->updated_on)) ? date("M d, Y, g:i:s A", strtotime($modelArticleReviewer->updated_on)) : null,
-    					'format' => 'HTML'
-    				],
-    			],
-    		]);
-    		echo "<hr>";
-    	}
-    ?>
-
+	<div id="myreview-section-container">
+	    <h1><?= Html::encode("My Review") ?></h1>
+	    
+	    <?php 
+	    	if(!isset($modelArticleReviewer)){
+	    		echo "No Review Available!";
+	    	}
+	    
+	    	if(isset($modelArticleReviewer) && $modelArticleReviewer->is_submited == 0) {
+	    		if($canEditForm)
+	    			echo "Status: Review is not submitted yet!";
+	    		else
+	    			echo "Status: Article is not 'under review' state!";
+	    		$form = ActiveForm::begin();    		
+	    		    echo $form->field($modelArticleReviewer, 'short_comment')->dropDownList(
+	    		    	ArticleReviewer::$STATUS_REVIEW,
+	    		    	['prompt' => 'Select Status', 'disabled' => !$canEditForm]
+	    		    );    		    
+	    		    echo $form->field($modelArticleReviewer, 'long_comment')->textInput(['disabled' => !$canEditForm]);
+	    		    echo Html::button('Submit', ['id' => 'create-review-btn', 'data-articleid' => $modelArticleReviewer->article_id, 'data-reviewerid' => $modelArticleReviewer->reviewer_id, 'class' => 'btn btn-primary', 'disabled' => !$canEditForm]);
+	    		ActiveForm::end();
+	    		echo "<hr>";
+	    	} else if(isset($modelArticleReviewer) && $modelArticleReviewer->is_submited == 1 && $modelArticleReviewer->is_editable == 1) {
+	    		if($canEditForm)
+	    			echo "Status: Review is submitted, but can be edited still!";
+	    		else
+	    			echo "Status: Article is not 'under review' state!";    		
+	    		$form = ActiveForm::begin();
+	    			echo $form->field($modelArticleReviewer, 'short_comment')->dropDownList(
+	    				ArticleReviewer::$STATUS_REVIEW,
+	    				['prompt' => 'Select Status', 'disabled' => !$canEditForm]
+	    			);
+	    			echo $form->field($modelArticleReviewer, 'long_comment')->textInput(['disabled' => !$canEditForm]);
+	    		    echo Html::button('Submit', ['id' => 'update-review-btn', 'data-articleid' => $modelArticleReviewer->article_id, 'data-reviewerid' => $modelArticleReviewer->reviewer_id, 'class' => 'btn btn-primary', 'disabled' => !$canEditForm]);
+	    		ActiveForm::end();    		
+	    		echo "<hr>";
+	    	} else if(isset($modelArticleReviewer) &&  $modelArticleReviewer->is_submited == 1 && $modelArticleReviewer->is_editable == 0) {
+	    		echo "Status: Can not edit submitted Review!";//, just show it
+	    		echo DetailView::widget([
+	    			'model' => $modelArticleReviewer,
+	    			'attributes' => [
+	    				[
+	    					'class' => DataColumn::className(), // this line is optional
+	    					'attribute' => 'short_comment',
+	    					'value' => (isset(ArticleReviewer::$STATUS_REVIEW[$modelArticleReviewer->short_comment])) ? ArticleReviewer::$STATUS_REVIEW[$modelArticleReviewer->short_comment] : null,
+	    					'format' => 'HTML'
+	    				],
+	    				[
+	    					'class' => DataColumn::className(), // this line is optional
+	    					'attribute' => 'long_comment',
+	    					'value' => (isset($modelArticleReviewer->long_comment)) ? $modelArticleReviewer->long_comment : null,
+	    					'format' => 'HTML'
+	    				],
+	    				//'created_on:datetime',
+	    				//'updated_on:datetime',
+	    				[
+	    					'class' => DataColumn::className(), // this line is optional
+	    					'attribute' => 'created_on',
+	    					'value' => (isset($modelArticleReviewer->created_on)) ? date("M d, Y, g:i:s A", strtotime($modelArticleReviewer->created_on)) : null,
+	    					'format' => 'HTML'
+	    				],
+	    				[
+	    					'class' => DataColumn::className(), // this line is optional
+	    					'attribute' => 'updated_on',
+	    					'value' => (isset($modelArticleReviewer->updated_on)) ? date("M d, Y, g:i:s A", strtotime($modelArticleReviewer->updated_on)) : null,
+	    					'format' => 'HTML'
+	    				],
+	    			],
+	    		]);
+	    		echo "<hr>";
+	    	}
+	    ?>
+	</div>
 </div>

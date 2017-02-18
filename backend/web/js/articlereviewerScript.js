@@ -31,6 +31,7 @@ $('#create-review-btn').on('click', function(event) {
         		$("#articlereview-section-alert").removeClass("hidden-div");
         		$("#articlereview-section-alert").addClass("alert-success");
         		$("#articlereview-section-alert-msg").text(successData);
+        		$("#myreview-section-container").addClass("hidden");
         	}
         },
         error: function (xhr, error) {
@@ -76,7 +77,8 @@ $('#update-review-btn').on('click', function(event) {
         	if(successData != "Empty message!") {
         		$("#articlereview-section-alert").removeClass("hidden-div");
         		$("#articlereview-section-alert").addClass("alert-success");
-        		$("#articlereview-section-alert-msg").text(successData);
+        		$("#articlereview-section-alert-msg").text(successData);        		
+        		$("#myreview-section-container").addClass("hidden");
         	}        	
         },
         error: function (xhr, error) {

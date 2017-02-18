@@ -63,7 +63,7 @@ class ArticlereviewerController extends Controller
     	$queryParams = Yii::$app->request->queryParams;
     	$queryParams['ArticleSearch']['is_deleted'] = 0;
     	$queryParams['ArticleSearch']['is_submited'] = 0;
-    	$queryParams['ArticleSearch']['statuses_review'] = "1"; //under review and review required
+    	$queryParams['ArticleSearch']['statuses_review'] = "1"; //under review
 
     	$searchModel = new ArticleSearch();
     	$dataProvider = $searchModel->search($queryParams, null, Yii::$app->user->id);

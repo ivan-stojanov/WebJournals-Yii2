@@ -45,7 +45,7 @@ class ArticleSearch extends Article
      * 
      * @return ActiveDataProvider 
      */ 
-    public function search($params, $author_id = null, $reviewer_id = null) 
+    public function search($params, $author_id = null, $reviewer_id = null, $editor_id = null) 
     { 
         $query = Article::find();        
         $query->joinWith(['articleReviewers' => function($query) { $query->from(['articleReviewers' => 'article_reviewer']); }]);
@@ -65,6 +65,10 @@ class ArticleSearch extends Article
         	}
         	$query = $query->joinWith('articleReviewers')
         	->where($conditionArray);
+        }
+        if($editor_id != null) {
+        	$query = $query->joinWith('articleEditors')
+        	->where(['article_editor.editor_id' => $editor_id]);
         }
 
         $dataProvider = new ActiveDataProvider([ 

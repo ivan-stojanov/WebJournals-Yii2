@@ -232,7 +232,18 @@ AppAsset::register($this);
                             </ul>
                             <!-- /.nav-second-level -->
                         </li>
-                        <?php } ?> 
+                        <?php } ?>
+                        <?php if (Yii::$app->session->get('user.is_editor') == true){ ?>
+                        <li>
+                            <a href='#'><i class="fa fa-sliders fa-fw"></i> Editor Menu<span class="fa arrow"></span></a>
+                            <ul class="nav nav-second-level">
+                            	<li>
+                                    <a href='<?php echo Url::to(['/articleeditor/myarticles']); ?>'><i class="fa fa-list fa-fw"></i> My Articles</a>
+                                </li>
+                            </ul>
+                            <!-- /.nav-second-level -->
+                        </li>
+                        <?php } ?>                        
 						<!-- 
                         <li>
                             <a href="forms.html"><i class="fa fa-edit fa-fw"></i> Forms</a>

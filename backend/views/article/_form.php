@@ -31,10 +31,25 @@ $this->registerJsFile("@web/js/articleScript.js", [ 'depends' => ['backend\asset
 
     <?php $form = ActiveForm::begin(['options' => ['enctype' => 'multipart/form-data']]); ?>
     
+	<?php 
+	if($isAdminOrEditor == true) {
+		echo $form->field($modelArticle, 'send_emails', [
+				'options' => [
+						'id' => 'send_emails_container',
+						'title' => 'If you want to skip the stages and to not send emails to the users in the system (when moving between stages) this should be disabled'
+				]
+		])->widget(SwitchInput::classname(), [
+				'options' => [
+						'id' => 'send_emails'
+				]
+		]);
+	}
+	?>
+    
     <?= $form->field($modelArticle, 'title')->textInput(['maxlength' => true, 'disabled' => !$canEditForm]) ?>
     
 	<?php 
-	if($isAdminOrEditor == true) {
+	if($isAdminOrEditor == true) {		
 		echo $form->field($modelArticle, 'section_id')->dropDownList(
     		ArrayHelper::map(Section::find()->all(), 'section_id', 'volumeissuesectiontitle'),
     		['prompt' => 'Select Section', 'disabled' => !$canEditForm]		

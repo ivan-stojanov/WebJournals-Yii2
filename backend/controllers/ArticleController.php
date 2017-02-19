@@ -12,6 +12,7 @@ use common\models\ArticleEditor;
 use common\models\ArticleFile;
 use common\models\Keyword;
 use common\models\User;
+use common\models\ArticleReviewResponse;
 use backend\models\ArticleSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
@@ -179,7 +180,7 @@ class ArticleController extends Controller
     			}
     		}
     	}
-
+    	
         return $this->render('view', [
             'model' => $modelArticle,
         	'modelsArticleReviewer' => $modelsArticleReviewer,
@@ -222,6 +223,7 @@ class ArticleController extends Controller
     	$correspondent_author = null;
     		
     	$post_msg = null;
+    	$modelArticle->send_emails = 1;
     	$modelArticle->created_on = date("Y-m-d H:i:s");
     	$addKeywords = false;
     	$addAuthors = false;
@@ -869,35 +871,36 @@ class ArticleController extends Controller
     			Yii::error("ArticleController->actionMoveforreview(1): ".json_encode($modelArticle->getErrors()), "custom_errors_articles");
     			Yii::$app->session->setFlash('error', 'Some error occured! Please try again or contact the admin!');
     		} else {
-    			$modelsArticleReviewer = ArticleReviewer::find()->where(['article_id' => $id])
-    															->andWhere(['is_submited' => 0])
-												    			->andWhere(['<>','reviewer_id', Yii::$app->user->identity->id])
-												    			->all();    			
-    			foreach ($modelsArticleReviewer as $index => $modelArticleReviewer) {
-    				$email_sent_reviewer = Yii::$app->mailer->compose(['html' => 'moveForReviewReviewer-html', 'text' => 'moveForReviewReviewer-text'], ['modelArticleReviewer' => $modelArticleReviewer])
-						    				->setTo($modelArticleReviewer->reviewer->email)
-						    				->setFrom([Yii::$app->user->identity->email => Yii::$app->user->identity->fullName])
-						    				->setSubject("Article sent for Review!")
-						    				->send();
-    				if(!$email_sent_reviewer) {
-    					Yii::error("ArticleController->actionMoveforreview(2): Failure! Email to reviewer has not been sent", "custom_errors_articles");
-    				}
+    			if($modelArticle->send_emails == 1){
+	    			$modelsArticleReviewer = ArticleReviewer::find()->where(['article_id' => $id])
+	    															->andWhere(['is_submited' => 0])
+													    			->andWhere(['<>','reviewer_id', Yii::$app->user->identity->id])
+													    			->all();    			
+	    			foreach ($modelsArticleReviewer as $index => $modelArticleReviewer) {
+	    				$email_sent_reviewer = Yii::$app->mailer->compose(['html' => 'moveForReviewReviewer-html', 'text' => 'moveForReviewReviewer-text'], ['modelArticleReviewer' => $modelArticleReviewer])
+							    				->setTo($modelArticleReviewer->reviewer->email)
+							    				->setFrom([Yii::$app->user->identity->email => Yii::$app->user->identity->fullName])
+							    				->setSubject("Article sent for Review!")
+							    				->send();
+	    				if(!$email_sent_reviewer) {
+	    					Yii::error("ArticleController->actionMoveforreview(2): Failure! Email to reviewer has not been sent", "custom_errors_articles");
+	    				}
+	    			}
+	    			$modelsArticleAuthor = ArticleAuthor::findAll([
+	    					'article_id' => $id,
+	    					'is_correspondent' => 1
+	    			]);
+	    			foreach ($modelsArticleAuthor as $index => $modelArticleAuthor) {
+	    				$email_sent_author = Yii::$app->mailer->compose(['html' => 'moveForReviewAuthor-html', 'text' => 'moveForReviewAuthor-text'], ['modelArticleAuthor' => $modelArticleAuthor])
+							    				->setTo($modelArticleAuthor->author->email)
+							    				->setFrom([Yii::$app->user->identity->email => Yii::$app->user->identity->fullName])
+							    				->setSubject("Article sent for Review!")
+							    				->send();
+	    				if(!$email_sent_author) {
+	    					Yii::error("ArticleController->actionMoveforreview(3): Failure! Email to author has not been sent", "custom_errors_articles");
+	    				}
+	    			}
     			}
-    			$modelsArticleAuthor = ArticleAuthor::findAll([
-    					'article_id' => $id,
-    					'is_correspondent' => 1
-    			]);
-    			foreach ($modelsArticleAuthor as $index => $modelArticleAuthor) {
-    				$email_sent_author = Yii::$app->mailer->compose(['html' => 'moveForReviewAuthor-html', 'text' => 'moveForReviewAuthor-text'], ['modelArticleAuthor' => $modelArticleAuthor])
-						    				->setTo($modelArticleAuthor->author->email)
-						    				->setFrom([Yii::$app->user->identity->email => Yii::$app->user->identity->fullName])
-						    				->setSubject("Article sent for Review!")
-						    				->send();
-    				if(!$email_sent_author) {
-    					Yii::error("ArticleController->actionMoveforreview(3): Failure! Email to author has not been sent", "custom_errors_articles");
-    				}
-    			}
-    			
     			Yii::$app->session->setFlash('success', 'Article status has been successfully changed into \'review\' state!');
     		}    		
     	} else {
@@ -937,47 +940,48 @@ class ArticleController extends Controller
     			Yii::error("ArticleController->actionMoveforreviewagain(1): ".json_encode($modelArticle->getErrors()), "custom_errors_articles");
     			Yii::$app->session->setFlash('error', 'Some error occured! Please try again or contact the admin!');
     		} else {
-    			$modelsArticleReviewer = ArticleReviewer::find()->where(['article_id' => $id])
-												    			->andWhere(['<>','reviewer_id', Yii::$app->user->identity->id])
-												    			->all();    			
-    			foreach ($modelsArticleReviewer as $index => $modelArticleReviewer) {
-    				$can_send_email = true;
-    				if($modelArticleReviewer->is_editable == 0){
-    					$modelArticleReviewer->is_editable = 1;
-    					$modelArticleReviewer->scenario = 'article_reviewer_init';
-    					$modelArticleReviewer->updated_on = date("Y-m-d H:i:s");
-    					if(!$modelArticleReviewer->save()){
-    						Yii::error("ArticleController->actionMoveforreviewagain(2): ".json_encode($modelArticleReviewer->getErrors()), "custom_errors_articles");
-    						Yii::$app->session->setFlash('error', 'Some error occured! Please try again or contact the admin!');
-    						$can_send_email = false;
-    					}
-    				}
-    				if($can_send_email == true){
-	    				$email_sent_reviewer = Yii::$app->mailer->compose(['html' => 'moveForReviewAgainReviewer-html', 'text' => 'moveForReviewAgainReviewer-text'], ['modelArticleReviewer' => $modelArticleReviewer])
-							    				->setTo($modelArticleReviewer->reviewer->email)
+    			if($modelArticle->send_emails == 1){
+	    			$modelsArticleReviewer = ArticleReviewer::find()->where(['article_id' => $id])
+													    			->andWhere(['<>','reviewer_id', Yii::$app->user->identity->id])
+													    			->all();    			
+	    			foreach ($modelsArticleReviewer as $index => $modelArticleReviewer) {
+	    				$can_send_email = true;
+	    				if($modelArticleReviewer->is_editable == 0){
+	    					$modelArticleReviewer->is_editable = 1;
+	    					$modelArticleReviewer->scenario = 'article_reviewer_init';
+	    					$modelArticleReviewer->updated_on = date("Y-m-d H:i:s");
+	    					if(!$modelArticleReviewer->save()){
+	    						Yii::error("ArticleController->actionMoveforreviewagain(2): ".json_encode($modelArticleReviewer->getErrors()), "custom_errors_articles");
+	    						Yii::$app->session->setFlash('error', 'Some error occured! Please try again or contact the admin!');
+	    						$can_send_email = false;
+	    					}
+	    				}
+	    				if($can_send_email == true){
+		    				$email_sent_reviewer = Yii::$app->mailer->compose(['html' => 'moveForReviewAgainReviewer-html', 'text' => 'moveForReviewAgainReviewer-text'], ['modelArticleReviewer' => $modelArticleReviewer])
+								    				->setTo($modelArticleReviewer->reviewer->email)
+								    				->setFrom([Yii::$app->user->identity->email => Yii::$app->user->identity->fullName])
+								    				->setSubject("Article sent for Review!")
+								    				->send();
+		    				if(!$email_sent_reviewer) {
+		    					Yii::error("ArticleController->actionMoveforreviewagain(3): Failure! Email to reviewer has not been sent", "custom_errors_articles");
+		    				}
+	    				}
+	    			}
+	    			$modelsArticleAuthor = ArticleAuthor::findAll([
+	    					'article_id' => $id,
+	    					'is_correspondent' => 1
+	    			]);
+	    			foreach ($modelsArticleAuthor as $index => $modelArticleAuthor) {
+	    				$email_sent_author = Yii::$app->mailer->compose(['html' => 'moveForReviewAgainAuthor-html', 'text' => 'moveForReviewAgainAuthor-text'], ['modelArticleAuthor' => $modelArticleAuthor])
+							    				->setTo($modelArticleAuthor->author->email)
 							    				->setFrom([Yii::$app->user->identity->email => Yii::$app->user->identity->fullName])
 							    				->setSubject("Article sent for Review!")
 							    				->send();
-	    				if(!$email_sent_reviewer) {
-	    					Yii::error("ArticleController->actionMoveforreviewagain(3): Failure! Email to reviewer has not been sent", "custom_errors_articles");
+	    				if(!$email_sent_author) {
+	    					Yii::error("ArticleController->actionMoveforreviewagain(4): Failure! Email to author has not been sent", "custom_errors_articles");
 	    				}
-    				}
+	    			}
     			}
-    			$modelsArticleAuthor = ArticleAuthor::findAll([
-    					'article_id' => $id,
-    					'is_correspondent' => 1
-    			]);
-    			foreach ($modelsArticleAuthor as $index => $modelArticleAuthor) {
-    				$email_sent_author = Yii::$app->mailer->compose(['html' => 'moveForReviewAgainAuthor-html', 'text' => 'moveForReviewAgainAuthor-text'], ['modelArticleAuthor' => $modelArticleAuthor])
-						    				->setTo($modelArticleAuthor->author->email)
-						    				->setFrom([Yii::$app->user->identity->email => Yii::$app->user->identity->fullName])
-						    				->setSubject("Article sent for Review!")
-						    				->send();
-    				if(!$email_sent_author) {
-    					Yii::error("ArticleController->actionMoveforreviewagain(4): Failure! Email to author has not been sent", "custom_errors_articles");
-    				}
-    			}
-    			 
     			Yii::$app->session->setFlash('success', 'Article status has been successfully changed into \'review\' state!');
     		}
     	} else {
@@ -1080,21 +1084,23 @@ class ArticleController extends Controller
     			Yii::error("ArticleController->actionMoveforpublish(1): ".json_encode($modelArticle->getErrors()), "custom_errors_articles");
     			Yii::$app->session->setFlash('error', 'Some error occured! Please try again or contact the admin!');
     		} else {
-    			//Yii::$app->session->setFlash('success', 'Article status has been successfully \'published\'!');
-    			$modelsArticleAuthor = ArticleAuthor::findAll([
-    					'article_id' => $id,
-    					'is_correspondent' => 1
-    			]);
-    			foreach ($modelsArticleAuthor as $index => $modelArticleAuthor) {
-    				$email_sent_author = Yii::$app->mailer->compose(['html' => 'moveForPublishAuthor-html', 'text' => 'moveForPublishAuthor-text'], ['modelArticleAuthor' => $modelArticleAuthor])
-						    				->setTo($modelArticleAuthor->author->email)
-						    				->setFrom([Yii::$app->user->identity->email => Yii::$app->user->identity->fullName])
-						    				->setSubject("Article has been Published!")
-						    				->send();
-    				if(!$email_sent_author) {
-    					Yii::error("ArticleController->actionMoveforpublish(2): Failure! Email to author has not been sent", "custom_errors_articles");
-    				}
-    			}    			 
+    			if($modelArticle->send_emails == 1){
+	    			//Yii::$app->session->setFlash('success', 'Article status has been successfully \'published\'!');
+	    			$modelsArticleAuthor = ArticleAuthor::findAll([
+	    					'article_id' => $id,
+	    					'is_correspondent' => 1
+	    			]);
+	    			foreach ($modelsArticleAuthor as $index => $modelArticleAuthor) {
+	    				$email_sent_author = Yii::$app->mailer->compose(['html' => 'moveForPublishAuthor-html', 'text' => 'moveForPublishAuthor-text'], ['modelArticleAuthor' => $modelArticleAuthor])
+							    				->setTo($modelArticleAuthor->author->email)
+							    				->setFrom([Yii::$app->user->identity->email => Yii::$app->user->identity->fullName])
+							    				->setSubject("Article has been Published!")
+							    				->send();
+	    				if(!$email_sent_author) {
+	    					Yii::error("ArticleController->actionMoveforpublish(2): Failure! Email to author has not been sent", "custom_errors_articles");
+	    				}
+	    			}
+    			}
     		}
     	} else {
     		Yii::$app->session->setFlash('error', 'You do not have permission for performing this action!');
@@ -1207,22 +1213,22 @@ class ArticleController extends Controller
     			
     			if ($flag) {
     				$transaction->commit();
-    				
-    				$modelsArticleAuthor = ArticleAuthor::findAll([
-    						'article_id' => $articleID,
-    						'is_correspondent' => 1
-    				]);
-    				foreach ($modelsArticleAuthor as $index => $modelArticleAuthor) {
-    					$email_sent_author = Yii::$app->mailer->compose(['html' => 'moveForAcceptPublicationAuthor-html', 'text' => 'moveForAcceptPublicationAuthor-text'], ['modelArticleAuthor' => $modelArticleAuthor, 'modelArticleReviewer' => $modelArticleReviewer])
-						    					->setTo($modelArticleAuthor->author->email)
-						    					->setFrom([Yii::$app->user->identity->email => Yii::$app->user->identity->fullName])
-						    					->setSubject("Article has been accepted for Publication!")
-						    					->send();
-    					if(!$email_sent_author) {
-    						Yii::error("ArticleController->actionAsynchArticleStatusAccept(2): Failure! Email to author has not been sent", "custom_errors_articles");
-    					}
+    				if($modelArticle->send_emails == 1){
+	    				$modelsArticleAuthor = ArticleAuthor::findAll([
+	    						'article_id' => $articleID,
+	    						'is_correspondent' => 1
+	    				]);
+	    				foreach ($modelsArticleAuthor as $index => $modelArticleAuthor) {
+	    					$email_sent_author = Yii::$app->mailer->compose(['html' => 'moveForAcceptPublicationAuthor-html', 'text' => 'moveForAcceptPublicationAuthor-text'], ['modelArticleAuthor' => $modelArticleAuthor, 'modelArticleReviewer' => $modelArticleReviewer])
+							    					->setTo($modelArticleAuthor->author->email)
+							    					->setFrom([Yii::$app->user->identity->email => Yii::$app->user->identity->fullName])
+							    					->setSubject("Article has been accepted for Publication!")
+							    					->send();
+	    					if(!$email_sent_author) {
+	    						Yii::error("ArticleController->actionAsynchArticleStatusAccept(2): Failure! Email to author has not been sent", "custom_errors_articles");
+	    					}
+	    				}
     				}
-    				
     				return "Article has been successfully accepted for publication! Please refresh the page to get the updated status!";
     			}    			
      		} else {
@@ -1292,22 +1298,22 @@ class ArticleController extends Controller
     			 
     			if ($flag) {
     				$transaction->commit();
-    				
-    				$modelsArticleAuthor = ArticleAuthor::findAll([
-    						'article_id' => $articleID,
-    						'is_correspondent' => 1
-    				]);
-    				foreach ($modelsArticleAuthor as $index => $modelArticleAuthor) {
-    					$email_sent_author = Yii::$app->mailer->compose(['html' => 'moveForRejectAuthor-html', 'text' => 'moveForRejectAuthor-text'], ['modelArticleAuthor' => $modelArticleAuthor, 'modelArticleReviewer' => $modelArticleReviewer])
-						    					->setTo($modelArticleAuthor->author->email)
-						    					->setFrom([Yii::$app->user->identity->email => Yii::$app->user->identity->fullName])
-						    					->setSubject("Article has been rejected!")
-						    					->send();
-    					if(!$email_sent_author) {
-    						Yii::error("ArticleController->actionAsynchArticleStatusReject(2): Failure! Email to author has not been sent", "custom_errors_articles");
-    					}
+    				if($modelArticle->send_emails == 1){
+	    				$modelsArticleAuthor = ArticleAuthor::findAll([
+	    						'article_id' => $articleID,
+	    						'is_correspondent' => 1
+	    				]);
+	    				foreach ($modelsArticleAuthor as $index => $modelArticleAuthor) {
+	    					$email_sent_author = Yii::$app->mailer->compose(['html' => 'moveForRejectAuthor-html', 'text' => 'moveForRejectAuthor-text'], ['modelArticleAuthor' => $modelArticleAuthor, 'modelArticleReviewer' => $modelArticleReviewer])
+							    					->setTo($modelArticleAuthor->author->email)
+							    					->setFrom([Yii::$app->user->identity->email => Yii::$app->user->identity->fullName])
+							    					->setSubject("Article has been rejected!")
+							    					->send();
+	    					if(!$email_sent_author) {
+	    						Yii::error("ArticleController->actionAsynchArticleStatusReject(2): Failure! Email to author has not been sent", "custom_errors_articles");
+	    					}
+	    				}
     				}
-    				
     				return "Article has been successfully rejected! Please refresh the page to get the updated status!";
     			}
     		} else {
@@ -1377,22 +1383,22 @@ class ArticleController extends Controller
     
     			if ($flag) {
     				$transaction->commit();
-    				
-    				$modelsArticleAuthor = ArticleAuthor::findAll([
-    						'article_id' => $articleID,
-    						'is_correspondent' => 1
-    				]);
-    				foreach ($modelsArticleAuthor as $index => $modelArticleAuthor) {
-    					$email_sent_author = Yii::$app->mailer->compose(['html' => 'moveForImprovementAuthor-html', 'text' => 'moveForImprovementAuthor-text'], ['modelArticleAuthor' => $modelArticleAuthor, 'modelArticleReviewer' => $modelArticleReviewer])
-						    					->setTo($modelArticleAuthor->author->email)
-						    					->setFrom([Yii::$app->user->identity->email => Yii::$app->user->identity->fullName])
-						    					->setSubject("Article moved back for Improvement!")
-						    					->send();
-    					if(!$email_sent_author) {
-    						Yii::error("ArticleController->actionAsynchArticleStatusImprovement(2): Failure! Email to author has not been sent", "custom_errors_articles");
-    					}
+    				if($modelArticle->send_emails == 1){
+	    				$modelsArticleAuthor = ArticleAuthor::findAll([
+	    						'article_id' => $articleID,
+	    						'is_correspondent' => 1
+	    				]);
+	    				foreach ($modelsArticleAuthor as $index => $modelArticleAuthor) {
+	    					$email_sent_author = Yii::$app->mailer->compose(['html' => 'moveForImprovementAuthor-html', 'text' => 'moveForImprovementAuthor-text'], ['modelArticleAuthor' => $modelArticleAuthor, 'modelArticleReviewer' => $modelArticleReviewer])
+							    					->setTo($modelArticleAuthor->author->email)
+							    					->setFrom([Yii::$app->user->identity->email => Yii::$app->user->identity->fullName])
+							    					->setSubject("Article moved back for Improvement!")
+							    					->send();
+	    					if(!$email_sent_author) {
+	    						Yii::error("ArticleController->actionAsynchArticleStatusImprovement(2): Failure! Email to author has not been sent", "custom_errors_articles");
+	    					}
+	    				}
     				}
-    				
     				return "Article has been successfully moved back for improvement! Please refresh the page to get the updated status!";
     			}
     		} else {
@@ -1408,6 +1414,41 @@ class ArticleController extends Controller
     
     	return "Empty message!";
     }
+    
+    /*
+     * Asynch functions called with Ajax - Article (article view page when posting a reply to some comment)
+     */
+    public function actionAsynchArticleReviewResponsePost()
+    {
+    	$articleReceivedID = Yii::$app->getRequest()->post('articleid');
+    	$articleID = json_decode($articleReceivedID);
+    
+    	$reviewerReceivedID = Yii::$app->getRequest()->post('reviewerid');
+    	$reviewerID = json_decode($reviewerReceivedID);
+    
+    	$responsecreatoridReceived = Yii::$app->getRequest()->post('responsecreatorid');
+    	$responsecreatorID = json_decode($responsecreatoridReceived);
+    
+    	$longcommentReceived = Yii::$app->getRequest()->post('longcomment');
+    	$longcomment = $longcommentReceived; //json_decode($longcommentReceived);
+    
+    	$modelArticleReviewResponseNew = new ArticleReviewResponse();
+    	$modelArticleReviewResponseNew->article_id = $articleID;
+    	$modelArticleReviewResponseNew->reviewer_id = $reviewerID;
+    	$modelArticleReviewResponseNew->response_creator_id = $responsecreatorID;
+    	$modelArticleReviewResponseNew->long_comment = $longcomment;
+    	$modelArticleReviewResponseNew->created_on = date("Y-m-d H:i:s");   
+    	
+    	if(!$modelArticleReviewResponseNew->save()){
+    		Yii::error("ArticleController->actionAsynchArticleReviewResponsePost(1): ".json_encode($modelArticleReviewResponseNew->errors), "custom_errors_articles");
+    		throw new \Exception('Data not saved: '.print_r($modelArticleReviewResponseNew->errors, true), 500);
+    	} else {
+    		return "A response to an article review has been successfully posted. Please refresh the page to see the latest comments!";
+    	}
+    	
+    	return "Empty message!";
+    }  
+    
     
     public function actionPdfview($id, $partial = null)
     {

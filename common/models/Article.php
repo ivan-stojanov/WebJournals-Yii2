@@ -20,6 +20,8 @@ use yii\base\Object;
  * @property integer $sort_in_section
  * @property integer $status
  * @property integer $file_id
+ * @property integer $is_archived
+ * @property integer $send_emails
  * @property string $created_on
  * @property string $updated_on
  * @property integer $is_deleted
@@ -67,7 +69,7 @@ class Article extends \yii\db\ActiveRecord
     {
         return [
             [['title', 'abstract', 'content'/*',section_id', 'file_attach'*/], 'required'],
-            [['section_id', 'sort_in_section', 'status', 'is_deleted'], 'integer'],
+            [['section_id', 'sort_in_section', 'status', 'is_archived', 'send_emails', 'is_deleted'], 'integer'],
             [['title', 'abstract', 'content', 'pdf_content'], 'string'],       		
             [['created_on', 'updated_on'], 'safe'],
             [['page_from', 'page_to'], 'string', 'max' => 6],
@@ -237,6 +239,8 @@ class Article extends \yii\db\ActiveRecord
     			'sort_in_section' => 'Sort in section',
     			'status' => 'Status',
     			'file_id' => 'File ID',
+    			'is_archived' => 'Is archived',
+    			'send_emails' => 'Send emails while moving between stages',
     			'file_attach' => 'File',    			
     			'created_on' => 'Created on',
             	'updated_on' => 'Updated on',

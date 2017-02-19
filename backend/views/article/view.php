@@ -7,6 +7,7 @@ use yii\helpers\ArrayHelper;
 use yii\widgets\ActiveForm;
 use common\models\Article;
 use common\models\ArticleReviewer;
+use common\models\ArticleReviewResponse;
 
 /* @var $this yii\web\View */
 /* @var $model common\models\Article */
@@ -164,7 +165,7 @@ $this->registerJsFile("@web/js/articleScript.js", [ 'depends' => ['backend\asset
         	//'section_id',
         ];
     	if(($user_can_modify || $isAdminOrEditor) && $model->status == Article::STATUS_PUBLISHED) {
-	    	$attributes = ArrayHelper::merge($attributes, [  	
+	    	$attributes = ArrayHelper::merge($attributes, [
 	        	[
 	        		'class' => DataColumn::className(), // this line is optional
 	        		'attribute' => 'section_id',
@@ -336,6 +337,64 @@ $this->registerJsFile("@web/js/articleScript.js", [ 'depends' => ['backend\asset
     	    			],
     	    		],
     	    	]);
+    	    	
+    	    	$modelArticleReviewResponseNew = new ArticleReviewResponse();
+    	    	$modelArticleReviewResponseNew->article_id = $modelArticleReviewer->article_id;
+    	    	$modelArticleReviewResponseNew->reviewer_id = $modelArticleReviewer->reviewer_id;
+    	    	$modelArticleReviewResponseNew->response_creator_id = \Yii::$app->user->id;
+
+    	    	echo "<div id='reviewresponse_section".$index."'>";
+    	    	
+    	    	$modelsArticleReviewResponse = ArticleReviewResponse::find()->where(['article_id' => $modelArticleReviewer->article_id])
+															    	    	->andWhere(['reviewer_id' => $modelArticleReviewer->reviewer_id])
+															    	    	->andWhere(['is_deleted' => 0])
+															    	    	->orderBy(['created_on' => SORT_ASC])
+    	    																->all();
+				if($modelsArticleReviewResponse != null && count($modelsArticleReviewResponse)>0){
+					echo "<h4><i>Review's respons(es):</i></h4>";
+					
+					echo "<div class='alert alert-dismissable hidden-div' id='article-reviewresponse-section-alert".$index."'>";/*alert-danger alert-success alert-warning */
+					echo "	<button type='button' class='close' data-dismiss='alert' aria-hidden='true'>&times;</button>";
+					echo "	<strong><span id='article-reviewresponse-section-alert-msg".$index."'></span></strong>";
+					echo "</div>";					
+				}
+				echo "<div class='row'>";
+	    	    echo "	<div class='col-xs-1'>";
+			    echo "	</div>";	
+    	    	echo "	<div class='col-xs-11'>";
+					foreach ($modelsArticleReviewResponse as $indexReviewResoponse => $modelArticleReviewResponse){					
+						echo DetailView::widget([
+							'model' => $modelArticleReviewResponse,
+							'attributes' => [
+								[
+									'class' => DataColumn::className(), // this line is optional
+									'attribute' => 'response_creator_id',
+									'value' => $modelArticleReviewResponse->responseCreator->fullName." <".$modelArticleReviewResponse->responseCreator->email.">",
+									//'format' => 'HTML'
+								],
+									'long_comment',
+								[
+									'class' => DataColumn::className(), // this line is optional
+									'attribute' => 'created_on',
+									'value' => (isset($modelArticleReviewResponse->created_on)) ? date("M d, Y, g:i:s A", strtotime($modelArticleReviewResponse->created_on)) : null,
+									'format' => 'HTML'
+								],
+							],
+						]);					
+					}
+				echo "	</div>";
+				echo "</div>";
+				
+				if($model->status == Article::STATUS_REVIEW_REQUIRED || $model->status == Article::STATUS_IMPROVEMENT ||
+				   $model->status == Article::STATUS_ACCEPTED_FOR_PUBLICATION || $model->status == Article::STATUS_REJECTED)
+				{
+					$form = ActiveForm::begin();
+					echo $form->field($modelArticleReviewResponseNew, 'long_comment')->input('long_comment', ['placeholder' => "Enter Your Comment"])->label(false);
+					echo Html::button('Post a comment', ['id' => 'id-post-reviewresponse-btn', 'data-articleid' => $modelArticleReviewResponseNew->article_id, 'data-reviewerid' => $modelArticleReviewResponseNew->reviewer_id, 'data-responsecreatorid' => $modelArticleReviewResponseNew->response_creator_id, 'data-index' => $index, 'class' => 'class-post-reviewresponse-btn btn btn-primary']);
+					ActiveForm::end();
+					echo "</div>";
+					echo "<hr>";
+				}    	    	
     	    }
     	}
     	

@@ -121,11 +121,7 @@ class ArticlereviewerController extends Controller
     	$modelArticleReviewer = ArticleReviewer::findOne([
     		'article_id' => $id,
     		'reviewer_id' => Yii::$app->user->id,    			
-    	]);
-    	
-    	//$modelsArticleReviewer = ArticleReviewer::findAll([
-    	//	'article_id' => $id
-    	//]);
+    	]);    	
     	 
     	$modelArticle = Article::findOne($id);
     	$canEditForm = ($modelArticle->status == Article::STATUS_UNDER_REVIEW);
@@ -144,8 +140,18 @@ class ArticlereviewerController extends Controller
     	$user_can_modify = ($user_can_modify || ((strpos($article_editors['ids'], $current_user_id) !== false) && Yii::$app->session->get('user.is_editor')));
     	$user_can_modify = ($user_can_modify || Yii::$app->session->get('user.is_admin'));
     
+    	$modelsArticleReviewer = null;
+    	if($isAdminOrEditor || $user_can_modify) {
+    		if($modelArticle->status != Article::STATUS_SUBMITTED && $modelArticle->status != Article::STATUS_UNDER_REVIEW) {
+    			$modelsArticleReviewer = ArticleReviewer::findAll([
+    					'article_id' => $id,
+    					'is_submited' => 1,
+    			]);
+    		}
+    	}    	
+    	
     	return $this->render('view', [
-    			//'modelsArticleReviewer' => $modelsArticleReviewer,
+    			'modelsArticleReviewer' => $modelsArticleReviewer,
     			'modelArticleReviewer' => $modelArticleReviewer,
     			'modelArticle' => $modelArticle,
     			'article_authors' => $article_authors,

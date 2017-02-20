@@ -50,7 +50,7 @@ AppAsset::register($this);
     } else {
     	$menuItems[] = ['label' => 'User Panel', 'url' => Yii::$app->urlManagerBackEnd->createUrl('site/index'),];
     }
-    $menuItems[] = ['label' => 'Search', 'url' => ['/site/search']];
+    $menuItems[] = ['label' => 'Search', 'url' => ['/search/index']];
     $menuItems[] = ['label' => 'Current', 'url' => ['/site/current']];
     $menuItems[] = ['label' => 'Archive', 'url' => ['/site/archive']];
     $menuItems[] = ['label' => 'Blog', 'url' => ['/site/announcement'], 

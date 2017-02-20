@@ -32,3 +32,30 @@
 	cursor: pointer;
 }
 /* Admin: Users CRUD - END */
+
+
+
+/* User: Search page - START */
+.serach-section-letters {
+	color:#576f57;
+	font-size: x-large;
+	text-align: center;" 
+}
+.letter-serach {
+	cursor: pointer;
+}
+.letter-serach-active {
+	color: #3ec12e;
+}
+
+.serach-section-btn-group {
+	padding-left: 0px;
+	padding-right: 0px;
+}
+.serach-section-btn {
+	width: 100%;
+}
+
+
+/* User: Search page - END */
+

@@ -1079,6 +1079,7 @@ class ArticleController extends Controller
     		$modelArticle = $this->findModel($id);
     		$modelArticle->scenario = 'article_change_status';
     		$modelArticle->status = Article::STATUS_PUBLISHED;
+    		$modelArticle->is_archived = 1;
     		$modelArticle->updated_on = date("Y-m-d H:i:s");
     		if(!$modelArticle->save()){
     			Yii::error("ArticleController->actionMoveforpublish(1): ".json_encode($modelArticle->getErrors()), "custom_errors_articles");
@@ -1290,6 +1291,7 @@ class ArticleController extends Controller
     		if($flag = $modelArticleReviewer->save(false)){
     			$modelArticle = $this->findModel($articleID);
     			$modelArticle->status = Article::STATUS_REJECTED;
+    			$modelArticle->is_archived = 1;
     			$modelArticle->updated_on = date("Y-m-d H:i:s");
     			if (($flag = $modelArticle->save(false)) === false) {
     				Yii::error("ArticleController->actionAsynchArticleStatusReject(1): ".json_encode($modelArticle->getErrors()), "custom_errors_articles");

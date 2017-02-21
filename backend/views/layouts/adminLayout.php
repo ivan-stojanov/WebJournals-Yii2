@@ -190,7 +190,7 @@ AppAsset::register($this);
                             <!-- /.nav-second-level -->
                         </li>
                         <?php } ?>
-						<?php if ((Yii::$app->session->get('user.is_admin') == true) || (isset(Yii::$app->user) && (Yii::$app->user->identity->is_author == 1))){ ?>
+						<?php if ((Yii::$app->session->get('user.is_admin') == true) || (isset(Yii::$app->user) && isset(Yii::$app->user->identity) && (Yii::$app->user->identity->is_author == 1))){ ?>
                         <li>
                             <a href='#'><i class="fa fa-newspaper-o fa-fw"></i> Articles<span class="fa arrow"></span></a>
                             <ul class="nav nav-second-level">
@@ -199,7 +199,7 @@ AppAsset::register($this);
                                     <a href='<?php echo Url::to(['/article/index']); ?>'><i class="fa fa-list fa-fw"></i> List All</a>
                                 </li>
                             <?php } ?>
-							<?php if (isset(Yii::$app->user) && (Yii::$app->user->identity->is_author == 1)){ ?>                            
+							<?php if (isset(Yii::$app->user) && isset(Yii::$app->user->identity) && (Yii::$app->user->identity->is_author == 1)){ ?>
                                 <li>
                                     <a href='<?php echo Url::to(['/article/myarticles']); ?>'><i class="fa fa-list fa-fw"></i> My Articles</a>
                                 </li>

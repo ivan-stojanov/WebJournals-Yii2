@@ -67,7 +67,7 @@ $this->registerJsFile("@web/js/searchScript.js", [ 'depends' => ['frontend\asset
 			<span class="<?= (($params_GET != null && $params_GET->getQueryParam('letter') != null && $params_GET->getQueryParam('letter') == 'X') ? 'letter-serach-active' : '') ?> letter-serach" data-letter="X">X</span>
 			<span class="<?= (($params_GET != null && $params_GET->getQueryParam('letter') != null && $params_GET->getQueryParam('letter') == 'Y') ? 'letter-serach-active' : '') ?> letter-serach" data-letter="Y">Y</span>
 			<span class="<?= (($params_GET != null && $params_GET->getQueryParam('letter') != null && $params_GET->getQueryParam('letter') == 'Z') ? 'letter-serach-active' : '') ?> letter-serach" data-letter="Z">Z</span>
-			<span class="<?= ((($params_GET == null || $params_GET->getQueryParam('letter') == null) || ($params_GET != null && $params_GET->getQueryParam('letter') != null && $params_GET->getQueryParam('letter') == 'A')) ? 'letter-serach-active' : '') ?> letter-serach" data-letter="All">All</span>
+			<span class="<?= ((($params_GET == null || $params_GET->getQueryParam('letter') == null) || ($params_GET != null && $params_GET->getQueryParam('letter') != null && $params_GET->getQueryParam('letter') == 'All')) ? 'letter-serach-active' : '') ?> letter-serach" data-letter="All">All</span>
         </div>
     </div>
 	<br>
@@ -88,132 +88,128 @@ $this->registerJsFile("@web/js/searchScript.js", [ 'depends' => ['frontend\asset
 		<div class="serach-section-result col-sm-12">			
 			
 			<?php 
-			if($volumes_result != null && count($volumes_result)>0) {
-				foreach ($volumes_result as $volume_index => $volume_item) {
-				echo "<div class='row'>";
-					echo "<span class='serach-section-result-volume'>".$volume_item->title."</span>";
-					echo "<br/>";
-					$volume_issues = null;
-					if($volume_item->issues != null)
-						$volume_issues = $volume_item->issues;
-					if($volume_issues != null && count($volume_issues)>0) {
-						foreach ($volume_issues as $issue_index => $issue_item) {
-							echo "<span class='serach-section-result-issue'>".$issue_item->title."</span>";
-							echo "<br/>";
-							$issue_sectons = null;
-							if($issue_item->sections != null)
-								$issue_sectons = $issue_item->sections;
-							if($issue_sectons != null && count($issue_sectons)>0) {
-								foreach ($issue_sectons as $section_index => $section_item) {
-									echo "<span class='serach-section-result-section'>".$section_item->title."</span>";
-									echo "<br/>";
-									$secton_articles = null;
-									if($section_item->articles != null)
-										$secton_articles = $section_item->articles;
-									if($secton_articles != null && count($secton_articles)>0) {									
-										foreach ($secton_articles as $article_index => $article_item) {
-											echo "<ul class='serach-section-result-article'>";
-											echo "	<li>";
-											echo "		<span>".$article_item->title."</span>";
-											echo "		<br>";
-											echo "		<i>Authors: </i><span class='serach-section-result-users'>".$article_item->title."</span>";
-											echo "	</li>";
-											echo "</ul>";
+			if(($params_GET == null || $params_GET->getQueryParam('type') == null) || ($params_GET != null && $params_GET->getQueryParam('type') != null && $params_GET->getQueryParam('type') == 'volume')) {
+				if($volumes_result != null && count($volumes_result)>0) {
+					foreach ($volumes_result as $volume_index => $volume_item) {
+					echo "<div class='row'>";
+						echo "<span class='volume-serach-section-result-volume'>".$volume_item->title."</span>";
+						echo "<br/>";
+						$volume_issues = null;
+						if($volume_item->issues != null)
+							$volume_issues = $volume_item->issues;
+						if($volume_issues != null && count($volume_issues)>0) {
+							foreach ($volume_issues as $issue_index => $issue_item) {
+								echo "<span class='volume-serach-section-result-issue'><i>Issue #".($issue_index+1).": </i>".$issue_item->title."</span>";
+								echo "<br/>";
+								$issue_sectons = null;
+								if($issue_item->sections != null)
+									$issue_sectons = $issue_item->sections;
+								if($issue_sectons != null && count($issue_sectons)>0) {
+									foreach ($issue_sectons as $section_index => $section_item) {
+										echo "<span class='volume-serach-section-result-section'>".$section_item->title."</span>";
+										echo "<br/>";
+										$secton_articles = null;
+										if($section_item->articles != null)
+											$secton_articles = $section_item->articles;
+										if($secton_articles != null && count($secton_articles)>0) {									
+											foreach ($secton_articles as $article_index => $article_item) {
+												echo "<ul class='volume-serach-section-result-article'>";
+												echo "	<li>";
+												echo "		<span>".$article_item->title."</span>";
+												echo "		<br>";
+												echo "		<i>Authors: </i><span class='volume-serach-section-result-users'>".$article_item->title."</span>";
+												echo "	</li>";
+												echo "</ul>";
+											}
 										}
 									}
 								}
 							}
 						}
+						echo "</div>";
+						if($volume_index < (count($volumes_result)-1)) {
+							echo "<hr style='border-top: 3px dashed #eee;' />";
+						}					
 					}
-					echo "</div>";
-					if($volume_index < (count($volumes_result)-1)) {
-						echo "<hr style='border-top: 3px dashed #eee;' />";
-					}					
+				} else {
+					echo "<div class='serach-section-empty-result'>No Volumes are found!</div>";
 				}
 			}
-			?>
-
-			<?php /* HTML TEMPLATE --- START 
-			<div class="row">
-				<span class="serach-section-result-volume">Volume Name 1</span>
-				<br/>
-				<span class="serach-section-result-issue">Issue Name 11</span>
-				<br/>
-				<span class="serach-section-result-section">Section Name 1x1</span>
-				<br/>
-				<ul class="serach-section-result-article">
-					<li>
-						<span>Article Name 1x1x1</span>
-						<br/>
-						<i>Authors: </i><span class="serach-section-result-users">User Name 1x1x1x1; User Name 1x1x1x2; User Name 1x1x1x3</span>
-					</li>
-				</ul>
-				<ul class="serach-section-result-article">
-					<li>
-						<span>Article Name 1x1x2</span>
-						<br/>
-						<i>Authors: </i><span class="serach-section-result-users">User Name 1x1x2x1; User Name 1x1x2x2; User Name 1x1x2x3</span>
-					</li>
-				</ul>				
-				<span class="serach-section-result-section">Section Name 1x2</span>
-				<ul class="serach-section-result-article">
-					<li>
-						<span>Article Name 1x2x1</span>
-						<br/>
-						<i>Authors: </i><span class="serach-section-result-users">User Name 1x2x1x1; User Name 1x2x1x2; User Name 1x2x1x3</span>
-					</li>
-				</ul>
-				<ul class="serach-section-result-article">
-					<li>
-						<span>Article Name 1x2x2</span>
-						<br/>
-						<i>Authors: </i><span class="serach-section-result-users">User Name 1x2x2x1; User Name 1x2x2x2; User Name 1x2x2x3</span>
-					</li>
-				</ul>
-				
-			</div>
-			<hr style="border-top: 3px dashed #eee;" />
-			<div class="row">
-
-				<span class="serach-section-result-volume">Volume Name 2</span>
-				<br/>
-				<span class="serach-section-result-issue">Issue Name 22</span>
-				<br/>
-				<span class="serach-section-result-section">Section Name 2x1</span>
-				<br/>
-				<ul class="serach-section-result-article">
-					<li>
-						<span>Article Name 2x1x1</span>
-						<br/>
-						<i>Authors: </i><span class="serach-section-result-users">User Name 2x1x1x1; User Name 2x1x1x2; User Name 2x1x1x3</span>
-					</li>
-				</ul>
-				<ul class="serach-section-result-article">
-					<li>
-						<span>Article Name 2x1x2</span>
-						<br/>
-						<i>Authors: </i><span class="serach-section-result-users">User Name 2x1x2x1; User Name 2x1x2x2; User Name 2x1x2x3</span>
-					</li>
-				</ul>				
-				<span class="serach-section-result-section">Section Name 2x2</span>
-				<ul class="serach-section-result-article">
-					<li>
-						<span>Article Name 2x2x1</span>
-						<br/>
-						<i>Authors: </i><span class="serach-section-result-users">User Name 2x2x1x1; User Name 2x2x1x2; User Name 2x2x1x3</span>
-					</li>
-				</ul>
-				<ul class="serach-section-result-article">
-					<li>
-						<span>Article Name 2x2x2</span>
-						<br/>
-						<i>Authors: </i><span class="serach-section-result-users">User Name 2x2x2x1; User Name 2x2x2x2; User Name 2x2x2x3</span>
-					</li>
-				</ul>
-				
-			</div>
-			HTML TEMPLATE --- END */ ?>			
 			
+			if($params_GET != null && $params_GET->getQueryParam('type') != null && $params_GET->getQueryParam('type') == 'issue') {
+				if($issues_result != null && count($issues_result)>0) {
+					foreach ($issues_result as $issue_index => $issue_item) {
+						echo "<div class='row'>";
+						echo "<span class='issue-serach-section-result-issue'>".$issue_item->title."</span>";
+						echo "<br/>";
+						echo "<span class='issue-serach-section-result-volume'><i>Volume: </i>".$issue_item->volume->title."</span>";
+						echo "<br/>";
+						$issue_sectons = null;
+						if($issue_item->sections != null)
+							$issue_sectons = $issue_item->sections;
+						if($issue_sectons != null && count($issue_sectons)>0) {
+							foreach ($issue_sectons as $section_index => $section_item) {
+								echo "<span class='issue-serach-section-result-section'>".$section_item->title."</span>";
+								echo "<br/>";
+								$secton_articles = null;
+								if($section_item->articles != null)
+									$secton_articles = $section_item->articles;
+								if($secton_articles != null && count($secton_articles)>0) {
+									foreach ($secton_articles as $article_index => $article_item) {
+										echo "<ul class='issue-section-result-article'>";
+										echo "	<li>";
+										echo "		<span>".$article_item->title."</span>";
+										echo "		<br>";
+										echo "		<i>Authors: </i><span class='issue-serach-section-result-users'>".$article_item->title."</span>";
+										echo "	</li>";
+										echo "</ul>";
+									}
+								}
+							}
+						}
+						echo "</div>";
+						if($issue_index < (count($issues_result)-1)) {
+							echo "<hr style='border-top: 3px dashed #eee;' />";
+						}
+					}	
+				} else {
+					echo "<div class='serach-section-empty-result'>No Issues are found!</div>";
+				}
+			}
+			
+			if($params_GET != null && $params_GET->getQueryParam('type') != null && $params_GET->getQueryParam('type') == 'section') {
+				if($sections_result != null && count($sections_result)>0) {
+						
+				} else {
+					echo "<div class='serach-section-empty-result'>No Sections are found!</div>";
+				}
+			}
+			
+			if($params_GET != null && $params_GET->getQueryParam('type') != null && $params_GET->getQueryParam('type') == 'article') {
+				if($articles_result != null && count($articles_result)>0) {
+			
+				} else {
+					echo "<div class='serach-section-empty-result'>No Articles are found!</div>";
+				}
+			}
+			
+			if($params_GET != null && $params_GET->getQueryParam('type') != null && $params_GET->getQueryParam('type') == 'keyword') {
+				if($keywords_result != null && count($keywords_result)>0) {
+						
+				} else {
+					echo "<div class='serach-section-empty-result'>No Keywords are found!</div>";
+				}
+			}
+			
+			if($params_GET != null && $params_GET->getQueryParam('type') != null && $params_GET->getQueryParam('type') == 'user') {
+				if($users_result != null && count($users_result)>0) {
+			
+				} else {
+					echo "<div class='serach-section-empty-result'>No Users are found!</div>";
+				}
+			}
+			
+			?>			
 		</div>
 	</div>
 	<hr>

@@ -56,26 +56,55 @@
 	width: 100%;
 }
 
-.serach-section-result-volume {
+.volume-serach-section-result-volume {
 	padding-left:10px;
 	font-size: 14px;
 }
-.serach-section-result-issue {
+.volume-serach-section-result-issue {
 	padding-left:25px;
 	font-size: 14px;
 }
-.serach-section-result-section {
+.volume-serach-section-result-section {
 	padding-left:35px;
 	font-size: 14px;
 	font-style: italic;
 }
-.serach-section-result-article {
+.volume-serach-section-result-article {
 	padding-left:70px;
 	font-size: 12px;
 }
-.serach-section-result-user {
+.volume-serach-section-result-user {
 	padding-left:0px;
 	font-size: 10px;
+	font-style: italic;
+}
+
+.issue-serach-section-result-volume {
+	padding-left:10px;
+	font-size: 14px;
+}
+.issue-serach-section-result-issue {
+	padding-left:10px;
+	font-size: 14px;
+}
+.issue-serach-section-result-section {
+	padding-left:25px;
+	font-size: 14px;
+	font-style: italic;
+}
+.issue-serach-section-result-article {
+	padding-left:35px;
+	font-size: 12px;
+}
+.issue-serach-section-result-user {
+	padding-left:0px;
+	font-size: 10px;
+	font-style: italic;
+}
+
+.serach-section-empty-result {
+	text-align: center;
+	font-size: 20px;
 	font-style: italic;
 }
 /* User: Search page - END */

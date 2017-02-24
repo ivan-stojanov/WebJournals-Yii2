@@ -89,126 +89,40 @@ $this->registerJsFile("@web/js/searchScript.js", [ 'depends' => ['frontend\asset
 			
 			<?php 
 			if(($params_GET == null || $params_GET->getQueryParam('type') == null) || ($params_GET != null && $params_GET->getQueryParam('type') != null && $params_GET->getQueryParam('type') == 'volume')) {
-				if($volumes_result != null && count($volumes_result)>0) {
-					foreach ($volumes_result as $volume_index => $volume_item) {
-					echo "<div class='row'>";
-						echo "<span class='volume-serach-section-result-volume'>".$volume_item->title."</span>";
-						echo "<br/>";
-						$volume_issues = null;
-						if($volume_item->issues != null)
-							$volume_issues = $volume_item->issues;
-						if($volume_issues != null && count($volume_issues)>0) {
-							foreach ($volume_issues as $issue_index => $issue_item) {
-								echo "<span class='volume-serach-section-result-issue'><i>Issue #".($issue_index+1).": </i>".$issue_item->title."</span>";
-								echo "<br/>";
-								$issue_sectons = null;
-								if($issue_item->sections != null)
-									$issue_sectons = $issue_item->sections;
-								if($issue_sectons != null && count($issue_sectons)>0) {
-									foreach ($issue_sectons as $section_index => $section_item) {
-										echo "<span class='volume-serach-section-result-section'>".$section_item->title."</span>";
-										echo "<br/>";
-										$secton_articles = null;
-										if($section_item->articles != null)
-											$secton_articles = $section_item->articles;
-										if($secton_articles != null && count($secton_articles)>0) {									
-											foreach ($secton_articles as $article_index => $article_item) {
-												echo "<ul class='volume-serach-section-result-article'>";
-												echo "	<li>";
-												echo "		<span>".$article_item->title."</span>";
-												echo "		<br>";
-												echo "		<i>Authors: </i><span class='volume-serach-section-result-users'>".$article_item->title."</span>";
-												echo "	</li>";
-												echo "</ul>";
-											}
-										}
-									}
-								}
-							}
-						}
-						echo "</div>";
-						if($volume_index < (count($volumes_result)-1)) {
-							echo "<hr style='border-top: 3px dashed #eee;' />";
-						}					
-					}
-				} else {
-					echo "<div class='serach-section-empty-result'>No Volumes are found!</div>";
-				}
+				echo $this->render('_search_volume', [
+					'volumes_result' => $volumes_result
+				]);
 			}
 			
 			if($params_GET != null && $params_GET->getQueryParam('type') != null && $params_GET->getQueryParam('type') == 'issue') {
-				if($issues_result != null && count($issues_result)>0) {
-					foreach ($issues_result as $issue_index => $issue_item) {
-						echo "<div class='row'>";
-						echo "<span class='issue-serach-section-result-issue'>".$issue_item->title."</span>";
-						echo "<br/>";
-						echo "<span class='issue-serach-section-result-volume'><i>Volume: </i>".$issue_item->volume->title."</span>";
-						echo "<br/>";
-						$issue_sectons = null;
-						if($issue_item->sections != null)
-							$issue_sectons = $issue_item->sections;
-						if($issue_sectons != null && count($issue_sectons)>0) {
-							foreach ($issue_sectons as $section_index => $section_item) {
-								echo "<span class='issue-serach-section-result-section'>".$section_item->title."</span>";
-								echo "<br/>";
-								$secton_articles = null;
-								if($section_item->articles != null)
-									$secton_articles = $section_item->articles;
-								if($secton_articles != null && count($secton_articles)>0) {
-									foreach ($secton_articles as $article_index => $article_item) {
-										echo "<ul class='issue-section-result-article'>";
-										echo "	<li>";
-										echo "		<span>".$article_item->title."</span>";
-										echo "		<br>";
-										echo "		<i>Authors: </i><span class='issue-serach-section-result-users'>".$article_item->title."</span>";
-										echo "	</li>";
-										echo "</ul>";
-									}
-								}
-							}
-						}
-						echo "</div>";
-						if($issue_index < (count($issues_result)-1)) {
-							echo "<hr style='border-top: 3px dashed #eee;' />";
-						}
-					}	
-				} else {
-					echo "<div class='serach-section-empty-result'>No Issues are found!</div>";
-				}
+				echo $this->render('_search_issue', [
+					'issues_result' => $issues_result
+				]);				
 			}
 			
 			if($params_GET != null && $params_GET->getQueryParam('type') != null && $params_GET->getQueryParam('type') == 'section') {
-				if($sections_result != null && count($sections_result)>0) {
-						
-				} else {
-					echo "<div class='serach-section-empty-result'>No Sections are found!</div>";
-				}
+				echo $this->render('_search_section', [
+					'sections_result' => $sections_result
+				]);
 			}
 			
 			if($params_GET != null && $params_GET->getQueryParam('type') != null && $params_GET->getQueryParam('type') == 'article') {
-				if($articles_result != null && count($articles_result)>0) {
-			
-				} else {
-					echo "<div class='serach-section-empty-result'>No Articles are found!</div>";
-				}
+				echo $this->render('_search_article', [
+					'articles_result' => $articles_result
+				]);
 			}
 			
 			if($params_GET != null && $params_GET->getQueryParam('type') != null && $params_GET->getQueryParam('type') == 'keyword') {
-				if($keywords_result != null && count($keywords_result)>0) {
-						
-				} else {
-					echo "<div class='serach-section-empty-result'>No Keywords are found!</div>";
-				}
+				echo $this->render('_search_keyword', [
+					'keywords_result' => $keywords_result
+				]);
 			}
 			
 			if($params_GET != null && $params_GET->getQueryParam('type') != null && $params_GET->getQueryParam('type') == 'user') {
-				if($users_result != null && count($users_result)>0) {
-			
-				} else {
-					echo "<div class='serach-section-empty-result'>No Users are found!</div>";
-				}
-			}
-			
+				echo $this->render('_search_user', [
+					'users_result' => $users_result
+				]);
+			}			
 			?>			
 		</div>
 	</div>

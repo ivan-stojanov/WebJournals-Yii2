@@ -102,6 +102,52 @@
 	font-style: italic;
 }
 
+.section-serach-section-result-volume {
+	padding-left:10px;
+	font-size: 14px;
+}
+.section-serach-section-result-issue {
+	padding-left:10px;
+	font-size: 14px;
+}
+.section-serach-section-result-section {
+	padding-left:10px;
+	font-size: 14px;
+	font-style: italic;
+}
+.section-serach-section-result-article {
+	padding-left:25px;
+	font-size: 12px;
+}
+.section-serach-section-result-user {
+	padding-left:0px;
+	font-size: 10px;
+	font-style: italic;
+}
+
+.article-serach-section-result-volume {
+	padding-left:10px;
+	font-size: 14px;
+}
+.article-serach-section-result-issue {
+	padding-left:10px;
+	font-size: 14px;
+}
+.article-serach-section-result-section {
+	padding-left:10px;
+	font-size: 14px;
+	font-style: italic;
+}
+.article-serach-section-result-article {
+	padding-left:25px;
+	font-size: 14px;
+}
+.article-serach-section-result-user {
+	padding-left:0px;
+	font-size: 10px;
+	font-style: italic;
+}
+
 .serach-section-empty-result {
 	text-align: center;
 	font-size: 20px;

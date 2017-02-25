@@ -76,6 +76,16 @@ class Section extends \yii\db\ActiveRecord
         			->andOnCondition(['is_deleted' => 0])
         			->orderBy(['sort_in_section' => SORT_ASC]);        
     }
+    
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getPublishedArticles()
+    {
+    	return $this->hasMany(\common\models\Article::className(),  ['section_id' => 'section_id'])
+			    	->andOnCondition(['is_deleted' => 0, 'status' => Article::STATUS_PUBLISHED])
+			    	->orderBy(['sort_in_section' => SORT_ASC]);
+    }
 
     /**
      * @return \yii\db\ActiveQuery

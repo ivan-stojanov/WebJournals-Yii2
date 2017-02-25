@@ -90,7 +90,7 @@ class SearchController extends Controller
     	
     	$articles_result = null;
     	if($params_GET != null && $params_GET->getQueryParam('type') != null && $params_GET->getQueryParam('type') == 'article') {
-    		$articles_result = Article::find()->where(['is_deleted' => 0]);
+    		$articles_result = Article::find()->where(['is_deleted' => 0, 'status' => Article::STATUS_PUBLISHED]);
     		if(!(($params_GET == null || $params_GET->getQueryParam('letter') == null) || ($params_GET != null && $params_GET->getQueryParam('letter') != null && $params_GET->getQueryParam('letter') == 'All'))) {
     			if($params_GET != null && $params_GET->getQueryParam('letter') != null) {
     				$articles_result = $articles_result->andWhere(['like', 'title', $params_GET->getQueryParam('letter').'%', false]);

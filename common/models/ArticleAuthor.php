@@ -86,6 +86,17 @@ class ArticleAuthor extends \yii\db\ActiveRecord
     /**
      * @return \yii\db\ActiveQuery
      */
+    public static function getPublishedArticlesForAuthor($authorID)
+    {
+    	return ArticleAuthor::find()->where(['author_id' => $authorID, 'article.is_deleted' => 0, 'article.status' => Article::STATUS_PUBLISHED])
+							    	->innerJoinWith('article')
+							    	->orderBy('article.title ASC, sort_order ASC')
+							    	->all();
+    }
+    
+    /**
+     * @return \yii\db\ActiveQuery
+     */
     public static function getAuthorsForArticleString($articleID)
     {
     	$article_authors_ids = null;

@@ -75,10 +75,21 @@ class ArticleKeyword extends \yii\db\ActiveRecord
      */
     public static function getKeywordsForArticle($articleID)
     {
-    	return ArticleKeyword::find()->where(['article_id' => $articleID, 'keyword.is_deleted' => false])
+    	return ArticleKeyword::find()->where(['article_id' => $articleID, 'keyword.is_deleted' => 0])
 							    	 ->innerJoinWith('keyword')
 							     	 ->orderBy('sort_order ASC')
 							     	 ->all();
+    }
+    
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public static function getPublishedArticlesForKeyword($keywordID)
+    {
+    	return ArticleKeyword::find()->where(['keyword_id' => $keywordID, 'article.is_deleted' => 0, 'article.status' => Article::STATUS_PUBLISHED])
+							    	->innerJoinWith('article')
+							    	->orderBy('article.title ASC, sort_order ASC')
+							    	->all();
     }
     
     /**

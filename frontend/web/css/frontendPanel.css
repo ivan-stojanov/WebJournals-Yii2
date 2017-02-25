@@ -55,6 +55,9 @@
 .serach-section-btn {
 	width: 100%;
 }
+.serach-section-switch {
+	text-align:center;
+}
 
 .volume-serach-section-result-volume {
 	padding-left:10px;
@@ -75,7 +78,7 @@
 }
 .volume-serach-section-result-user {
 	padding-left:0px;
-	font-size: 10px;
+	font-size: 12px;
 	font-style: italic;
 }
 
@@ -96,9 +99,9 @@
 	padding-left:35px;
 	font-size: 12px;
 }
-.issue-serach-section-result-user {
+.issue-serach-section-result-users {
 	padding-left:0px;
-	font-size: 10px;
+	font-size: 12px;
 	font-style: italic;
 }
 
@@ -119,22 +122,22 @@
 	padding-left:25px;
 	font-size: 12px;
 }
-.section-serach-section-result-user {
+.section-serach-section-result-users {
 	padding-left:0px;
-	font-size: 10px;
+	font-size: 12px;
 	font-style: italic;
 }
 
 .article-serach-section-result-volume {
-	padding-left:10px;
+	padding-left:25px;
 	font-size: 14px;
 }
 .article-serach-section-result-issue {
-	padding-left:10px;
+	padding-left:25px;
 	font-size: 14px;
 }
 .article-serach-section-result-section {
-	padding-left:10px;
+	padding-left:25px;
 	font-size: 14px;
 	font-style: italic;
 }
@@ -142,10 +145,64 @@
 	padding-left:25px;
 	font-size: 14px;
 }
-.article-serach-section-result-user {
+.article-serach-section-result-users {
 	padding-left:0px;
-	font-size: 10px;
+	font-size: 12px;
 	font-style: italic;
+}
+
+.keyword-serach-section-result-volume {
+	padding-left:25px;
+	font-size: 14px;
+}
+.keyword-serach-section-result-issue {
+	padding-left:25px;
+	font-size: 14px;
+}
+.keyword-serach-section-result-section {
+	padding-left:25px;
+	font-size: 14px;
+	font-style: italic;
+}
+.keyword-serach-section-result-article {
+	padding-left:25px;
+	font-size: 14px;
+}
+.keyword-serach-section-result-users {
+	padding-left:0px;
+	font-size: 12px;
+	font-style: italic;
+}
+.keyword-serach-section-result-keyword {
+	padding-left:10px;
+	font-size: 14px;
+}
+
+.user-serach-section-result-volume {
+	padding-left:25px;
+	font-size: 14px;
+}
+.user-serach-section-result-issue {
+	padding-left:25px;
+	font-size: 14px;
+}
+.user-serach-section-result-section {
+	padding-left:25px;
+	font-size: 14px;
+	font-style: italic;
+}
+.user-serach-section-result-article {
+	padding-left:25px;
+	font-size: 14px;
+}
+.user-serach-section-result-users {
+	padding-left:0px;
+	font-size: 12px;
+	font-style: italic;
+}
+.user-serach-section-result-user {
+	padding-left:10px;
+	font-size: 14px;
 }
 
 .serach-section-empty-result {

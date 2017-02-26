@@ -1,17 +1,18 @@
 <?php
 if($articles_result != null && count($articles_result)>0) {
 	foreach ($articles_result as $article_index => $article_item) {
+		$articleLink = Yii::$app->urlManagerFrontEnd->createAbsoluteUrl(['search/article', 'id' => $article_item->article_id]);
 		echo "<div class='row'>";		
 		echo "<ul class='article-serach-section-result-article'>";
 		echo "	<li>";
-		echo "		<span>".$article_item->title."</span>";
+		echo "		<span><a href='".$articleLink."'>".$article_item->title."</a></span>";
 		echo "		<br>";
 		echo "		<span class='article-serach-section-result-users'><i>Authors: </i>".\common\models\ArticleAuthor::getAuthorsForArticleString($article_item->article_id)['string']."</span>";
 		echo "	</li>";
 		echo "</ul>";
-		$show_details = true;
-		if($params_GET != null && $params_GET->getQueryParam('details') != null && $params_GET->getQueryParam('details') == '0')
-			$show_details = false;		
+		$show_details = false;
+		if($params_GET != null && $params_GET->getQueryParam('details') != null && $params_GET->getQueryParam('details') == '1')
+			$show_details = true;
 		$have_section = false;
 		$have_issue = false;
 		$have_volume = false;
@@ -25,15 +26,18 @@ if($articles_result != null && count($articles_result)>0) {
 			}			
 		}
 		if($have_volume == true && $show_details) {
-			echo "<span class='article-serach-section-result-volume'><u><i>Volume:</i></u> ".$article_item->section->issue->volume->title."</span>";
+			$volumeLink = Yii::$app->urlManagerFrontEnd->createAbsoluteUrl(['search/volume', 'id' => $article_item->section->issue->volume->volume_id]);
+			echo "<span class='article-serach-section-result-volume'><u><i>Volume:</i></u> <a href='".$volumeLink."'>".$article_item->section->issue->volume->title."</a></span>";
 			echo "<br/>";				
 		}
 		if($have_issue == true && $show_details) {
-			echo "<span class='article-serach-section-result-issue'><u><i>Issue:</i></u> ".$article_item->section->issue->title."</span>";
+			$issueLink = Yii::$app->urlManagerFrontEnd->createAbsoluteUrl(['search/issue', 'id' => $article_item->section->issue->issue_id]);
+			echo "<span class='article-serach-section-result-issue'><u><i>Issue:</i></u> <a href='".$issueLink."'>".$article_item->section->issue->title."</a></span>";
 			echo "<br/>";				
 		}
 		if($have_section == true && $show_details) {
-			echo "<span class='article-serach-section-result-section'><u><i>Section:</i></u> ".$article_item->section->title."</span>";
+			$sectionLink = Yii::$app->urlManagerFrontEnd->createAbsoluteUrl(['search/section', 'id' => $article_item->section->section_id]);
+			echo "<span class='article-serach-section-result-section'><u><i>Section:</i></u> <a href='".$sectionLink."'>".$article_item->section->title."</a></span>";
 			echo "<br/>";				
 		}
 		echo "</div>";

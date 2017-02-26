@@ -75,7 +75,7 @@ $this->registerJsFile("@web/js/searchScript.js", [ 'depends' => ['frontend\asset
 		<?php
 			echo SwitchInput::widget([
 					'name' => 'show_details', 
-					'value' => ($params_GET != null && $params_GET->getQueryParam('details') != null && $params_GET->getQueryParam('details') == 0) ? 0 : 1,
+					'value' => ($params_GET != null && $params_GET->getQueryParam('details') != null && $params_GET->getQueryParam('details') == 1) ? 1 : 0,
 					'pluginOptions' => [
 							'size' => 'mini',
 							'handleWidth' => 60,

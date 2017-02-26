@@ -50,7 +50,15 @@ AppAsset::register($this);
     } else {
     	$menuItems[] = ['label' => 'User Panel', 'url' => Yii::$app->urlManagerBackEnd->createUrl('site/index'),];
     }
-    $menuItems[] = ['label' => 'Search', 'url' => ['/search/index']];
+    $menuItems[] = ['label' => 'Search', 'url' => ['/search/index'],
+    				'active' => (($currentControllerId == 'search' && $currentActionId == 'index') 			||
+    							 ($currentControllerId == 'search' && $currentActionId == 'volume') 		||
+    							 ($currentControllerId == 'search' && $currentActionId == 'issue')			||
+    							 ($currentControllerId == 'search' && $currentActionId == 'section')		||
+    							 ($currentControllerId == 'search' && $currentActionId == 'article')		||
+    							 ($currentControllerId == 'search' && $currentActionId == 'keyword')		||
+    							 ($currentControllerId == 'search' && $currentActionId == 'user')),    		
+    				];
     $menuItems[] = ['label' => 'Current', 'url' => ['/site/current']];
     $menuItems[] = ['label' => 'Archive', 'url' => ['/site/archive']];
     $menuItems[] = ['label' => 'Blog', 'url' => ['/site/announcement'], 
@@ -85,7 +93,7 @@ AppAsset::register($this);
 
 <footer class="footer">
     <div class="container">
-        <p class="pull-left">&copy; My Company <?= date('Y') ?></p>
+        <p class="pull-left">&copy; Ivan Stojanov <?= date('Y') ?></p>
 
         <p class="pull-right"><?= Yii::powered() ?></p>
     </div>

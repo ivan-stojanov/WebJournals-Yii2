@@ -4,6 +4,7 @@ namespace frontend\controllers;
 use Yii;
 use yii\base\InvalidParamException;
 use yii\web\BadRequestHttpException;
+use yii\web\NotFoundHttpException;
 use yii\web\Controller;
 use yii\filters\VerbFilter;
 use yii\filters\AccessControl;
@@ -143,6 +144,186 @@ class SearchController extends Controller
     			'current_base_url' => $current_base_url,
     			'params_GET' => $params_GET,
     	]);
+    }
+    
+    /**
+     * Displays volume details page, on search.
+     *
+     * @return mixed
+     */
+    public function actionVolume($id)
+    {
+    	$modelVolume = $this->findVolume($id);    	
+    	
+    	return $this->render('volume', [
+    			'modelVolume' => $modelVolume
+    	]);
+    }
+    
+    /**
+     * Displays issue details page, on search.
+     *
+     * @return mixed
+     */
+    public function actionIssue($id)
+    {
+    	$modelIssue = $this->findIssue($id);
+    	 
+    	return $this->render('issue', [
+    			'modelIssue' => $modelIssue
+    	]);
+    }
+    
+    /**
+     * Displays section details page, on search.
+     *
+     * @return mixed
+     */
+    public function actionSection($id)
+    {
+    	$modelSection = $this->findSection($id);
+    
+    	return $this->render('section', [
+    			'modelSection' => $modelSection
+    	]);
+    }
+    
+    /**
+     * Displays article details page, on search.
+     *
+     * @return mixed
+     */
+    public function actionArticle($id)
+    {
+    	$modelArticle = $this->findArticle($id);
+    
+    	return $this->render('article', [
+    			'modelArticle' => $modelArticle
+    	]);
+    }
+    
+    /**
+     * Displays keyword details page, on search.
+     *
+     * @return mixed
+     */
+    public function actionKeyword($id)
+    {
+    	$modelKeyword = $this->findKeyword($id);
+    
+    	return $this->render('keyword', [
+    			'modelKeyword' => $modelKeyword
+    	]);
+    }
+    
+    /**
+     * Displays user details page, on search.
+     *
+     * @return mixed
+     */
+    public function actionUser($id)
+    {
+    	$modelUser = $this->findUser($id);
+    
+    	return $this->render('user', [
+    			'modelUser' => $modelUser
+    	]);
+    }
+    
+    /**
+     * Finds the Volume model based on its primary key value.
+     * If the model is not found, a 404 HTTP exception will be thrown.
+     * @param integer $id
+     * @return Volume the loaded model
+     * @throws NotFoundHttpException if the model cannot be found
+     */
+    protected function findVolume($id)
+    {
+    	if (($model = Volume::findOne($id)) !== null) {
+    		return $model;
+    	} else {
+    		throw new NotFoundHttpException('The requested page does not exist.');
+    	}
+    }
+    
+    /**
+     * Finds the Issue model based on its primary key value.
+     * If the model is not found, a 404 HTTP exception will be thrown.
+     * @param integer $id
+     * @return Issue the loaded model
+     * @throws NotFoundHttpException if the model cannot be found
+     */
+    protected function findIssue($id)
+    {
+    	if (($model = Issue::findOne($id)) !== null) {
+    		return $model;
+    	} else {
+    		throw new NotFoundHttpException('The requested page does not exist.');
+    	}
+    }
+    
+    /**
+     * Finds the Section model based on its primary key value.
+     * If the model is not found, a 404 HTTP exception will be thrown.
+     * @param integer $id
+     * @return Section the loaded model
+     * @throws NotFoundHttpException if the model cannot be found
+     */
+    protected function findSection($id)
+    {
+    	if (($model = Section::findOne($id)) !== null) {
+    		return $model;
+    	} else {
+    		throw new NotFoundHttpException('The requested page does not exist.');
+    	}
+    }
+    
+    /**
+     * Finds the Article model based on its primary key value.
+     * If the model is not found, a 404 HTTP exception will be thrown.
+     * @param integer $id
+     * @return Article the loaded model
+     * @throws NotFoundHttpException if the model cannot be found
+     */
+    protected function findArticle($id)
+    {
+    	if (($model = Article::findOne($id)) !== null) {
+    		return $model;
+    	} else {
+    		throw new NotFoundHttpException('The requested page does not exist.');
+    	}
+    }
+    
+    /**
+     * Finds the Keyword model based on its primary key value.
+     * If the model is not found, a 404 HTTP exception will be thrown.
+     * @param integer $id
+     * @return Keyword the loaded model
+     * @throws NotFoundHttpException if the model cannot be found
+     */
+    protected function findKeyword($id)
+    {
+    	if (($model = Keyword::findOne($id)) !== null) {
+    		return $model;
+    	} else {
+    		throw new NotFoundHttpException('The requested page does not exist.');
+    	}
+    }
+    
+    /**
+     * Finds the User model based on its primary key value.
+     * If the model is not found, a 404 HTTP exception will be thrown.
+     * @param integer $id
+     * @return User the loaded model
+     * @throws NotFoundHttpException if the model cannot be found
+     */
+    protected function findUser($id)
+    {
+    	if (($model = User::findOne($id)) !== null) {
+    		return $model;
+    	} else {
+    		throw new NotFoundHttpException('The requested page does not exist.');
+    	}
     }
     
     /*

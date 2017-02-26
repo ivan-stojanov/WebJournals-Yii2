@@ -102,24 +102,30 @@ class ArticleAuthor extends \yii\db\ActiveRecord
     	$article_authors_ids = null;
     	$article_authors_string = null;
     	$article_correspondent_author = null;
+    	$article_authors_public_search = null;
     	$articleAuthors_array = ArticleAuthor::getAuthorsForArticle($articleID);
     	if($articleAuthors_array != null && count($articleAuthors_array)>0){
     		$article_authors_ids = ",";
-    		$article_authors_string = "";    		
+    		$article_authors_string = "";
+    		$article_authors_public_search = "";
     		foreach ($articleAuthors_array as $articleAuthor){
     			$article_authors_ids .= $articleAuthor->author->id.",";
     			$article_authors_string .= $articleAuthor->author->fullName." <".$articleAuthor->author->email.">, ";
     			if($articleAuthor->is_correspondent == true){
     				$article_correspondent_author = $articleAuthor->author->id;
     			}
+    			$authorLink = Yii::$app->urlManagerFrontEnd->createAbsoluteUrl(['search/user', 'id' => $articleAuthor->author->id]);
+    			$article_authors_public_search .= "<a href='".$authorLink."'>".$articleAuthor->author->fullName."</a>; ";
     		}
     		$article_authors_string = trim($article_authors_string, ", ");
+    		$article_authors_public_search = trim($article_authors_public_search, " ");
     	}
     	
     	$article_authors = null;
     	$article_authors['ids'] = $article_authors_ids;
     	$article_authors['string'] = $article_authors_string;
     	$article_authors['correspondent_author'] = $article_correspondent_author;
+    	$article_authors['public_search'] = $article_authors_public_search;
 
     	return $article_authors;
     }    

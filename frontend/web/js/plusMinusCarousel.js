@@ -6,7 +6,7 @@
        iconClose = 'glyphicon glyphicon-plus';
 
     $(document).on('show.bs.collapse hide.bs.collapse', '.accordion', function (e) {
-        var $target = $(e.target)
+        var $target = $(e.target);
           $target.siblings('.accordion-heading').find('em').toggleClass(iconOpen + ' ' + iconClose);
           if(e.type == 'show')
               $target.prev('.accordion-heading').find('.accordion-toggle').addClass('active');
@@ -16,9 +16,10 @@
     
     var hash = window.location.hash;
     if(hash != null){
-    	$(hash+':first').find('.accordion-toggle').trigger('click');
-    	//$(hash+':first').find('em').toggleClass(iconOpen + ' ' + iconClose);
-    	//$(hash+':first').find('.accordion-toggle').addClass('active');
+    	//console.log($(hash+':first').parent().find('.accordion-toggle'));
+    	$(hash+':first').parent().find('.accordion-toggle').trigger('click');
+      	//$(hash+':first').parent().find('em').toggleClass(iconOpen + ' ' + iconClose);
+    	//$(hash+':first').parent().find('.accordion-toggle').addClass('active');
     }
     
 })(jQuery);

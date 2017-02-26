@@ -18,7 +18,7 @@ if($sections_result != null && count($sections_result)>0) {
 				echo "	<li>";
 				echo "		<span><a href='".$articleLink."'>".$article_item->title."</a></span>";
 				echo "		<br>";
-				echo "		<i>Authors: </i><span class='section-serach-section-result-users'>".\common\models\ArticleAuthor::getAuthorsForArticleString($article_item->article_id)['string']."</span>";
+				echo "		<i>Authors: </i><span class='section-serach-section-result-users'>".\common\models\ArticleAuthor::getAuthorsForArticleString($article_item->article_id)['public_search']."</span>";
 				echo "	</li>";
 				echo "</ul>";
 			}

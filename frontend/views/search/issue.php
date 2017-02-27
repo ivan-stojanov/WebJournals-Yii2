@@ -47,7 +47,7 @@ $this->params['breadcrumbs'][] = $this->title;
 			echo "<hr class='hr-dashed'>";
 			echo "<h5 class='size18'>Volume</h5>";
 			$volumeLink = Yii::$app->urlManagerFrontEnd->createAbsoluteUrl(['search/volume', 'id' => $modelIssue->volume->volume_id]);
-			echo "<span class='search-page-details-nested-level-two'><a href='".$volumeLink."'>".$modelIssue->volume->title."</a></span>";
+			echo "<span class='search-page-details-nested-level-two'><a href='".$volumeLink."'>".$modelIssue->volume->searchVolumeTitle."</a></span>";
 			echo "<br/>";
 		}
 	}

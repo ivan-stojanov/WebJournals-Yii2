@@ -15,6 +15,8 @@ use common\models\Issue;
 use common\models\Section;
 use common\models\Article;
 use common\models\Keyword;
+use common\models\ArticleKeyword;
+use common\models\ArticleAuthor;
 
 /**
  * Site controller
@@ -196,7 +198,19 @@ class SearchController extends Controller
     public function actionArticle($id)
     {
     	$modelArticle = $this->findArticle($id);
-    
+    	
+    	$params_GET = Yii::$app->getRequest();
+    	if($params_GET != null && $params_GET->getQueryParam('type') != null && $params_GET->getQueryParam('type') == 'html') {
+    		return $this->render('article_html', [
+    				'modelArticle' => $modelArticle
+    		]);
+    	} else if($params_GET != null && $params_GET->getQueryParam('type') != null && $params_GET->getQueryParam('type') == 'pdf') {
+    		/*return $this->render('article_pdf', [
+    				'modelArticle' => $modelArticle
+    		]);  */  		
+    		return $this->redirect(['/search/pdfview', 'id' => $modelArticle->article_id]);
+    	}
+    	
     	return $this->render('article', [
     			'modelArticle' => $modelArticle
     	]);
@@ -209,7 +223,7 @@ class SearchController extends Controller
      */
     public function actionKeyword($id)
     {
-    	$modelKeyword = $this->findKeyword($id);
+    	$modelKeyword = $this->findKeyword($id);    	
     
     	return $this->render('keyword', [
     			'modelKeyword' => $modelKeyword
@@ -326,20 +340,56 @@ class SearchController extends Controller
     	}
     }
     
-    /*
-     * Asynch functions called with Ajax - Search page (front-end)
-     */
-    /*public function actionAsynchSearchCriteria()
+    public function actionPdfview($id, $partial = null)
     {
-    	$search_by_letter_POST = Yii::$app->getRequest()->post('search_by_letter');
-    	$search_by_letter = json_decode($search_by_letter_POST);
+    	$modelArticle = $this->findArticle($id);
+    	 
+    	$article_keywords_string = ArticleKeyword::getKeywordsForArticleString($modelArticle->article_id)['string'];
+    	 
+    	$article_authors_string = ArticleAuthor::getAuthorsForArticleString($id)['string'];
+    	 
+    	// get your HTML raw content without any layouts or scripts
+    	$abstract_title = "<strong>Abstract</strong><br/><br/>";
+    	$content = $abstract_title.$modelArticle->abstract."<br>".$modelArticle->content;
+    	if($partial != null && $partial == "abstract"){
+    		$content = $modelArticle->abstract;
+    	} else if($partial != null && $partial == "content"){
+    		$content = $modelArticle->content;
+    	} else {
+    		$beforeArticleContent = "<h3 style='text-align: center;'>".$modelArticle->title."</h3>";
+    		$afterArticleContent = "";
     
-    	$search_by_entities_POST = Yii::$app->getRequest()->post('search_by_entities');
-    	$search_by_entities = json_decode($search_by_entities_POST);
+    		if (strlen($article_authors_string)>0)
+    			$beforeArticleContent = $beforeArticleContent."<p style='text-align: center;'><strong>Authors:&nbsp;</strong>".$article_authors_string."</p>";
+    			if (strlen($article_keywords_string)>0)
+    				$afterArticleContent = "<p style='text-align: justify;'><strong>Keywords:&nbsp;</strong>".$article_keywords_string."</p>";
     
-    	$search_by_text_POST = Yii::$app->getRequest()->post('search_by_text');
-    	$search_by_text = json_decode($search_by_text_POST);
-     	 
-    	return "Empty message!";
-    }*/
+    				$content = $beforeArticleContent.$content.$afterArticleContent;
+    	}
+    
+    	$pdf = Yii::$app->pdf;
+    	//$pdf->content = $content."<br>".$content."<br>".$content."<br>".$content."<br>".$content."<br>".$content."<br>".$content."<br>".$content."<br>";
+    	$pdf->content = $content;
+    	// set mPDF properties on the fly
+    	$pdf->options = [
+    			'title' => $modelArticle->title,
+    			//'subject' => 'PDF Document Subject',
+    			'keywords' => 'krajee, grid, export, yii2-grid, pdf'
+    	];
+    	// call mPDF methods on the fly
+    	$header = "||".$modelArticle->section->title;
+    	$pageno = "|{PAGENO}|";
+    	$pdf->methods = [
+    			'SetHeader'=>[$header],
+    			'SetFooter'=>[$pageno],
+    	];
+    	return $pdf->render();
+    
+    	/*	    $mpdf = $pdf->api; // fetches mpdf api
+    	 $mpdf->SetHeader('Krajee mpdf Header|f|p'); // call methods or set any properties
+    	 $mpdf->WriteHtml($content); // call mpdf write html
+    	 $mpdf->SetKeywords('Zoki, Smoki');
+    	 echo $mpdf->Output('filename.pdf', $pdf->destination); // call the mpdf api output as needed
+    	 */
+    }    
 }

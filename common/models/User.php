@@ -325,6 +325,14 @@ class User extends ActiveRecord implements IdentityInterface
     /**
      * @return \yii\db\ActiveQuery
      */
+    public function getMyPublishedArticles()
+    {
+    	return $this->hasMany(Article::className(), ['article_id' => 'article_id'])->viaTable('article_author', ['author_id' => 'id'])->andWhere(['status' => Article::STATUS_PUBLISHED]);;
+    }
+    
+    /**
+     * @return \yii\db\ActiveQuery
+     */
     public function getArticleFiles()
     {
     	return $this->hasMany(ArticleFile::className(), ['user_id' => 'id']);

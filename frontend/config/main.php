@@ -16,6 +16,23 @@ return [
             'identityClass' => 'common\models\User',
             'enableAutoLogin' => true,
         ],
+    	'pdf' => [
+    		'class' => \kartik\mpdf\Pdf::classname(),
+    		// set to use core fonts only
+    		//'mode' => \kartik\mpdf\Pdf::MODE_CORE,
+    		// A4 paper format
+    		'format' => \kartik\mpdf\Pdf::FORMAT_A4,
+    		// portrait orientation
+    		'orientation' => \kartik\mpdf\Pdf::ORIENT_PORTRAIT,
+    		// stream to browser inline
+    		'destination' => \kartik\mpdf\Pdf::DEST_BROWSER,
+    		// format content from your own css file if needed or use the
+    		// enhanced bootstrap css built by Krajee for mPDF formatting
+    		'cssFile' => '@vendor/kartik-v/yii2-mpdf/assets/kv-mpdf-bootstrap.min.css',
+    		// any css to be embedded if required
+    		'cssInline' => '.kv-heading-1{font-size:18px}',
+    		// refer settings section for all configuration options
+    	],
         'log' => [
             'traceLevel' => YII_DEBUG ? 3 : 0,
             'targets' => [

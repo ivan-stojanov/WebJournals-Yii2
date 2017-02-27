@@ -140,7 +140,7 @@ class ArticleController extends Controller
     	if(isset($article_authors['correspondent_author'])){
     		$article_correspondent_author = User::findOne(intval($article_authors['correspondent_author']));
     	}    	
-    	$article_keywords_string = ArticleKeyword::getKeywordsForArticleString($id);    	 
+    	$article_keywords_string = ArticleKeyword::getKeywordsForArticleString($id)['string'];    	 
     	$article_reviewers = ArticleReviewer::getReviewersForArticleString($id);
     	$article_editors = ArticleEditor::getEditorsForArticleString($id);    	
     	$current_user_id = ','.Yii::$app->user->id.',';
@@ -1456,7 +1456,7 @@ class ArticleController extends Controller
     {
     	$modelArticle = $this->findModel($id);
     	
-    	$article_keywords_string = ArticleKeyword::getKeywordsForArticleString($modelArticle->article_id);
+    	$article_keywords_string = ArticleKeyword::getKeywordsForArticleString($modelArticle->article_id)['string'];
     	
     	$article_authors_string = ArticleAuthor::getAuthorsForArticleString($id)['string'];
     	

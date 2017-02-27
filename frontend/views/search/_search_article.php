@@ -27,7 +27,7 @@ if($articles_result != null && count($articles_result)>0) {
 		}
 		if($have_volume == true && $show_details) {
 			$volumeLink = Yii::$app->urlManagerFrontEnd->createAbsoluteUrl(['search/volume', 'id' => $article_item->section->issue->volume->volume_id]);
-			echo "<span class='article-serach-section-result-volume'><u><i>Volume:</i></u> <a href='".$volumeLink."'>".$article_item->section->issue->volume->title."</a></span>";
+			echo "<span class='article-serach-section-result-volume'><u><i>Volume:</i></u> <a href='".$volumeLink."'>".$article_item->section->issue->volume->searchVolumeTitle."</a></span>";
 			echo "<br/>";				
 		}
 		if($have_issue == true && $show_details) {

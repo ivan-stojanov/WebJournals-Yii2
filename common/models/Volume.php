@@ -66,4 +66,16 @@ class Volume extends \yii\db\ActiveRecord
             'is_deleted' => 'Is deleted',
         ];
     }
+    
+    /**
+     * @inheritdoc
+     */
+    public function getSearchVolumeTitle()
+    {
+    	$year = "";
+    	if(isset($this->year) && ($this->year != null))
+    		$year = " (".$this->year.")";
+    		
+    	return $this->title.$year;
+    }
 }

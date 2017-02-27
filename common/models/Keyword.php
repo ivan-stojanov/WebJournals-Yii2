@@ -69,6 +69,14 @@ class Keyword extends \yii\db\ActiveRecord
         return $this->hasMany(Article::className(), ['article_id' => 'article_id'])->viaTable('article_keyword', ['keyword_id' => 'keyword_id']);
     }
     
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getPublishedArticles()
+    {
+    	return $this->hasMany(Article::className(), ['article_id' => 'article_id'])->viaTable('article_keyword', ['keyword_id' => 'keyword_id'])->andWhere(['status' => Article::STATUS_PUBLISHED]);
+    }
+    
     public function getKeywordsInAssociativeArray()
     {
     	$keywordModel_array = Keyword::find()->where(['is_deleted' => false])->all();

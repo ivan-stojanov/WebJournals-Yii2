@@ -75,7 +75,7 @@ $this->title = $modelKeyword->content;
 
     			//$article_reviewers = ArticleReviewer::getReviewersForArticleString($article->article_id);
     			$article_authors = ArticleAuthor::getAuthorsForArticleString($article->article_id);
-    			$article_keywords_string = ArticleKeyword::getKeywordsForArticleString($article->article_id);
+    			$article_keywords_string = ArticleKeyword::getKeywordsForArticleString($article->article_id)['string'];
     
     			$current_user_id = ','.Yii::$app->user->id.',';
     			$user_can_modify = (strpos($article_authors['ids'], $current_user_id) !== false);

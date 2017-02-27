@@ -127,7 +127,7 @@ class ArticlereviewerController extends Controller
     	$canEditForm = ($modelArticle->status == Article::STATUS_UNDER_REVIEW);
     	
     	$article_authors = ArticleAuthor::getAuthorsForArticleString($id);
-    	$article_keywords_string = ArticleKeyword::getKeywordsForArticleString($id);
+    	$article_keywords_string = ArticleKeyword::getKeywordsForArticleString($id)['string'];
     	$article_reviewers = ArticleReviewer::getReviewersForArticleString($id);
     	$article_editors = ArticleEditor::getEditorsForArticleString($id);
     	$current_user_id = ','.Yii::$app->user->id.',';

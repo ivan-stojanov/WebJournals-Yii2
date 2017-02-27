@@ -98,16 +98,26 @@ class ArticleKeyword extends \yii\db\ActiveRecord
     public static function getKeywordsForArticleString($articleID)
     {
     	$article_keywords_string = null;
+    	$article_keywords_public_search = null;
     	$articleKeywords_array = ArticleKeyword::getKeywordsForArticle($articleID);
     	
     	if($articleKeywords_array != null && count($articleKeywords_array)>0 ){
     		$article_keywords_string = "";
+    		$article_keywords_public_search = "";
     		foreach ($articleKeywords_array as $articleKeyword){
     			$article_keywords_string .= $articleKeyword->keyword->content.", ";
+    			
+    			$keywordLink = Yii::$app->urlManagerFrontEnd->createAbsoluteUrl(['search/keyword', 'id' => $articleKeyword->keyword->keyword_id]);
+    			$article_keywords_public_search .= "<a href='".$keywordLink."'>".$articleKeyword->keyword->content."</a>, ";
     		}
-    		$article_keywords_string = trim($article_keywords_string, ", ");
+    		$article_keywords_string = trim($article_keywords_string, ",  ");
+    		$article_keywords_public_search = trim($article_keywords_public_search, ",  ");
     	}
     	
-    	return $article_keywords_string;
+    	$article_keywords = null;
+    	$article_authors['string'] = $article_keywords_string;    	
+    	$article_authors['public_search'] = $article_keywords_public_search;
+    	
+    	return $article_authors;
     } 
 }

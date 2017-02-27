@@ -3,7 +3,7 @@ if($volumes_result != null && count($volumes_result)>0) {
 	foreach ($volumes_result as $volume_index => $volume_item) {
 		$volumeLink = Yii::$app->urlManagerFrontEnd->createAbsoluteUrl(['search/volume', 'id' => $volume_item->volume_id]);
 		echo "<div class='row'>";
-		echo "<span class='volume-serach-section-result-volume'><a href='".$volumeLink."'>".$volume_item->title."</a></span>";
+		echo "<span class='volume-serach-section-result-volume'><a href='".$volumeLink."'>".$volume_item->searchVolumeTitle."</a></span>";
 		echo "<br/>";
 		$show_details = false;
 		if($params_GET != null && $params_GET->getQueryParam('details') != null && $params_GET->getQueryParam('details') == '1')

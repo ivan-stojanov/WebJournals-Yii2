@@ -10,7 +10,7 @@ $this->params['breadcrumbs'][] = "Volume";
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="search-page-details">
-	<h2><?= $modelVolume->title." (".$modelVolume->year.")"; ?></h2>
+	<h2><?= $modelVolume->searchVolumeTitle; ?></h2>
 	<hr class="hr-dotted">
 <?php 
 	if($modelVolume->issues != null && count($modelVolume->issues)>0) {

@@ -92,7 +92,7 @@ $this->registerJsFile("@web/js/userScript.js", [ 'depends' => ['\yii\web\JqueryA
 				<?= $form->field($model, 'is_admin')->checkbox() ?>
 			<?php } ?>
 				
-			<?= $form->field($model, 'reviewer_interests')->label() ?>
+			<?php /* echo $form->field($model, 'reviewer_interests')->label() */ ?>
 			
 			<input type="hidden" name="type" value="type"/>
     	

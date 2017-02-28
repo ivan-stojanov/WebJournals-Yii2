@@ -1,78 +1,73 @@
-<?php if(isset($model) && count($model)>0) {?>
-	<hr>
-	<?php 
-	foreach ($model as $modelSection){
-         		$id = $modelSection->homepage_section_id;
-        		$section_type = $modelSection->section_type;
-        		$section_name = $common_vars->admin_homepage_sections[$section_type]['section_name'];
-        		$section_url = $common_vars->admin_homepage_sections[$section_type]['section_url'];
-        		if($section_type == "page_content"){
-        			echo $modelSection->section_content;
-        		} else {
-        			echo $section_name;
-        		}	
-        		echo "<hr>";
-	}
-	?>
-
-<?php } else { echo "No result"; ?>
-
-				
-	
-<?php } ?>
-
-
-<?php
-
-/* @var $this yii\web\View 
-
-$this->title = 'My Yii Application';
+<?php 
+	if(isset($homeSections) && count($homeSections)>0) {		
+		echo "<hr class='hr-double'>";
+		foreach ($homeSections as $modelSection) {
+        	$id = $modelSection->homepage_section_id;
+        	$section_type = $modelSection->section_type;
+        	$section_name = $common_vars->admin_homepage_sections[$section_type]['section_name'];
+        	$section_url = $common_vars->admin_homepage_sections[$section_type]['section_url'];
+        	if($section_type == "page_content"){
+        		echo $modelSection->section_content;
+        	} else if($section_type == "current_issue"){
 ?>
-<div class="site-index">
-
-    <div class="jumbotron">
-        <h1>Congratulations!</h1>
-
-        <p class="lead">You have successfully created your Yii-powered application.</p>
-
-        <p><a class="btn btn-lg btn-success" href="http://www.yiiframework.com">Get started with Yii</a></p>
-    </div>
-
-    <div class="body-content">
-
-        <div class="row">
-            <div class="col-lg-4">
-                <h2>Heading</h2>
-
-                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et
-                    dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip
-                    ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu
-                    fugiat nulla pariatur.</p>
-
-                <p><a class="btn btn-default" href="http://www.yiiframework.com/doc/">Yii Documentation &raquo;</a></p>
-            </div>
-            <div class="col-lg-4">
-                <h2>Heading</h2>
-
-                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et
-                    dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip
-                    ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu
-                    fugiat nulla pariatur.</p>
-
-                <p><a class="btn btn-default" href="http://www.yiiframework.com/forum/">Yii Forum &raquo;</a></p>
-            </div>
-            <div class="col-lg-4">
-                <h2>Heading</h2>
-
-                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et
-                    dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip
-                    ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu
-                    fugiat nulla pariatur.</p>
-
-                <p><a class="btn btn-default" href="http://www.yiiframework.com/extensions/">Yii Extensions &raquo;</a></p>
-            </div>
-        </div>
-
-    </div>
-</div>
-*/ ?>
+			<div class="search-page-details">
+				<?php 
+					if($modelIssue != null) {
+				?>
+					<h2><?= $modelIssue->title; ?></h2>
+					<?php if(isset($modelIssue->published_on)) { ?>	
+						<div class="search-page-details-nested-level-two">
+							<span>Published at: <i><?= date("M d, Y, g:i:s A", strtotime($modelIssue->published_on)) ?></i></span>
+						</div>
+					<?php } ?>
+					<hr class="hr-dashed">
+					<div class="accordion-inner">
+				<?php 
+					if($modelIssue->sections != null && count($modelIssue->sections)>0) {
+						echo "<h4 class='size20'>Table of Contents</h4>";
+						echo "<hr class='hr-dashed'>";
+						echo "<h5 class='size18'>Section(s) / Article(s) / Author(s)</h5>";
+						foreach ($modelIssue->sections as $section_index => $section_item) {					
+							$sectionLink = Yii::$app->urlManagerFrontEnd->createAbsoluteUrl(['search/section', 'id' => $section_item->section_id]);
+							echo "<span class='search-page-details-nested-level-two'><a href='".$sectionLink."'>".$section_item->title."</a></span>";
+							echo "<br/>";
+				
+							if($section_item->publishedArticles != null && count($section_item->publishedArticles)>0) {
+								echo "<div class='search-page-details-nested-level-two'>";
+								foreach ($section_item->publishedArticles as $article_index => $article_item) {
+									$articleLink = Yii::$app->urlManagerFrontEnd->createAbsoluteUrl(['search/article', 'id' => $article_item->article_id]);
+									echo "<span class='search-page-details-nested-level-two'><a href='".$articleLink."'>".$article_item->title."</a></span>";
+									echo "<br/>";
+									echo "<span class='search-page-details-nested-level-three'><i>".\common\models\ArticleAuthor::getAuthorsForArticleString($article_item->article_id)['public_search']."</i></span>";
+									echo "<br/>";
+								}
+								echo "</div>";
+							}
+						}	
+						
+						if($modelIssue->volume != null) {
+							echo "<hr class='hr-dashed'>";
+							echo "<h5 class='size18'>Volume</h5>";
+							$volumeLink = Yii::$app->urlManagerFrontEnd->createAbsoluteUrl(['search/volume', 'id' => $modelIssue->volume->volume_id]);
+							echo "<span class='search-page-details-nested-level-two'><a href='".$volumeLink."'>".$modelIssue->volume->searchVolumeTitle."</a></span>";
+							echo "<br/>";
+						}
+					}
+				?>
+					</div>
+				<?php 
+					} else {
+						echo "<hr class='hr-dotted'>";
+						echo "<div class='serach-section-empty-result'>No current Issue is found!</div>";
+						echo "<hr class='hr-dotted'>";
+					}
+				?>
+				</div>
+<?php 
+        	}	
+        	echo "<hr class='hr-double'>";
+		}
+	} else { 
+		echo "No result"; 
+	} 
+?>

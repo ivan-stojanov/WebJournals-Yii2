@@ -38,6 +38,38 @@
 }
 /* Admin: Announcements CRUD - END */
 
+/* Admin: CurrentIssue CRUD - START */
+.search-page-details {
+	font-family: Georgia,'Times New Roman',Times,serif;
+    font-weight: normal;
+}
+.search-page-details .hr-dotted {
+	border-top: 3px dotted #eee;
+}
+.search-page-details .hr-dashed {
+	border-top: 3px dashed #eee;
+}
+.search-page-details .hr-double, hr.hr-double {
+	border-top: 5px double #eee;
+}
+.search-page-details-nested-level-one {
+	padding-left:40px;
+}
+.search-page-details-nested-level-two {
+	padding-left:20px;
+}
+.search-page-details-nested-level-three {
+	padding-left:40px;
+}
+
+.size18 {
+	font-size: 18px;
+}
+.size20 {
+	font-size: 20px;
+}
+/* Admin: CurrentIssue CRUD - END */
+
 /* Global CSS for ON OFF checbox - START */
 .switch {
     cursor: pointer;

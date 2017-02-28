@@ -242,7 +242,10 @@ AppAsset::register($this);
                             <a href='#'><i class="fa fa-sliders fa-fw"></i> Editor Menu<span class="fa arrow"></span></a>
                             <ul class="nav nav-second-level">
                             	<li>
-                                    <a href='<?php echo Url::to(['/articleeditor/myarticles']); ?>'><i class="fa fa-list fa-fw"></i> My Articles</a>
+                                    <a href='<?php echo Url::to(['/articleeditor/myissues']); ?>'><i class="fa fa-edit fa-fw"></i> My Issues</a>
+                                </li>
+                            	<li>
+                                    <a href='<?php echo Url::to(['/articleeditor/myarticles']); ?>'><i class="fa fa-newspaper-o fa-fw"></i> My Articles</a>
                                 </li>
                             </ul>
                             <!-- /.nav-second-level -->

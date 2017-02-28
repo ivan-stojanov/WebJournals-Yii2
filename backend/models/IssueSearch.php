@@ -39,10 +39,12 @@ class IssueSearch extends Issue
      *
      * @return ActiveDataProvider
      */
-    public function search($params)
+    public function search($params, $editor_id = null)
     {
         $query = Issue::find();
-
+        if($editor_id != null) {
+        	$query = $query->where(['special_editor' => $editor_id]);
+        }
         // add conditions that should always apply here
 
         $dataProvider = new ActiveDataProvider([

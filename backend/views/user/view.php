@@ -130,7 +130,7 @@ $this->title = 'User Details';
     					'value' => ($model->creator_user_id != null) ? $model->creatorUser->fullName : null,
     					'format' => 'HTML'
     			),
-	            'reviewer_interests:ntext',
+	            //'reviewer_interests:ntext',
 	        	 /*array(
 	        			'class' => DataColumn::className(), // this line is optional
 	        			'attribute' => 'user_image',

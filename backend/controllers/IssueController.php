@@ -244,12 +244,16 @@ class IssueController extends Controller
     	if (Yii::$app->user->isGuest) {
     		return $this->redirect(Yii::$app->urlManagerFrontEnd->createUrl('site/login'));
     	}
-    	if (Yii::$app->session->get('user.is_admin') != true){
-    		return $this->redirect(['site/error']);
-    	}
     	
         $modelIssue = $this->findModel($id);
-        $modelIssue->updated_on = date("Y-m-d H:i:s");
+        $modelIssue->updated_on = date("Y-m-d H:i:s");        
+
+        $isAdminOrEditor = ($modelIssue->special_editor != null && intval($modelIssue->special_editor) == intval(Yii::$app->user->id));
+        $isAdminOrEditor = ($isAdminOrEditor || Yii::$app->session->get('user.is_admin'));
+        if ($isAdminOrEditor != true){
+        	return $this->redirect(['site/error']);
+        }
+        
         $update_volumes_after_save = false; $volume_id_old = 0; $volume_id_new = 0;
         
         $modelUser = new User();

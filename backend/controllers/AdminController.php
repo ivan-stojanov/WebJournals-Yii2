@@ -5,6 +5,7 @@ namespace backend\controllers;
 use Yii;
 use yii\filters\VerbFilter;
 use yii\filters\AccessControl;
+use common\models\Issue;
 use common\models\HomepageSection;
 use common\models\CommonVariables;
 
@@ -23,7 +24,7 @@ class AdminController extends \yii\web\Controller
 								],*/
 								//only logged users have access to actions
 								[
-										'actions' => [	'index', 'home', 'homecontent', 'home', 
+										'actions' => [	'index', 'home', 'homecontent', 'home', 'currentissue', 
 														'asynch-home-section-change-visibility',
 														'asynch-home-section-change-sorting',												
 													 ],
@@ -95,6 +96,15 @@ class AdminController extends \yii\web\Controller
 	    	]);
     	}
     } 
+    
+    public function actionCurrentissue()
+    {
+    	$modelIssue = Issue::find()->where(['is_deleted' => 0, 'is_current' => 1])->one();
+    	 
+    	return $this->render('currentissue', [
+    			'modelIssue' => $modelIssue,
+    	]);
+    }
     
     /*
      * Asynch functions called with Ajax - Homepage (list of sections - change visibility)

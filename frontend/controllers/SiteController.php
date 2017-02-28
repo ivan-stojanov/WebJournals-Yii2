@@ -17,6 +17,8 @@ use common\models\CommonVariables;
 use common\models\HomepageSection;
 use common\models\Announcement;
 use common\models\User;
+use common\models\Volume;
+use common\models\Issue;
 
 /**
  * Site controller
@@ -84,12 +86,15 @@ class SiteController extends Controller
     	$common_vars = new CommonVariables();
 
     	$homeSections = HomepageSection::find()
-				    	->where(['is_deleted' => false, 'is_visible' => true])
-				    	->orderBy('sort_order')
-				    	->all();
+					    	->where(['is_deleted' => false, 'is_visible' => true])
+					    	->orderBy('sort_order')
+					    	->all();
+    	
+		$currentIssue = Issue::find()->where(['is_deleted' => 0, 'is_current' => 1])->one();
 				    	 
     	return $this->render('index', [
-    			'model' => $homeSections,
+    			'homeSections' => $homeSections,
+    			'modelIssue' => $currentIssue,
     			'common_vars' => $common_vars
     	]);
     }
@@ -470,20 +475,26 @@ class SiteController extends Controller
      */
     public function actionCurrent()
     {
-    	$model = new ContactForm();
-    	if ($model->load(Yii::$app->request->post()) && $model->validate()) {
-    		if ($model->sendEmail(Yii::$app->params['adminEmail'])) {
-    			Yii::$app->session->setFlash('success', 'Thank you for contacting us. We will respond to you as soon as possible.');
-    		} else {
-    			Yii::$app->session->setFlash('error', 'There was an error sending email.');
-    		}
+    	$modelIssue = Issue::find()->where(['is_deleted' => 0, 'is_current' => 1])->one();
+    	
+    	return $this->render('current', [
+    			'modelIssue' => $modelIssue,
+    	]);
+    }
     
-    		return $this->refresh();
-    	} else {
-    		return $this->render('current', [
-    				'model' => $model,
-    		]);
-    	}
+    /**
+     * Displays archive page.
+     *
+     * @return mixed
+     */
+    public function actionArchive()
+    {
+    	$volumes_result = Volume::find()->where(['is_deleted' => 0])
+    									->orderBy('year DESC, created_on DESC, title ASC')->all();
+    	
+    	return $this->render('archive', [
+    		'volumes_result' => $volumes_result,
+    	]);
     }
     
     /**
@@ -562,5 +573,5 @@ class SiteController extends Controller
     	}
     
     	return "Report for duplicate user has been successfully sent.";
-    }
+    } 
 }

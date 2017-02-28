@@ -221,6 +221,9 @@
 .search-page-details .hr-dashed {
 	border-top: 3px dashed #eee;
 }
+.search-page-details .hr-double, hr.hr-double{
+	border-top: 5px double #eee;
+}
 .search-page-details-nested-level-one {
 	padding-left:40px;
 }
@@ -231,15 +234,15 @@
 	padding-left:40px;
 }
 
-.public-abstract {
-	padding-top: 15px;
-}
-
 .size18 {
 	font-size: 18px;
 }
 .size20 {
 	font-size: 20px;
+}
+
+.public-abstract {
+	padding-top: 15px;
 }
 
 /* User: Search page - END */

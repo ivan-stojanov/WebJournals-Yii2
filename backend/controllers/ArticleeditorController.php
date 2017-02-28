@@ -6,6 +6,7 @@ use Yii;
 use yii\web\Controller;
 use yii\filters\VerbFilter;
 use backend\models\ArticleSearch;
+use backend\models\IssueSearch;
 use common\models\Section;
 use common\models\Article;
 use common\models\ArticleAuthor;
@@ -62,6 +63,29 @@ class ArticleeditorController extends Controller
     	$post_msg = null;
     	 
     	return $this->render('myarticles', [
+    			'searchModel' => $searchModel,
+    			'dataProvider' => $dataProvider,
+    			'post_msg' => $post_msg,
+    	]);
+    }
+    
+    public function actionMyissues()
+    {
+    	if (Yii::$app->user->isGuest) {
+    		return $this->redirect(Yii::$app->urlManagerFrontEnd->createUrl('site/login'));
+    	}
+    	if (Yii::$app->session->get('user.is_editor') != true){
+    		return $this->redirect(['site/error']);
+    	}
+    	 
+    	$queryParams = Yii::$app->request->queryParams;
+    	$queryParams['IssueSearch']['is_deleted'] = 0;
+    	 
+    	$searchModel = new IssueSearch();
+    	$dataProvider = $searchModel->search($queryParams, Yii::$app->user->id);
+    	$post_msg = null;
+    
+    	return $this->render('myissues', [
     			'searchModel' => $searchModel,
     			'dataProvider' => $dataProvider,
     			'post_msg' => $post_msg,

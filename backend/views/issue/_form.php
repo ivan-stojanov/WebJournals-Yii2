@@ -151,7 +151,7 @@ use kartik\file\FileInput;
 			    ],
 		]);?>	    
 	    
-		<?/*= $form->field($modelIssue, 'special_editor', [
+		<?php /*= $form->field($modelIssue, 'special_editor', [
 	    		'options' => [
 	    			'id' => 'special_editor_container',
 					'style' => ($is_special_issue_flag) ? '' : 'display:none'

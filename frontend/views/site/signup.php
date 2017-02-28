@@ -95,7 +95,7 @@ $this->params['breadcrumbs'][] = $this->title;
 				
 				<?= $form->field($model, 'is_reviewer')->checkbox() ?>
 				
-				<?= $form->field($model, 'reviewer_interests')->label() ?>
+				<?php /*echo $form->field($model, 'reviewer_interests')->label()*/ ?>
     	
 	        	<div class="form-group">
 	            	<?= Html::submitButton('Register', ['class' => 'btn btn-primary', 'name' => 'signup-button']) ?>

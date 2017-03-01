@@ -29,7 +29,8 @@ $this->params['breadcrumbs'][] = $this->title;
 <?php 
 			$have_articles = false;
 			if($issue_item->sections != null && count($issue_item->sections)>0) {
-				echo "<h4 class='size20'>Table of Contents</h4>";
+				$issueLink = Yii::$app->urlManagerFrontEnd->createAbsoluteUrl(['search/issue', 'id' => $issue_item->issue_id]);
+				echo "<h4 class='size20'><a href='".$issueLink."'>Table of Contents</a></h4>";
 				echo "<hr class='hr-dashed'>";
 				echo "<h5 class='size18'>Sections</h5>";
 				foreach ($issue_item->sections as $section_index => $section_item) {					

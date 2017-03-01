@@ -170,6 +170,15 @@ class SearchController extends Controller
     public function actionIssue($id)
     {
     	$modelIssue = $this->findIssue($id);
+    	
+    	$params_GET = Yii::$app->getRequest();
+    	if($params_GET != null && $params_GET->getQueryParam('type') != null && $params_GET->getQueryParam('type') == 'html') {
+    		return $this->render('issue_html', [
+    				'modelIssue' => $modelIssue
+    		]);
+    	} else if($params_GET != null && $params_GET->getQueryParam('type') != null && $params_GET->getQueryParam('type') == 'pdf') {
+    		return $this->redirect(['/search/pdfviewissue', 'id' => $modelIssue->issue_id]);
+    	}
     	 
     	return $this->render('issue', [
     			'modelIssue' => $modelIssue
@@ -346,7 +355,7 @@ class SearchController extends Controller
     	 
     	$article_keywords_string = ArticleKeyword::getKeywordsForArticleString($modelArticle->article_id)['string'];
     	 
-    	$article_authors_string = ArticleAuthor::getAuthorsForArticleString($id)['string'];
+    	$article_authors_string = ArticleAuthor::getAuthorsForArticleString($modelArticle->article_id)['string'];
     	 
     	// get your HTML raw content without any layouts or scripts
     	$abstract_title = "<strong>Abstract</strong><br/><br/>";
@@ -391,5 +400,82 @@ class SearchController extends Controller
     	 $mpdf->SetKeywords('Zoki, Smoki');
     	 echo $mpdf->Output('filename.pdf', $pdf->destination); // call the mpdf api output as needed
     	 */
-    }    
+    }
+    
+    public function actionPdfviewissue($id)
+    {
+    	$modelIssue = $this->findIssue($id);    	
+    	$pdf = Yii::$app->pdf; 
+    	
+    	$content = "";    	
+    	
+    	$issueImagesPath = Yii::$app->urlManagerCommon->createUrl('images/issues/cover.jpg');
+    	if(isset($modelIssue->cover_image) && ($modelIssue->cover_image > 0) && isset($modelIssue->coverimage)){
+    		$modelImage = $modelIssue->coverimage;
+    		 
+    		if ($modelImage) {
+    			$issueImagesPath = Yii::$app->urlManagerCommon->createUrl('images/issues') . DIRECTORY_SEPARATOR . $modelIssue->volume_id . DIRECTORY_SEPARATOR;
+    			$issueImagesPath = $issueImagesPath . $modelImage->path;
+    		}
+    	}
+    	
+    	$test = "http://localhost".$issueImagesPath;
+    	$first_page = "<br><div style='text-align:center;'><img src='".$test."' style='height:80%;'/></div><br>";
+    	$first_page .= "<br><div style='text-align:center; font-size:24px;'><strong>".$modelIssue->title."</strong></div>";
+    	$first_page .= "<div style='text-align:center; font-size:16px;'><strong>(Volume: ".$modelIssue->volume->title.")</strong></div><br/>";
+    	//$issue_title .= $test;//"http://".$_SERVER["SERVER_NAME"].$issueImagesPath;
+    	$first_page .= "<pagebreak />";
+    	
+    	if($modelIssue->sections != null && count($modelIssue->sections)>0) {
+    		foreach ($modelIssue->sections as $section_index => $section_item) {
+    			if($section_item->publishedArticles != null && count($section_item->publishedArticles)>0) {
+	    			//if($section_index == 0) {	$content .= "<hr>";	}
+    				$content .= "Section: <i>".$section_item->title."</i><br/>";
+    				foreach ($section_item->publishedArticles as $article_index => $article_item) {    					
+    					
+    					$article_keywords_string = ArticleKeyword::getKeywordsForArticleString($article_item->article_id)['string'];
+    					$article_authors_string = ArticleAuthor::getAuthorsForArticleString($article_item->article_id)['string'];
+    					$beforeArticleContent = "<h3 style='text-align: center;'>".$article_item->title."</h3>";
+    					$afterArticleContent = "";    					 
+    					if (strlen($article_authors_string)>0) {
+    						$beforeArticleContent = $beforeArticleContent."<p style='text-align: center;'><strong>Authors:&nbsp;</strong>".$article_authors_string."</p>";
+    					}
+    					if (strlen($article_keywords_string)>0) {
+    						$afterArticleContent = "<p style='text-align: justify;'><strong>Keywords:&nbsp;</strong>".$article_keywords_string."</p>";
+    					}    					
+    					$articleContent = "<strong>Abstract</strong><br/><br/>";
+    					$articleContent = $articleContent.$article_item->abstract."<br>".$article_item->content;
+    					$articleContent = $beforeArticleContent.$articleContent.$afterArticleContent;
+    					
+    					$content .= "<div>";
+    					$content .= $articleContent;
+    					$content .= "</div>";    					
+    					if($article_index < (count($section_item->publishedArticles)-1)) {
+    						$content .= "<pagebreak />";
+    					}
+    				}
+    			}    			   			
+    		}
+    	}
+    	
+		$content = $first_page.$content;
+    			
+    	$pdf->content = $content;
+    	$pdf->options = [
+    			'title' => $modelIssue->title,
+    			'keywords' => 'krajee, grid, export, yii2-grid, pdf'
+    	];
+    	// call mPDF methods on the fly
+    	$header = "||Volume: ".$modelIssue->volume->title;
+    	$pageno = "|{PAGENO}|";    	
+    	if(isset($modelIssue->published_on)) {
+    		$pageno = "|{PAGENO}|Publish date: ".date("M d, Y", strtotime($modelIssue->published_on));
+    	}    	
+    	
+    	$pdf->methods = [
+    			'SetHeader'=>[$header],
+    			'SetFooter'=>[$pageno],
+    	];
+    	return $pdf->render();
+    }
 }

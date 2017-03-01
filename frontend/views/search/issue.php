@@ -8,6 +8,9 @@ use yii\helpers\Html;
 $this->title = $modelIssue->title;
 $this->params['breadcrumbs'][] = "Issue";
 $this->params['breadcrumbs'][] = $this->title;
+
+$issueLinkHTML = Yii::$app->urlManagerFrontEnd->createAbsoluteUrl(['search/issue', 'id' => $modelIssue->issue_id, 'type' => 'html']);
+$issueLinkPDF = Yii::$app->urlManagerFrontEnd->createAbsoluteUrl(['search/issue', 'id' => $modelIssue->issue_id, 'type' => 'pdf']);
 ?>
 <div class="search-page-details">
 	<h2><?= $modelIssue->title; ?></h2>
@@ -43,6 +46,16 @@ $this->params['breadcrumbs'][] = $this->title;
 				}
 			}
 		}
+		
+		
+		echo "<hr class='hr-dashed'>";
+		echo "<h4 class='size20'>Full Text</h4>";
+		echo "<div class='public-full-text search-page-details-nested-level-two'>";
+		echo "<span><a href=".$issueLinkHTML.">HTML</a></span>&nbsp;&nbsp;";
+		echo "<span><a href=".$issueLinkPDF.">PDF</a></span>";
+		echo "</div>";
+		
+		
 		if($modelIssue->volume != null) {
 			echo "<hr class='hr-dashed'>";
 			echo "<h5 class='size18'>Volume</h5>";

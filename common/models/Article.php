@@ -74,7 +74,7 @@ class Article extends \yii\db\ActiveRecord
             [['created_on', 'updated_on'], 'safe'],
             [['page_from', 'page_to'], 'string', 'max' => 6],
         	[['file_id'], 'exist', 'skipOnError' => true, 'targetClass' => ArticleFile::className(), 'targetAttribute' => ['file_id' => 'file_id']],
-        	[['file_attach'], 'file', 'skipOnEmpty' => true, 'extensions' => 'pdf'],
+        	[['file_attach'], 'file', 'skipOnEmpty' => true, 'extensions' => 'pdf, doc, docx, txt'],
         	[['section_id'], 'exist', 'skipOnError' => true, 'targetClass' => Section::className(), 'targetAttribute' => ['section_id' => 'section_id']],
         	[['post_authors', 'post_correspondent_author', 'post_keywords'], 'required', 'except' => 'article_change_status'],
         	[['post_reviewers', 'post_editors', 'post_authors', 'post_correspondent_author', 'post_keywords'], 'each', 'rule' => ['integer']],        		

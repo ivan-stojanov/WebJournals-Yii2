@@ -32,8 +32,11 @@ if($users_result != null && count($users_result)>0) {
 					echo "<ul class='keyword-serach-section-result-article'>";
 					echo "	<li>";
 					echo "		<span><a href='".$articleLink."'>".$published_ArticleAuthor_item->article->title."</a></span>";
-					echo "		<br>";
-					echo "		<span class='keyword-serach-section-result-users'><i>Authors: </i>".\common\models\ArticleAuthor::getAuthorsForArticleString($published_ArticleAuthor_item->article->article_id)['public_search']."</span>";
+					echo "		<br>";					
+					$authors_list = \common\models\ArticleAuthor::getAuthorsForArticleString($published_ArticleAuthor_item->article->article_id)['public_search'];
+					if(isset($authors_list) && strlen($authors_list) > 0) {
+						echo "		<span class='keyword-serach-section-result-users'><i>Authors: </i>".$authors_list."</span>";
+					}					
 					echo "	</li>";
 					echo "</ul>";
 				}

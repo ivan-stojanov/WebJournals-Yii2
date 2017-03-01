@@ -7,7 +7,10 @@ if($articles_result != null && count($articles_result)>0) {
 		echo "	<li>";
 		echo "		<span><a href='".$articleLink."'>".$article_item->title."</a></span>";
 		echo "		<br>";
-		echo "		<span class='article-serach-section-result-users'><i>Authors: </i>".\common\models\ArticleAuthor::getAuthorsForArticleString($article_item->article_id)['public_search']."</span>";
+		$authors_list = \common\models\ArticleAuthor::getAuthorsForArticleString($article_item->article_id)['public_search'];
+		if(isset($authors_list) && strlen($authors_list) > 0) {
+			echo "		<span class='article-serach-section-result-users'><i>Authors: </i>".$authors_list."</span>";
+		}		
 		echo "	</li>";
 		echo "</ul>";
 		$show_details = false;

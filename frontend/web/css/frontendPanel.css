@@ -215,10 +215,10 @@
 	font-family: Georgia,'Times New Roman',Times,serif;
     font-weight: normal;
 }
-.search-page-details .hr-dotted {
+.search-page-details .hr-dotted, hr.hr-dotted {
 	border-top: 3px dotted #eee;
 }
-.search-page-details .hr-dashed {
+.search-page-details .hr-dashed, hr.hr-dashed {
 	border-top: 3px dashed #eee;
 }
 .search-page-details .hr-double, hr.hr-double{

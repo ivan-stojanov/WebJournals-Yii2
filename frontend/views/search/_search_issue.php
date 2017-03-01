@@ -26,7 +26,10 @@ if($issues_result != null && count($issues_result)>0) {
 						echo "	<li>";
 						echo "		<span><a href='".$articleLink."'>".$article_item->title."</a></span>";
 						echo "		<br>";
-						echo "		<i>Authors: </i><span class='issue-serach-section-result-users'>".\common\models\ArticleAuthor::getAuthorsForArticleString($article_item->article_id)['public_search']."</span>";
+						$authors_list = \common\models\ArticleAuthor::getAuthorsForArticleString($article_item->article_id)['public_search'];
+						if(isset($authors_list) && strlen($authors_list) > 0) {
+							echo "		<i>Authors: </i><span class='issue-serach-section-result-users'>".$authors_list."</span>";
+						}
 						echo "	</li>";
 						echo "</ul>";
 					}

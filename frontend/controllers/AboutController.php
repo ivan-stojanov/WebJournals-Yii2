@@ -65,7 +65,7 @@ class AboutController extends Controller
      *
      * @return mixed
      */
-    public function actionSiteMap()
+    public function actionSitemap()
     {
     	return $this->render('sitemap');
     }

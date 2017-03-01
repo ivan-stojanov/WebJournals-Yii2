@@ -40,9 +40,12 @@ if($modelIssue != null)
 				foreach ($section_item->publishedArticles as $article_index => $article_item) {
 					$articleLink = Yii::$app->urlManagerFrontEnd->createAbsoluteUrl(['search/article', 'id' => $article_item->article_id]);
 					echo "<span class='search-page-details-nested-level-two'><a href='".$articleLink."'>".$article_item->title."</a></span>";
-					echo "<br/>";
-					echo "<span class='search-page-details-nested-level-three'><i>".\common\models\ArticleAuthor::getAuthorsForArticleString($article_item->article_id)['public_search']."</i></span>";
-					echo "<br/>";
+					echo "<br/>";					
+					$authors_list = \common\models\ArticleAuthor::getAuthorsForArticleString($article_item->article_id)['public_search'];
+					if(isset($authors_list) && strlen($authors_list) > 0) {
+						echo "<span class='search-page-details-nested-level-three'><i>".$authors_list."</i></span>";
+						echo "<br/>";
+					}					
 				}
 				echo "</div>";
 			}

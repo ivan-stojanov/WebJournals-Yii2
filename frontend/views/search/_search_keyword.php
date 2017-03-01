@@ -33,7 +33,10 @@ if($keywords_result != null && count($keywords_result)>0) {
 					echo "	<li>";
 					echo "		<span><a href='".$articleLink."'>".$published_ArticlesKeyword_item->article->title."</a></span>";
 					echo "		<br>";
-					echo "		<span class='keyword-serach-section-result-users'><i>Authors: </i>".\common\models\ArticleAuthor::getAuthorsForArticleString($published_ArticlesKeyword_item->article->article_id)['public_search']."</span>";
+					$authors_list = \common\models\ArticleAuthor::getAuthorsForArticleString($published_ArticlesKeyword_item->article->article_id)['public_search'];
+					if(isset($authors_list) && strlen($authors_list) > 0) {
+						echo "		<span class='keyword-serach-section-result-users'><i>Authors: </i>".$authors_list."</span>";
+					}					
 					echo "	</li>";
 					echo "</ul>";
 				}

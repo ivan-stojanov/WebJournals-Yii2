@@ -419,14 +419,14 @@ class SearchController extends Controller
     		}
     	}
     	
-    	$test = "http://localhost".$issueImagesPath;
-    	$first_page = "<br><div style='text-align:center;'><img src='".$test."' style='height:80%;'/></div><br>";
+    	$image_path_url = \Yii::$app->params['baseUrl'].$issueImagesPath;
+    	$first_page = "<br><div style='text-align:center;'><img src='".$image_path_url."' style='height:80%;'/></div><br>";
     	$first_page .= "<br><div style='text-align:center; font-size:24px;'><strong>".$modelIssue->title."</strong></div>";
     	$first_page .= "<div style='text-align:center; font-size:16px;'><strong>(Volume: ".$modelIssue->volume->title.")</strong></div><br/>";
-    	//$issue_title .= $test;//"http://".$_SERVER["SERVER_NAME"].$issueImagesPath;
-    	$first_page .= "<pagebreak />";
+    	//$issue_title .= $image_path_url;//"http://".$_SERVER["SERVER_NAME"].$issueImagesPath;    	
     	
     	if($modelIssue->sections != null && count($modelIssue->sections)>0) {
+    		$first_page .= "<pagebreak />";
     		foreach ($modelIssue->sections as $section_index => $section_item) {
     			if($section_item->publishedArticles != null && count($section_item->publishedArticles)>0) {
 	    			//if($section_index == 0) {	$content .= "<hr>";	}

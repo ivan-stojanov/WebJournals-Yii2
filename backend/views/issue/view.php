@@ -56,6 +56,13 @@ $this->title = $model->title;
         	],
         	[
         		'class' => DataColumn::className(), // this line is optional
+        		'attribute' => 'abstract',
+        		'value' => '<a class="btn btn-info btn-xs" href="'.\Yii::$app->urlManagerFrontEnd->createAbsoluteUrl(['search/pdfviewissue', 'id' => $model->issue_id]).'">View in PDF</a>',
+        		'label' => 'Content',
+        		'format' => 'HTML'
+        	],        		
+        	[
+        		'class' => DataColumn::className(), // this line is optional
         		'attribute' => 'published_on',
         		'value' => (isset($model->published_on)) ? date("M d, Y, g:i:s A", strtotime($model->published_on)) : null,
         		'format' => 'HTML'

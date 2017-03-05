@@ -13,4 +13,5 @@ An article with the title '<?= $modelArticleReviewer->article->title ?>' has bee
 You are set as one of the reviewer(s). You can see the article details and update your review by clicking by clicking on the following link: <?= $reviewLink ?>.
 
 Regards,
+
 <?= \Yii::$app->name ?> team.

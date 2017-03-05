@@ -28,7 +28,7 @@ $this->registerJsFile("@web/js/userScript.js", [ 'depends' => ['\yii\web\JqueryA
 
     		<?= $form->field($model, 'username')->textInput(['maxlength' => true]) ?>
 
-    		<?= $form->field($model, 'email')->textInput(['maxlength' => true])->label('Email (see '.Html::a('Privacy Statement', '#PrivacyStatement').')') ?>
+    		<?= $form->field($model, 'email')->textInput(['maxlength' => true])->label('Email') ?>
 
 			<?= $form->field($model, 'repeat_email') ?>
     		
@@ -46,7 +46,7 @@ $this->registerJsFile("@web/js/userScript.js", [ 'depends' => ['\yii\web\JqueryA
 		
 		<div class="col-md-6">
 		
-			<?= $form->field($model, 'affiliation')->textarea(['rows' => 6]) ?>		
+			<?= $form->field($model, 'affiliation')->textarea(['rows' => 6])->label('Affiliation (Your institution, e.g. "Simon Fraser University")') ?>		
 
     		<?= $form->field($model, 'mailing_address')->textarea(['rows' => 6]) ?>
 

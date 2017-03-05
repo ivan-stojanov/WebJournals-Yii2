@@ -13,4 +13,5 @@ Your article with the title '<?= $modelArticleAuthor->article->title ?>' has bee
 You are set as correspondent author. You can see the article details and track it's status on the following link: <?= $articleLink ?>.
 
 Regards,
+
 <?= \Yii::$app->name ?> team.

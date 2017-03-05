@@ -13,4 +13,5 @@ An article with the title '<?= $modelArticleReviewer->article->title ?>' has bee
 You are set as one of the reviewer(s). Please see the article details and send your review by clicking by clicking on the following link: <?= $reviewLink ?>.
 
 Regards,
+
 <?= \Yii::$app->name ?> team.

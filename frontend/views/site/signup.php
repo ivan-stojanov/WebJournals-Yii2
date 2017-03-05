@@ -66,7 +66,7 @@ $this->params['breadcrumbs'][] = $this->title;
         	
         	<div class="col-md-6">
         	
-        		<?= $form->field($model, 'email')->label('Email (see '.Html::a('Privacy Statement', '#PrivacyStatement').')') ?>
+        		<?= $form->field($model, 'email')->label('Email') ?>
         		
         		<?= $form->field($model, 'repeat_email') ?>
         		
@@ -87,9 +87,9 @@ $this->params['breadcrumbs'][] = $this->title;
                     'template' => '<div class="row"><div class="col-lg-3">{image}</div><div class="col-lg-6">{input}</div></div>',
                 ]) ?> 
 
-				<?= $form->field($model, 'send_confirmation')->checkbox() ?>
+				<?= $form->field($model, 'send_confirmation')->checkbox()->label(false)->hiddenInput() ?>
 				
-				<?= $form->field($model, 'is_reader')->checkbox() ?>
+				<?= $form->field($model, 'is_reader')->checkbox()->label(false)->hiddenInput() ?>
 				
 				<?= $form->field($model, 'is_author')->checkbox() ?>
 				
@@ -109,7 +109,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
     </div>
     <hr style="color: black">    
- 	<h3>Privacy Statement</h3>
+ 	<!--<h3>Privacy Statement</h3>
 
     <div class="row" id="PrivacyStatement">   
     
@@ -120,5 +120,5 @@ $this->params['breadcrumbs'][] = $this->title;
         </div>
         
      </div>
-     
+     -->
 </div>

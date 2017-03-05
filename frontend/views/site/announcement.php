@@ -40,7 +40,7 @@ $this->params['breadcrumbs'][] = $this->title;
         <?php } ?>
 	</div>
 	<?php } else { ?>
-		<p>No announcements were found</p>
+		<div class='serach-section-empty-result'>No Announcements are found!</div>		
 		<hr>
 	<?php }?>
 </div>

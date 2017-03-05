@@ -33,7 +33,7 @@ if(isset(Yii::$app->user->identity) && isset(Yii::$app->user->identity->attribut
 </div>
 
     <hr style="color: black">    
- 	<h3>Privacy Statement</h3>
+ 	<!--<h3>Privacy Statement</h3>
 
     <div class="row" id="PrivacyStatement">   
     
@@ -44,3 +44,4 @@ if(isset(Yii::$app->user->identity) && isset(Yii::$app->user->identity->attribut
         </div>
         
      </div>
+     -->

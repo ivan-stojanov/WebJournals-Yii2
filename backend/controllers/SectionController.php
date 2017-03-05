@@ -6,6 +6,7 @@ use Yii;
 use common\models\Issue;
 use common\models\Section;
 use common\models\Article;
+use common\models\ArticleAuthor;
 use common\models\DynamicForms;
 use backend\models\SectionSearch;
 use yii\web\Controller;
@@ -147,12 +148,27 @@ class SectionController extends Controller
         			if ($flag = $modelSection->save(false)) {
         				
         				foreach ($modelsArticle as $index => $modelArticle) {
+        					if($modelArticle->abstract == null)
+        					   $modelArticle->abstract = "";
+        					if($modelArticle->content == null)
+        					   $modelArticle->content = "";
         					$modelArticle->section_id = $modelSection->section_id;
         					$modelArticle->sort_in_section = $index;
         					$modelArticle->created_on = date("Y-m-d H:i:s");
         					 
-        					if (($flag = $modelArticle->save(false)) === false) {
+        					if (($flag = $modelArticle->save(false)) === false) {        						
         						Yii::error("SectionController->actionCreate(1): ".json_encode($modelArticle->getErrors()), "custom_errors_sections");
+        						$transaction->rollBack();
+        						break;
+        					}
+        					
+        					$articleAuthorItem = new ArticleAuthor();
+        					$articleAuthorItem->article_id = $modelArticle->article_id;
+        					$articleAuthorItem->author_id = intval(\Yii::$app->user->id);
+        					$articleAuthorItem->sort_order = 1;
+        					$articleAuthorItem->created_on = date("Y-m-d H:i:s");
+        					if (($flag = $articleAuthorItem->save(false)) === false) {
+        						Yii::error("SectionController->actionCreate(1.1): ".json_encode($articleAuthorItem->getErrors()), "custom_errors_sections");
         						$transaction->rollBack();
         						break;
         					}

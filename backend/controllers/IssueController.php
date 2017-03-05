@@ -86,12 +86,18 @@ class IssueController extends Controller
     	if (Yii::$app->user->isGuest) {
     		return $this->redirect(Yii::$app->urlManagerFrontEnd->createUrl('site/login'));
     	}
-    	if (Yii::$app->session->get('user.is_admin') != true){
+    	
+    	$modelIssue = $this->findModel($id);
+    	
+    	$isEditor = (($modelIssue->special_editor != null && $modelIssue->special_editor == Yii::$app->user->id) && Yii::$app->session->get('user.is_editor'));
+    	$isAdminOrEditor = ($isEditor || Yii::$app->session->get('user.is_admin'));
+    	
+    	if ($isAdminOrEditor != true){
     		return $this->redirect(['site/error']);
     	}
     	
         return $this->render('view', [
-            'model' => $this->findModel($id),
+            'model' => $modelIssue,
         ]);
     }
 

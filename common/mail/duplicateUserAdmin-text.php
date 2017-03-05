@@ -10,6 +10,9 @@ Report for violation of the user email on the site "<?= \Yii::$app->name ?>" has
 These are the details related to the submitted message:
 
 User ID: <?= $user->id ?>
+
 Username: <?= $user->username ?>
+
 Email: <?= $user->email ?>
+
 Full Name: <?= $user->fullName ?>

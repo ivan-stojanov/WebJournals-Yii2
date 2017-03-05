@@ -21,7 +21,7 @@ $this->title = 'Create Unregistered User';
 </div>
 
     <hr style="color: black">    
- 	<h3>Privacy Statement</h3>
+ 	<!--<h3>Privacy Statement</h3>
 
     <div class="row" id="PrivacyStatement">   
     
@@ -32,3 +32,4 @@ $this->title = 'Create Unregistered User';
         </div>
         
      </div>
+     -->

@@ -13,7 +13,9 @@ An account has beed created using your email.
 These are the details related to the user:
 
 Username: <?= $user->username ?>
+
 Email: <?= $user->email ?>
+
 Full Name: <?= $user->fullName ?>
 
 If this was you, please verify your account by clicking on the following link: <?= $verifyLink ?>.
@@ -21,4 +23,5 @@ If this was you, please verify your account by clicking on the following link: <
 If this was not you, please cancel the account by clicking on the following link: <?= $cancelLink ?>.
 
 Regards,
+
 <?= \Yii::$app->name ?> team.

@@ -219,7 +219,7 @@ class SignupForm extends Model
     		'send_confirmation' => 'Send me a confirmation email including my username and password',
     		'is_reader' => 'Reader: Notified by email on publication of an issue of the journal',
     		'is_author' => 'Author: Able to submit items to the journal',
-    		'is_reviewer' => 'Reviewer: Willing to conduct peer review of submissions to the site. Identify reviewing interests (substantive areas and research methods):',  
+    		'is_reviewer' => 'Reviewer: Willing to conduct peer review of submissions to the site.',  
     		'reviewer_interests' => 'Reviewer Interests',    			
     		'mailing_address' => 'Mailing Address, City, Province',
     	);

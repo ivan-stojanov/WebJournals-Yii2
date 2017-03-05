@@ -84,6 +84,6 @@ $this->title = 'Announcements';
     </table>
 </div>
 <?php } else { ?>
-	<p>No announcements were found</p>
+	<div class='serach-section-empty-result'>No Announcements are found!</div>
 <?php }?>
 <hr>

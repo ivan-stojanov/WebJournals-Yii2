@@ -54,7 +54,7 @@ $this->registerJsFile("@web/js/userScript.js", [ 'depends' => ['\yii\web\JqueryA
         	
        	<div class="col-md-6">
         	
-       		<?= $form->field($model, 'email')->label('Email (see '.Html::a('Privacy Statement', '#PrivacyStatement').')') ?>
+       		<?= $form->field($model, 'email')->label('Email') ?>
         		
        		<?= $form->field($model, 'repeat_email') ?>
         		
@@ -76,9 +76,9 @@ $this->registerJsFile("@web/js/userScript.js", [ 'depends' => ['\yii\web\JqueryA
       			'captchaAction'=>'user/captcha'
             ]) ?> 
 
-			<?= $form->field($model, 'send_confirmation')->checkbox() ?>
+			<?= $form->field($model, 'send_confirmation')->checkbox()->label(false)->hiddenInput() ?>
 				
-			<?= $form->field($model, 'is_reader')->checkbox() ?>
+			<?= $form->field($model, 'is_reader')->checkbox()->label(false)->hiddenInput() ?>
 				
 			<?= $form->field($model, 'is_author')->checkbox() ?>
 				

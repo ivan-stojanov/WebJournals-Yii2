@@ -21,4 +21,5 @@ If this was you, please notify our administrators for violation of your email by
 If this was not you, please ignore the email. If you got this email multile times, please report the case to our administrators by clicking on the following link: <?= $contactLink ?>.
 
 Regards,
+
 <?= \Yii::$app->name ?> team.

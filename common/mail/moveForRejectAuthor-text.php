@@ -12,7 +12,9 @@ This is a notification from the site "<?= \Yii::$app->name ?>".
 Your article with the title '<?= $modelArticleAuthor->article->title ?>' has been rejected. Changes to it can no longer be made.
 
 Editor's action: <?= ArticleReviewer::$STATUS_REVIEW[$modelArticleReviewer->short_comment] ?>
+
 Editor's comment: <?= $modelArticleReviewer->long_comment ?>
+
 Editor's email: <?= $modelArticleReviewer->reviewer->email ?>
 
 You are set as correspondent author. Please see the article details by clicking on the following link: <?= $articleLink ?>.

@@ -18,7 +18,7 @@ $this->params['breadcrumbs'][] = $this->title;
 	    		<h3>Editors</h3>
 	    		<div class="container col-md-6">
 					<div class="list-group">
-						<a href="mailto:ivan.stojanov1990@gmail.com" class="list-group-item" title="Send Email to: ivan.stojanov1990@gmail.com">Ivan.S <em class="icon-fixed-width glyphicon glyphicon-envelope pull-right"></em></a>
+						<a href="<?= 'mailto:'.Yii::$app->params['adminEmail']?>" class="list-group-item" title="<?= 'Send Email to: '.Yii::$app->params['adminEmail']?>">Ivan.S <em class="icon-fixed-width glyphicon glyphicon-envelope pull-right"></em></a>
 					</div>
 				</div>    		
 	    	</div>

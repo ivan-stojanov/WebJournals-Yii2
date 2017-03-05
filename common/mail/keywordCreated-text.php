@@ -15,5 +15,7 @@ Please check the keyword by clicking on the following link: <?= $keywordLink ?> 
 hese are the details related to the creator:
 
 Creator name: <?= $keywordCreator->fullName ?>
+
 Creator username: <?= $keywordCreator->username ?>
+
 Creator email: <?= $keywordCreator->email ?>

@@ -23,6 +23,28 @@ $this->registerJsFile("@web/js/articlereviewerScript.js", [ 'depends' => ['backe
 		<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
 		<strong><span id="articlereview-section-alert-msg"></span></strong>
 	</div>
+	
+		<?php 
+		if($modelArticle->status == Article::STATUS_REJECTED) {
+	?>
+		<div class="alert alert-dismissable alert-danger">
+			<strong><span>Article has been rejected!</span></strong>
+		</div>	
+	<?php
+		} else if($modelArticle->status == Article::STATUS_ACCEPTED_FOR_PUBLICATION) {
+	?>
+		<div class="alert alert-dismissable alert-warning">
+			<strong><span>Article has been accepted for publication! Editors/Admins should publish it!</span></strong>
+		</div>	
+	<?php
+		} else if($modelArticle->status == Article::STATUS_PUBLISHED) {
+	?>
+		<div class="alert alert-dismissable alert-success">
+			<strong><span>Article has been published!</span></strong>
+		</div>					
+	<?php
+		}
+	?>	
 
     <h1><?= Html::encode($this->title) ?></h1>
 
@@ -133,7 +155,7 @@ $this->registerJsFile("@web/js/articlereviewerScript.js", [ 'depends' => ['backe
     	    			[
     	    				'class' => DataColumn::className(), // this line is optional
     	    				'attribute' => 'article_id',
-    	    				'value' => "<b><span style='color:blue'>MY ARTICLE</span></b>",
+    	    				'value' => "<b><span style='color:blue'>MY REVIEW</span></b>",
     	    				'format' => 'HTML',
     	    				'label' => '',
     	    			],

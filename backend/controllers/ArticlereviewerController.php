@@ -15,6 +15,7 @@ use common\models\ArticleEditor;
 use common\models\ArticleFile;
 use common\models\Keyword;
 use common\models\User;
+use common\models\ArticleReviewResponse;
 
 class ArticlereviewerController extends Controller
 {
@@ -141,7 +142,7 @@ class ArticlereviewerController extends Controller
     	$user_can_modify = ($user_can_modify || Yii::$app->session->get('user.is_admin'));
     
     	$modelsArticleReviewer = null;
-    	if($isAdminOrEditor || $user_can_modify) {
+    	if($isAdminOrEditor || $user_can_modify || $isReviewer) {
     		if($modelArticle->status != Article::STATUS_SUBMITTED && $modelArticle->status != Article::STATUS_UNDER_REVIEW) {
     			$modelsArticleReviewer = ArticleReviewer::findAll([
     					'article_id' => $id,
@@ -262,5 +263,38 @@ class ArticlereviewerController extends Controller
     
     	return "Empty message!";
     }
-
+    /*
+     * Asynch functions called with Ajax - Article (article view page when posting a reply to some comment)
+     */
+    public function actionAsynchArticleReviewResponsePost()
+    {
+    	$articleReceivedID = Yii::$app->getRequest()->post('articleid');
+    	$articleID = json_decode($articleReceivedID);
+    
+    	$reviewerReceivedID = Yii::$app->getRequest()->post('reviewerid');
+    	$reviewerID = json_decode($reviewerReceivedID);
+    
+    	$responsecreatoridReceived = Yii::$app->getRequest()->post('responsecreatorid');
+    	$responsecreatorID = json_decode($responsecreatoridReceived);
+    
+    	$longcommentReceived = Yii::$app->getRequest()->post('longcomment');
+    	$longcomment = $longcommentReceived; //json_decode($longcommentReceived);
+    
+    	$modelArticleReviewResponseNew = new ArticleReviewResponse();
+    	$modelArticleReviewResponseNew->article_id = $articleID;
+    	$modelArticleReviewResponseNew->reviewer_id = $reviewerID;
+    	$modelArticleReviewResponseNew->response_creator_id = $responsecreatorID;
+    	$modelArticleReviewResponseNew->long_comment = $longcomment;
+    	$modelArticleReviewResponseNew->created_on = date("Y-m-d H:i:s");
+    	 
+    	if(!$modelArticleReviewResponseNew->save()){
+    		Yii::error("ArticleController->actionAsynchArticleReviewResponsePost(1): ".json_encode($modelArticleReviewResponseNew->errors), "custom_errors_articles");
+    		throw new \Exception('Data not saved: '.print_r($modelArticleReviewResponseNew->errors, true), 500);
+    	} else {
+    		return "A response to an article review has been successfully posted. Please refresh the page to see the latest comments!";
+    	}
+    	 
+    	return "Empty message!";
+    }
+    
 }

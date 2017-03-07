@@ -147,6 +147,7 @@ class ArticleController extends Controller
     	 
     	$isEditor = ((strpos($article_editors['ids'], $current_user_id) !== false) && Yii::$app->session->get('user.is_editor'));
     	$isAdminOrEditor = ($isEditor || Yii::$app->session->get('user.is_admin'));
+    	$isReviewer = ((strpos($article_reviewers['ids'], $current_user_id) !== false) && Yii::$app->session->get('user.is_reviewer'));
     	
     	$user_can_modify = (strpos($article_authors['ids'], $current_user_id) !== false);
     	$user_can_modify = ($user_can_modify || ((strpos($article_editors['ids'], $current_user_id) !== false) && Yii::$app->session->get('user.is_editor')));
@@ -154,7 +155,7 @@ class ArticleController extends Controller
 
     	$modelArticle = $this->findModel($id);
     	$modelsArticleReviewer = null;
-    	if($isAdminOrEditor || $user_can_modify) {
+    	if($isAdminOrEditor || $user_can_modify || $isReviewer) {
     		if($modelArticle->status != Article::STATUS_SUBMITTED && $modelArticle->status != Article::STATUS_UNDER_REVIEW) {
 	    		$modelsArticleReviewer = ArticleReviewer::findAll([
 	    			'article_id' => $id,
@@ -447,7 +448,7 @@ class ArticleController extends Controller
     	$isAdminOrEditor = ($isAdminOrEditor || Yii::$app->session->get('user.is_admin'));    	
     	
     	$user_can_modify = (strpos($article_authors['ids'], $current_user_id) !== false);
-    	$user_can_modify = ($user_can_modify || Yii::$app->session->get('user.is_admin'));
+    	$user_can_modify = ($user_can_modify || $isAdminOrEditor);
     	if ($user_can_modify != true){
     		return $this->redirect(['site/error']);
     	}    	

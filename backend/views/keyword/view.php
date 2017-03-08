@@ -6,6 +6,7 @@ use yii\grid\DataColumn;
 use common\models\ArticleKeyword;
 use common\models\ArticleReviewer;
 use common\models\ArticleAuthor;
+use common\models\ArticleEditor;
 
 /* @var $this yii\web\View */
 /* @var $model common\models\Keyword */
@@ -67,28 +68,36 @@ $this->title = $modelKeyword->content;
     <?php 
     	$count_printed = 0;
     	if(isset($modelKeyword->articles) && (count($modelKeyword->articles) > 0)) {
-    ?>
-			<h2><i>Related Article(s):</i></h2>
-	    	<hr>    		    
-    <?php    		
-    		foreach ($modelKeyword->articles as $index => $article){
-
+    		
+			echo "<h2><i>Related Article(s):</i></h2>";
+			
+    		foreach ($modelKeyword->articles as $index => $article) {
     			//$article_reviewers = ArticleReviewer::getReviewersForArticleString($article->article_id);
     			$article_authors = ArticleAuthor::getAuthorsForArticleString($article->article_id);
-    			$article_keywords_string = ArticleKeyword::getKeywordsForArticleString($article->article_id)['string'];
-    
+    			$article_keywords_string = ArticleKeyword::getKeywordsForArticleString($article->article_id)['string'];    
+    			$article_editors = ArticleEditor::getEditorsForArticleString($article->article_id); 
+    			$article_reviewers = ArticleReviewer::getReviewersForArticleString($article->article_id);    			 
+    			
     			$current_user_id = ','.Yii::$app->user->id.',';
+    			$isEditor = ((strpos($article_editors['ids'], $current_user_id) !== false) && Yii::$app->session->get('user.is_editor'));
+    			$isReviewer = ((strpos($article_reviewers['ids'], $current_user_id) !== false) && Yii::$app->session->get('user.is_reviewer'));
     			$user_can_modify = (strpos($article_authors['ids'], $current_user_id) !== false);
     			$user_can_modify = ($user_can_modify || Yii::$app->session->get('user.is_admin'));
+    			$user_can_modify = ($user_can_modify || $isEditor || $isReviewer);
     			
-    			if($user_can_modify) {   
+    			if($user_can_modify) {
+    				if($index == 0) {
+    					echo "<hr>";
+    				}    				
     				$count_printed++;
-	?>
-			<p>
-    			<?= Html::a('View Article', ['article/view/'.$article->article_id], ['class' => 'btn btn-success']) ?>
-    			<?= Html::a('Update Article', ['article/update/'.$article->article_id], ['class' => 'btn btn-primary']) ?>
-			</p>
-  	<?php    				
+
+		    		echo "<p>";
+		    		echo Html::a('View Article', ['article/view/'.$article->article_id], ['class' => 'btn btn-success']);
+		    		if($user_can_modify && !$isReviewer) {
+		    			echo Html::a('Update Article', ['article/update/'.$article->article_id], ['class' => 'btn btn-primary']);
+		    		}		    			
+					echo "</p>";
+  				
 				    echo DetailView::widget([
 				    	'model' => $article,
 				    	'options' => ['class' => 'table table-striped table-bordered detail-view keyword-article-table'],

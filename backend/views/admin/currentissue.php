@@ -51,7 +51,7 @@ if($modelIssue != null)
 			}
 		}
 		
-		if($modelIssue != null) {
+		/*if($modelIssue != null) {
 			$issueLinkHTML = Yii::$app->urlManagerFrontEnd->createAbsoluteUrl(['search/issue', 'id' => $modelIssue->issue_id, 'type' => 'html']);
 			$issueLinkPDF = Yii::$app->urlManagerFrontEnd->createAbsoluteUrl(['search/issue', 'id' => $modelIssue->issue_id, 'type' => 'pdf']);
 			echo "<hr class='hr-dashed'>";
@@ -60,7 +60,7 @@ if($modelIssue != null)
 			echo "<span><a href=".$issueLinkHTML.">HTML</a></span>&nbsp;&nbsp;";
 			echo "<span><a href=".$issueLinkPDF.">PDF</a></span>";
 			echo "</div>";
-		}
+		}*/
 		
 		if($modelIssue->volume != null) {
 			echo "<hr class='hr-dashed'>";

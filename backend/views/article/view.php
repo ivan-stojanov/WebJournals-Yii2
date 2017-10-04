@@ -75,7 +75,11 @@ $this->registerJsFile("@web/js/articleScript.js", [ 'depends' => ['backend\asset
 	        }
 	    }
 	    echo "&nbsp;";
-        echo Html::a('View in PDF', ['pdfview', 'id' => $model->article_id], ['class' => 'btn btn-success']);
+        echo Html::a('View in PDF (auto generated)', ['pdfview', 'id' => $model->article_id], ['class' => 'btn btn-success']);
+        if ($model->file != null) {
+        	echo "&nbsp;<a target='_blank' class='btn btn-success' href='../@web/uploads/".$model->file->file_name."'>Article File</a>";        	 
+        }        
+		
 		if($isAdminOrEditor) {
 			$reviewOneBtnClasses = 'btn btn-warning';
 			if($model->status != Article::STATUS_SUBMITTED) {
@@ -193,8 +197,9 @@ $this->registerJsFile("@web/js/articleScript.js", [ 'depends' => ['backend\asset
             //'abstract:ntext',
         	[
         		'class' => DataColumn::className(), // this line is optional
-        		'attribute' => 'abstract',        			
-        		'value' => Html::a('View in PDF', ['pdfview', 'id' => $model->article_id, 'partial' => 'abstract'], ['class' => 'btn btn-info btn-xs']),
+        		'attribute' => 'abstract',
+        		'label' => 'Abstract (HTML)',
+        		'value' => Html::a('View in PDF (auto generated)', ['pdfview', 'id' => $model->article_id, 'partial' => 'abstract'], ['class' => 'btn btn-info btn-xs']),
         		//'value' => (($model->abstract) && (isset($model->abstract)) && (strlen($model->abstract) > 0)) ? $model->abstract : null,
         		'format' => 'HTML'
         	],
@@ -202,7 +207,8 @@ $this->registerJsFile("@web/js/articleScript.js", [ 'depends' => ['backend\asset
         	[
         		'class' => DataColumn::className(), // this line is optional
         		'attribute' => 'content',
-        		'value' => Html::a('View in PDF', ['pdfview', 'id' => $model->article_id, 'partial' => 'content'], ['class' => 'btn btn-info btn-xs']),
+        		'label' => 'Content (HTML)',
+        		'value' => Html::a('View in PDF (auto generated)', ['pdfview', 'id' => $model->article_id, 'partial' => 'content'], ['class' => 'btn btn-info btn-xs']),
         		//'value' => (($model->content) && (isset($model->content)) && (strlen($model->content) > 0)) ? $model->content : null,
         		'format' => 'HTML'
         	],
@@ -241,10 +247,30 @@ $this->registerJsFile("@web/js/articleScript.js", [ 'depends' => ['backend\asset
         	[
         		'class' => DataColumn::className(), // this line is optional
         		'attribute' => 'file_attach',
-        		'value' => ($model->file != null) ? "<a href='../@web/uploads/".$model->file->file_name."' download='".$model->file->file_name."'>".$model->file->file_original_name."</a>" : null,
+        		//'value' => ($model->file != null) ? "<a href='../@web/uploads/".$model->file->file_name."' download='".$model->file->file_name."'>".$model->file->file_original_name."</a>" : null,
+        		'value' => ($model->file != null) ? "<a class='btn btn-info btn-xs' href='../@web/uploads/".$model->file->file_name."' download='".$model->file->file_name."'>".$model->file->file_original_name."</a>" : null,
         		'format' => 'HTML'
-        	]
+        	]        	
     	]);
+    	
+    	if($model->files != null && count($model->files) > 0)
+    	{
+    		$files_links = "";
+    		foreach ($model->files as $file) {
+    			//$files_links .= "<a href='../@web/uploads/".$file->file_name."' download='".$file->file_name."'>".$file->file_original_name."</a>;&nbsp;";
+    			$files_links .= "<a class='btn btn-info btn-xs' href='../@web/uploads/".$file->file_name."' download='".$file->file_name."'>".$file->file_original_name."</a>&nbsp;";
+    		}
+    		
+    		$attributes = ArrayHelper::merge($attributes, [
+    				[
+    					'class' => DataColumn::className(), // this line is optional
+    					'attribute' => 'multiple_files',
+    					'value' => $files_links,
+    					'format' => 'HTML'
+    				]
+    		]);
+    	}    	
+    	
     if($user_can_modify) {
     	$attributes = ArrayHelper::merge($attributes, [
         	[

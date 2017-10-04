@@ -231,6 +231,7 @@ class ArticleController extends Controller
     	$addReviewers = false;
     	$addEditors = false;
     	$file_attach = null;
+    	$multiple_files = null;
     		
     	if ($modelArticle->load(Yii::$app->request->post())) {
     		if(isset(Yii::$app->request->post()['Article']) && Yii::$app->request->post()['Article'] != null)
@@ -239,6 +240,12 @@ class ArticleController extends Controller
     			if($file_attach != null)
     			{
     				$modelArticle->file_attach = $file_attach;
+    			}
+    			
+    			$multiple_files = UploadedFile::getInstances($modelArticle, 'multiple_files');
+    			if($multiple_files != null)
+    			{
+    				$modelArticle->multiple_files = $multiple_files;
     			}
     		
     			if(isset(Yii::$app->request->post()['Article']['post_keywords']) && Yii::$app->request->post()['Article']['post_keywords'] != null)
@@ -279,11 +286,15 @@ class ArticleController extends Controller
     			if($file_attach != null)
     			{
     				$modelArticle->file_id = $modelArticle->uploadFile($file_attach);
-    			}    			
+    			}
+    			
     			$transaction = \Yii::$app->db->beginTransaction();
     			try {
     				if ($flag = $modelArticle->save(false)) { 
-    		
+    					if($multiple_files != null)
+    					{
+    						$uploaded_files = $modelArticle->uploadMultipleFiles($multiple_files, $modelArticle->article_id);
+    					}
     				} else {
     					Yii::error("ArticleController->actionCreate(1): ".json_encode($modelArticle->getErrors()), "custom_errors_articles");
     				}
@@ -458,6 +469,7 @@ class ArticleController extends Controller
 		}
   	
         $modelArticle = $this->findModel($id);
+        $modelArticle->scenario = 'article_update';
         $modelArticle->updated_on = date("Y-m-d H:i:s");
         $update_sections_after_save = false; $section_id_old = 0; $section_id_new = 0;
         $modelKeyword = new Keyword();
@@ -500,6 +512,7 @@ class ArticleController extends Controller
         $reviewers_are_changed = true;
         $editors_are_changed = true;
         $file_attach = null;
+        $multiple_files = null;
         
         if ($modelArticle->load(Yii::$app->request->post())) 
         {
@@ -511,6 +524,12 @@ class ArticleController extends Controller
              	{
              		$modelArticle->file_attach = $file_attach;             		          		 
              	}
+             	
+             	$multiple_files = UploadedFile::getInstances($modelArticle, 'multiple_files');
+             	if($multiple_files != null)
+             	{
+             		$modelArticle->multiple_files = $multiple_files;
+             	}             	
              	
         		if(isset(Yii::$app->request->post()['Article']['post_keywords']) && Yii::$app->request->post()['Article']['post_keywords'] != null)
         		{
@@ -589,7 +608,10 @@ class ArticleController extends Controller
         		$transaction = \Yii::$app->db->beginTransaction();
         		try {
         			if ($flag = $modelArticle->save(false)) {
-        	
+        				if($multiple_files != null)
+        				{
+        					$uploaded_files = $modelArticle->uploadMultipleFiles($multiple_files, $modelArticle->article_id);
+        				}
         			} else {
         				Yii::error("ArticleController->actionUpdate(1): ".json_encode($modelArticle->getErrors()), "custom_errors_articles");
         			}

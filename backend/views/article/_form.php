@@ -138,7 +138,40 @@ $this->registerJsFile("@web/js/articleScript.js", [ 'depends' => ['backend\asset
     			'initialCaption' => $initialCaption,
     			'initialPreview' => $initialPreview,
     		],
-    ]);?> 
+    ]);?>  
+    
+    <?php 
+		$initialCaption = null;
+		$initialPreview = [];
+		if($modelArticle->files != null && count($modelArticle->files > 0)) {
+			$initialCaption = "";
+			foreach ($modelArticle->files as $file) {
+				$initialCaption .= " ".$file->file_original_name."; ";
+				$initialPreview[] = [
+					"<div class='file-preview-other'>".$file->file_name."</div>",
+				];
+			}
+		}
+	?> 
+
+    <?php echo $form->field($modelArticle, "multiple_files[]", [
+    		'options' => [
+    			'class' => 'article_attribute__multiple_files',
+    			'id' => 'article_attribute__multiple_files-'.$modelArticle->article_id
+    		]    		
+    ])->widget(FileInput::classname(), [
+    		'options' => [
+	    	    'multiple' => true,
+    			'disabled' => !$canEditForm,
+    			'accept' => 'application/*',
+    		],
+    		'pluginOptions' => [
+    			'showUpload' => false,
+    			'showPreview' => false,
+    			'initialCaption' => $initialCaption,
+    			'initialPreview' => $initialPreview,
+    		],
+    ]);?>    
 	
 	<?php 
 	if($isAdminOrEditor == true) {

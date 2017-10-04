@@ -11,6 +11,9 @@ $this->params['breadcrumbs'][] = $this->title;
 
 $articleLinkHTML = Yii::$app->urlManagerFrontEnd->createAbsoluteUrl(['search/article', 'id' => $modelArticle->article_id, 'type' => 'html']);
 $articleLinkPDF = Yii::$app->urlManagerFrontEnd->createAbsoluteUrl(['search/article', 'id' => $modelArticle->article_id, 'type' => 'pdf']);
+if ($modelArticle->file != null) {
+	$articleLinkPDF = "../../../../backend/web/@web/uploads/".$modelArticle->file->file_name;
+}
 ?>
 <div class="search-page-details">
 	<h2><?= $modelArticle->title; ?></h2>
@@ -33,7 +36,7 @@ $articleLinkPDF = Yii::$app->urlManagerFrontEnd->createAbsoluteUrl(['search/arti
 		<h4 class="size20">Full Text</h4>
 		<div class="public-full-text search-page-details-nested-level-two">
 			<span><a href="<?= $articleLinkHTML ?>">HTML</a></span>&nbsp;&nbsp;
-			<span><a href="<?= $articleLinkPDF ?>">PDF</a></span>
+			<span><a target="_blank" href="<?= $articleLinkPDF ?>">PDF</a></span>
 		</div>
 <?php
 	if($modelArticle->section != null) {

@@ -47,14 +47,14 @@ $issueLinkPDF = Yii::$app->urlManagerFrontEnd->createAbsoluteUrl(['search/issue'
 			}
 		}
 		
-		
+		/*
 		echo "<hr class='hr-dashed'>";
 		echo "<h4 class='size20'>Full Text</h4>";
 		echo "<div class='public-full-text search-page-details-nested-level-two'>";
 		echo "<span><a href=".$issueLinkHTML.">HTML</a></span>&nbsp;&nbsp;";
 		echo "<span><a href=".$issueLinkPDF.">PDF</a></span>";
 		echo "</div>";
-		
+		*/
 		
 		if($modelIssue->volume != null) {
 			echo "<hr class='hr-dashed'>";

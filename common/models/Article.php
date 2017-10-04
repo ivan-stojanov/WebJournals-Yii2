@@ -53,6 +53,7 @@ class Article extends \yii\db\ActiveRecord
 	public $post_reviewers = [];
 	public $post_editors = [];
 	public $file_attach;
+	public $multiple_files;
 		
     /**
      * @inheritdoc
@@ -74,7 +75,8 @@ class Article extends \yii\db\ActiveRecord
             [['created_on', 'updated_on'], 'safe'],
             [['page_from', 'page_to'], 'string', 'max' => 6],
         	[['file_id'], 'exist', 'skipOnError' => true, 'targetClass' => ArticleFile::className(), 'targetAttribute' => ['file_id' => 'file_id']],
-        	[['file_attach'], 'file', 'skipOnEmpty' => true, 'extensions' => 'pdf, doc, docx, txt'],
+        	[['file_attach'], 'file', 'skipOnEmpty' => false, 'extensions' => 'pdf'],
+        	[['multiple_files'], 'file', 'skipOnEmpty' => true, 'extensions' => 'pdf, doc, docx, txt', 'maxFiles' => 4],
         	[['section_id'], 'exist', 'skipOnError' => true, 'targetClass' => Section::className(), 'targetAttribute' => ['section_id' => 'section_id']],
         	[['post_authors', 'post_correspondent_author', 'post_keywords'], 'required', 'except' => 'article_change_status'],
         	[['post_reviewers', 'post_editors', 'post_authors', 'post_correspondent_author', 'post_keywords'], 'each', 'rule' => ['integer']],        		
@@ -86,6 +88,7 @@ class Article extends \yii\db\ActiveRecord
     	$scenarios = parent::scenarios();
     	$scenarios['section_crud'] = ['title']; //Scenario Attributes that will be validated
     	$scenarios['article_change_status'] = ['status']; //Scenario Attributes that will be validated
+    	$scenarios['article_update'] = ['title', 'section_id', 'abstract', 'content', 'post_authors', 'post_correspondent_author', 'post_keywords', 'post_reviewers', 'post_editors', 'multiple_files']; //Scenario Attributes that will be validated
     	return $scenarios;
     }
     
@@ -118,6 +121,12 @@ class Article extends \yii\db\ActiveRecord
     public function getFile()
     {
     	return $this->hasOne(ArticleFile::className(), ['file_id' => 'file_id']);
+    }
+    
+    public function getFiles()
+    {
+    	return $this->hasMany(ArticleFiles::className(), ['article_id' => 'article_id'])
+    				->orderBy(['article_id' => SORT_ASC]);
     }
     
     public static function  get_sections(){
@@ -222,6 +231,42 @@ class Article extends \yii\db\ActiveRecord
     	}    	
     }
     
+    public function uploadMultipleFiles($multiple_files, $article_id)
+    {
+    	try {
+    		$file_ids = [];
+    		if(isset($multiple_files)) {
+    			
+    			ArticleFiles::deleteAll([
+        			'article_id' => intval($article_id)
+        		]);
+    			
+    			foreach ($multiple_files as $file) {    				
+    				$articleFiles = new ArticleFiles();
+    				$articleFiles->user_id = Yii::$app->user->identity->attributes["id"];
+    				$articleFiles->article_id = $article_id;
+    				$articleFiles->file_original_name = $file->baseName.'.'.$file->extension;
+    				$articleFiles->file_name = md5(uniqid(rand(), true)).'.'.$file->extension;
+    				$articleFiles->file_mime_type = $file->type;
+    				$articleFiles->created_on = date("Y-m-d H:i:s");
+    				
+    				if(!$articleFiles->save()){
+    					Yii::error("Article->uploadMultipleFiles(1): ".json_encode($articleFiles->getErrors()), "custom_errors_articles");
+    					return null;
+    				}
+
+    				$file->saveAs('@web/uploads/'.$articleFiles->file_name);
+    				
+    				$file_ids[] = $articleFiles->file_id;
+    			}    			
+    		}
+    		return $file_ids;
+    	} catch (Exception $e) {
+    		Yii::error("Article->uploadMultipleFiles(2): ".json_encode($e), "custom_errors_articles");
+    		return null;
+    	}
+    }
+    
     /**
      * @inheritdoc
      */
@@ -241,7 +286,8 @@ class Article extends \yii\db\ActiveRecord
     			'file_id' => 'File ID',
     			'is_archived' => 'Is archived',
     			'send_emails' => 'Send emails while moving between stages',
-    			'file_attach' => 'File',    			
+    			'file_attach' => 'Article File',    
+    			'multiple_files' => 'Related Files',
     			'created_on' => 'Created on',
             	'updated_on' => 'Updated on',
             	'is_deleted' => 'Is deleted',    			

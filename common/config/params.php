@@ -1,9 +1,9 @@
 <?php
 return [
-    'adminEmail' => 'ivan.stojanov1990@gmail.com',
-    'supportEmail' => 'ivan.stojanov1990@gmail.com',
+    'adminEmail' => 'admin@ivanstojanov.com',
+    'supportEmail' => 'admin@ivanstojanov.com',
     'user.passwordResetTokenExpire' => 3600, //1 hour
-	'user.helperTokenExpire' => 86400, //24 hours
-	'testParameter' => 'common production',
-	'baseUrl' => 'http://localhost',
+    'user.helperTokenExpire' => 86400, //24 hours,
+    'testParameter' => 'common production',
+    'baseUrl' => 'http://localhost:8080/evidencija/',
 ];

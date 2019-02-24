@@ -26,7 +26,6 @@ class m160221_105716_delete_authors_table extends Migration
 			'last_name' 		=> 'varchar(100) NOT NULL',
 			'email' 			=> 'varchar(90) NOT NULL',
 			'title' 			=> 'varchar(255)',
-			'affiliation' 		=> 'text',				
 			'gender' 			=> 'ENUM("Male", "Female", "Other")',
 			'mailing_address'	=> 'text',
 			'country' 			=> 'varchar(100)',			

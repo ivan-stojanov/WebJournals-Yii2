@@ -19,7 +19,7 @@ class UserSearch extends User
     {
         return [
             [['id', 'status', 'created_at', 'updated_at', 'send_confirmation', 'is_admin', 'is_editor', 'is_reader', 'is_author', 'is_reviewer', 'is_unregistered_author', 'creator_user_id', 'last_login'], 'integer'],
-            [['username', 'auth_key', 'password_hash', 'password_reset_token', 'email', 'first_name', 'last_name', 'gender', 'salutation', 'middle_name', 'initials', 'affiliation', 'signature', 'orcid_id', 'url', 'phone', 'fax', 'mailing_address', 'bio_statement', 'reviewer_interests', 'user_image', 'last_login', 'country'], 'safe'],
+            [['username', 'auth_key', 'password_hash', 'password_reset_token', 'email', 'first_name', 'last_name', 'gender', 'salutation', 'middle_name', 'initials', 'info', 'city', 'url', 'phone', 'fax', 'mailing_address', 'bio_statement', 'reviewer_interests', 'user_image', 'last_login', 'country'], 'safe'],
         ];
     }
 
@@ -109,9 +109,8 @@ class UserSearch extends User
             ->andFilterWhere(['like', 'salutation', $this->salutation])
             ->andFilterWhere(['like', 'middle_name', $this->middle_name])
             ->andFilterWhere(['like', 'initials', $this->initials])
-            ->andFilterWhere(['like', 'affiliation', $this->affiliation])
-            ->andFilterWhere(['like', 'signature', $this->signature])
-            ->andFilterWhere(['like', 'orcid_id', $this->orcid_id])
+            ->andFilterWhere(['like', 'info', $this->info])
+            ->andFilterWhere(['like', 'city', $this->city])
             ->andFilterWhere(['like', 'url', $this->url])
             ->andFilterWhere(['like', 'phone', $this->phone])
             ->andFilterWhere(['like', 'fax', $this->fax])

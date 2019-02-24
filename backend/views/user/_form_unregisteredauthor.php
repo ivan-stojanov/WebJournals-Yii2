@@ -34,9 +34,9 @@ $this->registerJsFile("@web/js/userScript.js", [ 'depends' => ['\yii\web\JqueryA
     		
     		<?= $form->field($model, 'first_name')->textInput(['maxlength' => true]) ?>
 
-    		<?= $form->field($model, 'middle_name')->textInput(['maxlength' => true]) ?>
-    		
     		<?= $form->field($model, 'last_name')->textInput(['maxlength' => true]) ?>
+
+    		<?= $form->field($model, 'middle_name')->textInput(['maxlength' => true]) ?>
 
     		<?= $form->field($model, 'gender')->dropDownList($common_vars->gender_values, $additional_vars->gender_opt) ?>
 
@@ -44,9 +44,7 @@ $this->registerJsFile("@web/js/userScript.js", [ 'depends' => ['\yii\web\JqueryA
 
 		</div>
 		
-		<div class="col-md-6">
-		
-			<?= $form->field($model, 'affiliation')->textarea(['rows' => 6])->label('Affiliation (Your institution, e.g. "Simon Fraser University")') ?>		
+		<div class="col-md-6">		
 
     		<?= $form->field($model, 'mailing_address')->textarea(['rows' => 6]) ?>
 

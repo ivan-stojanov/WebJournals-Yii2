@@ -13,9 +13,20 @@ return [
     'bootstrap' => ['log'],
     'modules' => [],
     'components' => [
+		/*'request'=>[
+            'baseUrl'=>'/backend',
+        ],
+        'urlManager'=>[
+            'scriptUrl'=>'/backend/index.php',
+		],*/
         'user' => [
             'identityClass' => 'common\models\User',
-            'enableAutoLogin' => true,
+			'enableAutoLogin' => true,
+			/*'identityCookie' => [
+				'name' => '_identity-frontend',
+				'httpOnly' => true,
+				'domain' => '.evidencija',
+			],*/
         ],
     	'pdf' => [    			
     			'class' => \kartik\mpdf\Pdf::classname(),
@@ -87,7 +98,7 @@ return [
         ],
         'errorHandler' => [
             'errorAction' => 'site/error',
-        ],
+		],		
     ],
     'params' => $params,
 ];

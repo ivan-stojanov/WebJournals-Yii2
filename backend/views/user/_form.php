@@ -36,17 +36,15 @@ $this->registerJsFile("@web/js/userScript.js", [ 'depends' => ['\yii\web\JqueryA
 				
 			<?= $form->field($model, 'first_name') ?>
 				
-			<?= $form->field($model, 'middle_name') ?>
-                
             <?= $form->field($model, 'last_name') ?>  
-               
+
+			<?= $form->field($model, 'middle_name') ?>
+			   
  			<?= $form->field($model, 'initials')->label('Initials (e.g. Joan Alice Smith = JAS)') ?>
 				
 			<?= $form->field($model, 'gender')->dropDownList($common_vars->gender_values, $additional_vars->gender_opt) ?>
                 
-            <?= $form->field($model, 'affiliation')->textArea(['rows' => 3])->label('Affiliation (Your institution, e.g. "Simon Fraser University")') ?>    
-                
-            <?= $form->field($model, 'signature')->textArea(['rows' => 3]) ?> 
+            <?= $form->field($model, 'info')->textArea(['rows' => 3]) ?> 
                     		
         	<?= $form->field($model, 'bio_statement')->textArea(['rows' => 3]) ?>         
                             
@@ -58,9 +56,6 @@ $this->registerJsFile("@web/js/userScript.js", [ 'depends' => ['\yii\web\JqueryA
         		
        		<?= $form->field($model, 'repeat_email') ?>
         		
-       		<?= $form->field($model, 'orcid_id') ?>        		      		
-       		<?= Html::label('ORCID iDs can only be assigned by the '.Html::a('ORCID Registry', 'http://orcid.org/', ['target'=>'_blank']).'. You must conform to their standards for expressing ORCID iDs, and include the full URI (eg. http://orcid.org/0000-0002-1825-0097).', null, ['style' => 'font-weight:normal;margin-top:-15px']) ?>
-        		
        		<?= $form->field($model, 'url') ?>
       		
        		<?= $form->field($model, 'phone') ?>
@@ -69,6 +64,8 @@ $this->registerJsFile("@web/js/userScript.js", [ 'depends' => ['\yii\web\JqueryA
         		
        		<?= $form->field($model, 'mailing_address')->textArea(['rows' => 3]) ?> 
   		
+       		<?= $form->field($model, 'city') ?>        		      		
+
       		<?= $form->field($model, 'country')->dropDownList($common_vars->country_values, $additional_vars->country_opt) ?>		 
        		
       		<?= $form->field($model, 'verifyCode')->widget(Captcha::className(), [

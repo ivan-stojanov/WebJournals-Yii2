@@ -21,12 +21,11 @@ class UserProfileForm extends Model
     public $initials;
     public $gender;
     public $gender_opt;
-    public $affiliation;
-    public $signature;
+    public $info;
     public $bio_statement;    
     public $email;
     public $repeat_email;
-    public $orcid_id;
+    public $city;
     public $url;
     public $phone;
     public $fax;
@@ -74,12 +73,9 @@ class UserProfileForm extends Model
         		
         	['initials', 'match', 'pattern' => '/^[A-Z]{0,10}$/', 'message' => 'The initials must contain only uppercase letters.'],
 
-        	['gender', 'required'],
+        	['gender', 'required'],        		
         		
-        	['affiliation', 'required'],
-        	['affiliation', 'string', 'max' => 255],        		
-        		
-        	['signature', 'string', 'max' => 255],         		
+        	['info', 'string', 'max' => 255],         		
 
         	['bio_statement', 'string', 'max' => 255],        		
         		
@@ -95,7 +91,7 @@ class UserProfileForm extends Model
        		['repeat_email', 'string', 'max' => 255],       		
         	['repeat_email', 'compare', 'compareAttribute'=>'email', 'message' => 'Emails do not match.'],
         	
-        	['orcid_id', 'string', 'max' => 100],
+        	['city', 'string', 'max' => 100],
         		
         	['url', 'url'],	
         		
@@ -181,9 +177,8 @@ class UserProfileForm extends Model
     		$user->middle_name = $this->middle_name;
     		$user->last_name = $this->last_name;
     		$user->initials = $this->initials;
-    		$user->affiliation = $this->affiliation;
-    		$user->signature = $this->signature;
-    		$user->orcid_id = $this->orcid_id;
+    		$user->info = $this->info;
+    		$user->city = $this->city;
     		$user->url = $this->url;
     		$user->phone = $this->phone;
     		$user->fax = $this->fax;
@@ -326,9 +321,8 @@ class UserProfileForm extends Model
     		$user->middle_name = $this->middle_name;
     		$user->last_name = $this->last_name;
     		$user->initials = $this->initials;
-    		$user->affiliation = $this->affiliation;
-    		$user->signature = $this->signature;
-    		$user->orcid_id = $this->orcid_id;
+    		$user->info = $this->info;
+    		$user->city = $this->city;
     		$user->url = $this->url;
     		$user->phone = $this->phone;
     		$user->fax = $this->fax;
@@ -410,7 +404,7 @@ class UserProfileForm extends Model
     public function attributeLabels()
     {
     	return array(
-    		'orcid_id' => 'ORCID iD',
+    		'city' => 'City',
     		'verifyCode' => 'Verification Code',
     		'send_confirmation' => 'Send me a confirmation email including my username and password',
     		'is_reader' => 'Reader: Notified by email on publication of an issue of the journal',
@@ -419,7 +413,10 @@ class UserProfileForm extends Model
     		'is_editor' => 'Editor: Able to edit items to the journal',
     		'is_admin' => 'Admin: Able to manage the system',
     		'reviewer_interests' => 'Reviewer Interests',
-    		'mailing_address' => 'Mailing Address, City, Province',
+			'mailing_address' => 'Mailing Address, Province',
+			'info' => 'Info',
+			'bio_statement' => 'Additional Info',
+			'fax' => 'Phone 2',
     	);
     }
 }

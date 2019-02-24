@@ -35,7 +35,20 @@ class m161229_182256_remove_unregistered_users_table extends Migration
     	if ($this->db->driverName === 'mysql') {
     		// http://stackoverflow.com/questions/766809/whats-the-difference-between-utf8-general-ci-and-utf8-unicode-ci
     		$tableOptions = 'CHARACTER SET utf8 COLLATE utf8_unicode_ci ENGINE=InnoDB';
-    	}
+		}
+		
+		//make some fields not nullabe
+		$this->alterColumn('user', 'auth_key', 'varchar(32) NOT NULL');
+		$this->alterColumn('user', 'password_hash', 'varchar(255) NOT NULL');
+		$this->alterColumn('user', 'password_reset_token', 'varchar(255)');
+		$this->alterColumn('user', 'created_at', 'int(11) NOT NULL');
+		$this->alterColumn('user', 'updated_at', 'int(11) NOT NULL');
+		
+		//apply new flow for unregistered users
+		$this->dropForeignKey('fk_user__user', 'user');
+        $this->dropColumn('user', 'creator_user_id');
+        $this->dropColumn('user', 'is_unregistered_author');
+        $this->dropColumn('user', 'helper_token');
     	
         $this->createTable('unregistered_user', [
             'unregistered_user_id' => 'pk',
@@ -47,7 +60,6 @@ class m161229_182256_remove_unregistered_users_table extends Migration
         	'middle_name' 		=> 'varchar(100) DEFAULT NULL',
         	'gender'			=> 'ENUM("Male", "Female", "Other") DEFAULT NULL',
         	'initials'			=> 'varchar(10) DEFAULT NULL',
-        	'affiliation'   	=> 'text DEFAULT NULL',
         	'mailing_address'	=> 'text DEFAULT NULL',
         	'country'			=> 'varchar(100) DEFAULT NULL',
 			'created_on'   		=> 'datetime',
@@ -60,19 +72,7 @@ class m161229_182256_remove_unregistered_users_table extends Migration
         		'unregistered_user', 'user_creator_id',
         		'user', 'id',
         		'CASCADE',
-        		'CASCADE');
-        
-        //apply new flow for unregistered users
-        $this->dropForeignKey('fk_user__user', 'user');
-        $this->dropColumn('user', 'creator_user_id');
-        $this->dropColumn('user', 'is_unregistered_author');
-        $this->dropColumn('user', 'helper_token');
-        //make some fields not nullabe
-        $this->alterColumn('user', 'auth_key', 'varchar(32) NOT NULL');
-        $this->alterColumn('user', 'password_hash', 'varchar(255) NOT NULL');
-        $this->alterColumn('user', 'password_reset_token', 'varchar(255) NOT NULL');
-        $this->alterColumn('user', 'created_at', 'int(11) NOT NULL');
-        $this->alterColumn('user', 'updated_at', 'int(11) NOT NULL');
+        		'CASCADE');        
     }
 
     /*

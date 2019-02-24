@@ -54,7 +54,7 @@ use yii\grid\DataColumn;
         			'class' => DataColumn::className(), // this line is optional
        				'label' => 'Full Name',
        				'attribute' => 'first_name',
-       				'value' => function($model) { return $model->first_name  . " " .$model->middle_name  . " " . $model->last_name ;},
+       				'value' => function($model) { return $model->first_name  . " " . $model->last_name ;},
         	 ),
         	 //here add icons with roles
         	 /*array(
@@ -76,9 +76,8 @@ use yii\grid\DataColumn;
             // 'gender',
             // 'salutation',            
             // 'initials',
-            // 'affiliation:ntext',
-            // 'signature:ntext',
-            // 'orcid_id',
+            // 'info:ntext',
+            // 'city',
             // 'url:url',
             // 'phone',
             // 'fax',

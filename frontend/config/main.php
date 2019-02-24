@@ -12,9 +12,20 @@ return [
     'bootstrap' => ['log'],
     'controllerNamespace' => 'frontend\controllers',
     'components' => [
+		/*'request'=>[
+            'baseUrl'=>'',
+        ],
+        'urlManager'=>[
+            'scriptUrl'=>'/index.php',
+		],*/
         'user' => [
             'identityClass' => 'common\models\User',
-            'enableAutoLogin' => true,
+			'enableAutoLogin' => true,
+			/*'identityCookie' => [
+				'name' => '_identity-frontend',
+				'httpOnly' => true,
+				'domain' => '.evidencija',
+			],*/
         ],
     	'pdf' => [
     		'class' => \kartik\mpdf\Pdf::classname(),

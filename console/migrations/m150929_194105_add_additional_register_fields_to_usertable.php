@@ -11,9 +11,8 @@ class m150929_194105_add_additional_register_fields_to_usertable extends Migrati
 		$this->addColumn('user', 'salutation', 'varchar(100) DEFAULT NULL');
 		$this->addColumn('user', 'middle_name', 'varchar(100) DEFAULT NULL');
 		$this->addColumn('user', 'initials', 'varchar(10) DEFAULT NULL');
-		$this->addColumn('user', 'affiliation', 'text DEFAULT NULL');
-		$this->addColumn('user', 'signature', 'text DEFAULT NULL');
-		$this->addColumn('user', 'orcid_id', 'varchar(100) DEFAULT NULL');
+		$this->addColumn('user', 'info', 'text DEFAULT NULL');
+		$this->addColumn('user', 'city', 'varchar(100) DEFAULT NULL');
 		$this->addColumn('user', 'url', 'varchar(255) DEFAULT NULL');
 		$this->addColumn('user', 'phone', 'varchar(30) DEFAULT NULL');
 		$this->addColumn('user', 'fax', 'varchar(30) DEFAULT NULL');
@@ -297,9 +296,8 @@ class m150929_194105_add_additional_register_fields_to_usertable extends Migrati
 		$this->dropColumn('user', 'salutation');
 		$this->dropColumn('user', 'middle_name');
 		$this->dropColumn('user', 'initials');
-		$this->dropColumn('user', 'affiliation');
-		$this->dropColumn('user', 'signature');
-		$this->dropColumn('user', 'orcid_id');
+		$this->dropColumn('user', 'info');
+		$this->dropColumn('user', 'city');
 		$this->dropColumn('user', 'url');
 		$this->dropColumn('user', 'phone');
 		$this->dropColumn('user', 'fax');

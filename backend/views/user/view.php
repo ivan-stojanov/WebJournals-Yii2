@@ -69,12 +69,11 @@ $this->title = 'User Details';
 	            'bio_statement:ntext',
 	        	'url:url',
 	        	'salutation',
-	        	'affiliation:ntext',
     		]);
     	if($user_can_modify) {
     		$attributes = ArrayHelper::merge($attributes, [    				
-	        	'signature:ntext',
-	        	'orcid_id',            
+	        	'info:ntext',
+	        	'city',            
 	        	 array(
 	        			'class' => DataColumn::className(), // this line is optional
 	        			'attribute' => 'send_confirmation',

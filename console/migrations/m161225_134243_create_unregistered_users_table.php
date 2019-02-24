@@ -22,7 +22,6 @@ class m161225_134243_create_unregistered_users_table extends Migration
         	'middle_name' 		=> 'varchar(100) DEFAULT NULL',
         	'gender'			=> 'ENUM("Male", "Female", "Other") DEFAULT NULL',
         	'initials'			=> 'varchar(10) DEFAULT NULL',
-        	'affiliation'   	=> 'text DEFAULT NULL',
         	'mailing_address'	=> 'text DEFAULT NULL',
         	'country'			=> 'varchar(100) DEFAULT NULL',
 			'created_on'   		=> 'datetime',

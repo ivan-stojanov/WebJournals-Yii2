@@ -25,9 +25,8 @@ use yii\web\IdentityInterface;
  * @property string $salutation
  * @property string $middle_name
  * @property string $initials
- * @property string $affiliation
- * @property string $signature
- * @property string $orcid_id
+ * @property string $info
+ * @property string $city
  * @property string $url
  * @property string $phone
  * @property string $fax

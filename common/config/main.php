@@ -17,7 +17,7 @@ return [
     	],
     	'urlManagerFrontEnd' => [
     			'class' => 'yii\web\urlManager',
-    			'baseUrl' => '/WebSpisanieOOSI/frontend/web',
+    			'baseUrl' => '/evidencija/frontend/web',
     			'enablePrettyUrl' => true,
     			'showScriptName' => false,
     			'enableStrictParsing' => false,
@@ -29,7 +29,7 @@ return [
     	],
     	'urlManagerBackEnd' => [
     			'class' => 'yii\web\urlManager',
-    			'baseUrl' => '/WebSpisanieOOSI/backend/web',
+    			'baseUrl' => '/evidencija/backend/web',
     			'enablePrettyUrl' => true,
     			'showScriptName' => false,
     			'enableStrictParsing' => false,
@@ -41,7 +41,7 @@ return [
     	],
     	'urlManagerCommon' => [
     			'class' => 'yii\web\urlManager',
-    			'baseUrl' => '/WebSpisanieOOSI/common',
+    			'baseUrl' => '/evidencija/common',
     			'enablePrettyUrl' => true,
     			'showScriptName' => false,
     			'enableStrictParsing' => false,
@@ -66,7 +66,7 @@ return [
     	],
     	'db' => [
     			'class' => 'yii\db\Connection',
-    			'dsn' => 'mysql:host=localhost;dbname=webspisanie_oosi',
+    			'dsn' => 'mysql:host=localhost;dbname=evidencija',
     			'username' => 'root',
     			'password' => '',
     			'charset' => 'utf8',

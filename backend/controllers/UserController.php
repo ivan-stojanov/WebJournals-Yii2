@@ -286,22 +286,18 @@ class UserController extends Controller
     
     	if(isset($_POST[$model->formName()]["initials"])){
     		$model->initials = $_POST[$model->formName()]["initials"];
-    	}
-    
-    	if(isset($_POST[$model->formName()]["affiliation"])){
-    		$model->affiliation = $_POST[$model->formName()]["affiliation"];
-    	}
-    
-    	if(isset($_POST[$model->formName()]["signature"])){
-    		$model->signature = $_POST[$model->formName()]["signature"];
+    	}    
+   
+    	if(isset($_POST[$model->formName()]["info"])){
+    		$model->info = $_POST[$model->formName()]["info"];
     	}
     
     	if(isset($_POST[$model->formName()]["bio_statement"])){
     		$model->bio_statement = $_POST[$model->formName()]["bio_statement"];
     	}
     
-    	if(isset($_POST[$model->formName()]["orcid_id"])){
-    		$model->orcid_id = $_POST[$model->formName()]["orcid_id"];
+    	if(isset($_POST[$model->formName()]["city"])){
+    		$model->city = $_POST[$model->formName()]["city"];
     	}
     
     	if(isset($_POST[$model->formName()]["url"])){
@@ -493,18 +489,12 @@ class UserController extends Controller
     		$model->initials = $_POST[$model->formName()]["initials"];
     	} else if(isset($currentUserModel) && isset($currentUserModel->initials)){
     		$model->initials = $currentUserModel->initials;
-    	}
-    	
-    	if(isset($_POST[$model->formName()]["affiliation"])){
-    		$model->affiliation = $_POST[$model->formName()]["affiliation"];
-    	} else if(isset($currentUserModel) && isset($currentUserModel->affiliation)){
-    		$model->affiliation = $currentUserModel->affiliation;
-    	}
-    	
-    	if(isset($_POST[$model->formName()]["signature"])){
-    		$model->signature = $_POST[$model->formName()]["signature"];
-    	} else if(isset($currentUserModel) && isset($currentUserModel->signature)){
-    		$model->signature = $currentUserModel->signature;
+    	}    	
+   	
+    	if(isset($_POST[$model->formName()]["info"])){
+    		$model->info = $_POST[$model->formName()]["info"];
+    	} else if(isset($currentUserModel) && isset($currentUserModel->info)){
+    		$model->info = $currentUserModel->info;
     	}
     	
     	if(isset($_POST[$model->formName()]["bio_statement"])){
@@ -513,10 +503,10 @@ class UserController extends Controller
     		$model->bio_statement = $currentUserModel->bio_statement;
     	}
     	
-    	if(isset($_POST[$model->formName()]["orcid_id"])){
-    		$model->orcid_id = $_POST[$model->formName()]["orcid_id"];
-    	} else if(isset($currentUserModel) && isset($currentUserModel->orcid_id)){
-    		$model->orcid_id = $currentUserModel->orcid_id;
+    	if(isset($_POST[$model->formName()]["city"])){
+    		$model->city = $_POST[$model->formName()]["city"];
+    	} else if(isset($currentUserModel) && isset($currentUserModel->city)){
+    		$model->city = $currentUserModel->city;
     	}
     	
     	if(isset($_POST[$model->formName()]["url"])){
@@ -729,12 +719,8 @@ class UserController extends Controller
     
     	if(isset($_POST[$model->formName()]["initials"])){
     		$model->initials = $_POST[$model->formName()]["initials"];
-    	}
-    
-    	if(isset($_POST[$model->formName()]["affiliation"])){
-    		$model->affiliation = $_POST[$model->formName()]["affiliation"];
-    	}
-    	 
+    	}    
+   	 
     	if(isset($_POST[$model->formName()]["mailing_address"])){
     		$model->mailing_address = $_POST[$model->formName()]["mailing_address"];
     	}
@@ -848,12 +834,6 @@ class UserController extends Controller
     		$model->initials = $_POST[$model->formName()]["initials"];
     	} else if(isset($currentUserModel) && isset($currentUserModel->initials)){
     		$model->initials = $currentUserModel->initials;
-    	}
-    
-    	if(isset($_POST[$model->formName()]["affiliation"])){
-    		$model->affiliation = $_POST[$model->formName()]["affiliation"];
-    	} else if(isset($currentUserModel) && isset($currentUserModel->affiliation)){
-    		$model->affiliation = $currentUserModel->affiliation;
     	}
     
     	if(isset($_POST[$model->formName()]["mailing_address"])){

@@ -18,7 +18,6 @@ class UnregisteredUserProfileForm extends Model
     public $initials;
     public $gender;
     public $gender_opt;
-    public $affiliation;
     public $email;
     public $repeat_email;
     public $mailing_address;
@@ -46,10 +45,7 @@ class UnregisteredUserProfileForm extends Model
         		
         	['initials', 'match', 'pattern' => '/^[A-Z]{0,10}$/', 'message' => 'The initials must contain only uppercase letters.'],
 
-        	['gender', 'required'],
-        		
-        	['affiliation', 'required'],
-        	['affiliation', 'string', 'max' => 255],        		
+        	['gender', 'required'],        		
        		
         	['email', 'filter', 'filter' => 'trim'],
         	['email', 'required'],
@@ -125,7 +121,6 @@ class UnregisteredUserProfileForm extends Model
     		$user->middle_name = $this->middle_name;
     		$user->last_name = $this->last_name;
     		$user->initials = $this->initials;
-    		$user->affiliation = $this->affiliation;
     		$user->mailing_address = $this->mailing_address;
     		$user->updated_on = date("Y-m-d H:i:s");
     
@@ -197,7 +192,6 @@ class UnregisteredUserProfileForm extends Model
     		$user->middle_name = $this->middle_name;
     		$user->last_name = $this->last_name;
     		$user->initials = $this->initials;
-    		$user->affiliation = $this->affiliation;
     		$user->mailing_address = $this->mailing_address;
     		$user->created_on = date("Y-m-d H:i:s");
     

@@ -42,9 +42,7 @@ use yii\widgets\ActiveForm;
 
 		</div>
 		
-		<div class="col-md-6">
-		
-			<?= $form->field($model, 'affiliation')->textarea(['rows' => 6]) ?>		
+		<div class="col-md-6">		
 
     		<?= $form->field($model, 'mailing_address')->textarea(['rows' => 6]) ?>
 

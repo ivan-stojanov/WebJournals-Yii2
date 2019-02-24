@@ -16,7 +16,6 @@ use Yii;
  * @property string $middle_name
  * @property string $gender
  * @property string $initials
- * @property string $affiliation
  * @property string $mailing_address
  * @property string $country
  * @property string $created_on
@@ -43,7 +42,7 @@ class NOTUSEDUnregisteredUser extends \yii\db\ActiveRecord
         return [
             [['user_creator_id', 'username', 'email'], 'required'],
             [['user_creator_id', 'is_deleted'], 'integer'],
-            [['gender', 'affiliation', 'mailing_address'], 'string'],
+            [['gender', 'mailing_address'], 'string'],
             [['created_on', 'updated_on'], 'safe'],
             [['username', 'email'], 'string', 'max' => 255],
             [['first_name', 'last_name', 'middle_name', 'country'], 'string', 'max' => 100],
@@ -69,7 +68,6 @@ class NOTUSEDUnregisteredUser extends \yii\db\ActiveRecord
             'middle_name' => 'Middle Name',
             'gender' => 'Gender',
             'initials' => 'Initials',
-            'affiliation' => 'Affiliation',
             'mailing_address' => 'Mailing Address',
             'country' => 'Country',
             'created_on' => 'Created On',

@@ -47,7 +47,6 @@ use yii\grid\DataColumn;
             // 'middle_name',
             // 'gender',
             // 'initials',
-            // 'affiliation:ntext',
             // 'mailing_address:ntext',
             // 'country',
             // 'created_on',

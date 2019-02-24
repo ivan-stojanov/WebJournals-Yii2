@@ -51,7 +51,6 @@ $this->title = 'Unregistered User Details';
 	    				'value' => $common_vars->country_values[$model->country],
 	    				'format' => 'HTML',
 	    		),	    			
-	            'affiliation:ntext',	            
 	        ];
 	    if($user_can_modify) {    	
 	    	$attributes = ArrayHelper::merge($attributes, [
